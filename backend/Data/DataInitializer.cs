@@ -8,124 +8,127 @@ namespace Swallow.Data
 {
     public class DataInitializer
     {
-        public static async Task LoadWorldCities(DataContext _context)
+        public class CityRecord
         {
-            using var reader = new StreamReader("Data/Resources/Cities.csv");
-            using var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.InvariantCulture));
+            public required string city { get; set; }
+            public required string country { get; set; }
+            public required string iso2 { get; set; }
+            public required string iso3 { get; set; }
+            public required string lat { get; set; }
+            public required string lng { get; set; }
+        }
 
-            var records = csv.GetRecords<dynamic>().ToList();
+        public static async Task LoadWorldCities(ApplicationDbContext _context)
+        {
+            Dictionary<string, Country> countries = new Dictionary<string, Country>();
 
-            foreach (var record in records)
+            using StreamReader reader = new StreamReader("Data/Resources/Cities.csv");
+            using CsvReader csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.InvariantCulture));
+
+            _context.ChangeTracker.AutoDetectChangesEnabled = false;
+
+            const int batchSize = 1000;
+            int recordCount = 0;
+
+            List<Country> batchList = new List<Country>();
+
+            while (csv.Read())
             {
-                var countryName = record.country as string;
-                var countryISO2 = record.iso2 as string;
-                var countryISO3 = record.iso3 as string;
+                CityRecord? record = csv.GetRecord<CityRecord>();
+                if (record == null) continue;
 
-                if (countryName == null || countryISO2 == null || countryISO3 == null)
-                {
-                    continue;
-                }
-
-                var country = await _context.Countries
-                                .Include(c => c.Cities)
-                                .Where(c => c.ISO2 == countryISO2)
-                                .FirstOrDefaultAsync();
+                Country? country = countries.GetValueOrDefault(record.iso2);
 
                 if (country == null)
                 {
                     country = new Country
                     {
-                        Name = countryName,
-                        ISO2 = countryISO2,
-                        ISO3 = countryISO3
+                        Name = record.country,
+                        ISO2 = record.iso2,
+                        ISO3 = record.iso3,
                     };
-
-                    _context.Countries.Add(country);
-                    await _context.SaveChangesAsync();
+                    countries.Add(record.iso2, country);
+                    batchList.Add(country);
                 }
 
-                var cityName = record.city as string;
-                var cityLat = record.lat as string;
-                var cityLng = record.lng as string;
-
-                if (cityName == null || cityLat == null || cityLng == null || decimal.TryParse(cityLat, out decimal lat) == false || decimal.TryParse(cityLng, out decimal lng) == false)
+                country.Cities.Add(new City
                 {
-                    continue;
-                }
+                    Name = record.city,
+                    Latitude = decimal.Parse(record.lat),
+                    Longitude = decimal.Parse(record.lng),
+                    Country = country
+                });
 
-                var city = await _context.Cities
-                                .Where(c => c.Name == cityName && c.CountryId == country.CountryId)
-                                .FirstOrDefaultAsync();
+                recordCount++;
 
-                if (city == null)
+                if (recordCount % batchSize == 0)
                 {
-                    city = new City
-                    {
-                        CountryId = country.CountryId,
-                        Name = cityName,
-                        Latitude = decimal.Parse(cityLat),
-                        Longitude = decimal.Parse(cityLng)
-                    };
-
-                    country.Cities.Add(city);
+                    await _context.AddRangeAsync(batchList);
                     await _context.SaveChangesAsync();
+                    batchList.Clear();
                 }
             }
+
+            if (batchList.Any())
+            {
+                await _context.AddRangeAsync(batchList);
+                await _context.SaveChangesAsync();
+            }
+
+            _context.ChangeTracker.AutoDetectChangesEnabled = true;
         }
 
-        public static async Task LoadCurrencies(DataContext _context)
+        public class CurrencyRecord
         {
+            public required string country { get; set; }
+            public required string name { get; set; }
+            public required string code { get; set; }
+            public required string symbol { get; set; }
+        }
+
+        public static async Task LoadCurrencies(ApplicationDbContext _context)
+        {
+            Dictionary<string, Country> countries = await _context.Countries.ToDictionaryAsync(c => c.Name);
+
             using var reader = new StreamReader("Data/Resources/Currencies.csv");
             using var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.InvariantCulture));
 
-            var records = csv.GetRecords<dynamic>().ToList();
+            List<Currency> currencies = new List<Currency>();
 
-            foreach (var record in records)
+            while (csv.Read())
             {
-                var countryName = record.country as string;
-                var country = await _context.Countries
-                                .Include(c => c.Currencies)
-                                .Where(c => c.Name == countryName)
-                                .FirstOrDefaultAsync();
+                CurrencyRecord? record = csv.GetRecord<CurrencyRecord>();
+                if (record == null) continue;
 
-                var currencyName = record.name as string;
-                var currencyCode = record.code as string;
-                var currencySymbol = record.symbol as string;
+                Country? country = countries.GetValueOrDefault(record.country);
 
-                if (currencyName == null || currencyCode == null || currencySymbol == null)
+                if (country == null)
                 {
-                    continue;
-                }
-
-                Currency currency = new Currency
-                {
-                    Name = currencyName,
-                    Code = currencyCode,
-                    Symbol = currencySymbol,
-                };
-
-                if (country != null)
-                {
-                    currency.CountryId = country.CountryId;
-                }
-
-                var oldCurrency = await _context.Currencies
-                                    .Where(c => c.Code == currencyCode)
-                                    .FirstOrDefaultAsync();
-
-                if (oldCurrency != null)
-                {
-                    oldCurrency.Name = currencyName;
-                    oldCurrency.Symbol = currencySymbol;
-                    oldCurrency.CountryId = currency.CountryId;
+                    currencies.Add(new Currency
+                    {
+                        Name = record.name,
+                        Code = record.code,
+                        Symbol = record.symbol
+                    });
                 }
                 else
                 {
-                    _context.Currencies.Add(currency);
+                    currencies.Add(new Currency
+                    {
+                        Name = record.name,
+                        Code = record.code,
+                        Symbol = record.symbol,
+                        Country = country
+                    });
                 }
             }
 
+            _context.ChangeTracker.AutoDetectChangesEnabled = false;
+
+            await _context.AddRangeAsync(currencies);
             await _context.SaveChangesAsync();
+
+            _context.ChangeTracker.AutoDetectChangesEnabled = true;
         }
     }
 }

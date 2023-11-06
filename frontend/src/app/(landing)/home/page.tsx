@@ -1,16 +1,25 @@
 import React from 'react';
+import Image from 'next/image';
 import { Spacer } from "@nextui-org/react";
 import { Button } from '@nextui-org/button';
 import Typography from '@/components/Typography';
+import Link from 'next/link';
 
 export default function Home() {
     return (
         <>
             <section
                 className="bg-cover bg-center h-screen text-center relative"
-                style={{ backgroundImage: 'url(/landing/hero-cover.webp)' }}
                 aria-label='Hero Section'
             >
+                <Image
+                    src="/landing/hero-cover.webp"
+                    alt="Hero Cover"
+                    fill
+                    layout="fill"
+                    objectFit="cover"
+                    className="bg-cover bg-center"
+                />
                 <div
                     style={{ backgroundColor: 'rgba(0, 0, 0, 0.35)' }}
                     className="absolute inset-0 flex flex-col justify-center items-center"
@@ -23,7 +32,7 @@ export default function Home() {
                         Where Your Next Adventure Takes Wing
                     </Typography>
                     <Spacer y={12} />
-                    <Button size='lg' color='primary'>Get Started</Button>
+                    <Button as={Link} href='/auth/login' size='lg' color='primary'>Get Started</Button>
                 </div>
             </section>
         </>

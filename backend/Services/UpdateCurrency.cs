@@ -34,7 +34,7 @@ namespace Swallow.Services
         {
             using (var scope = _scopeFactory.CreateScope())
             {
-                var _context = scope.ServiceProvider.GetRequiredService<DataContext>();
+                var _context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
                 var platformSettings = await _context.PlatformSettings.FirstOrDefaultAsync();
                 

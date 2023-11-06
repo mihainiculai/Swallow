@@ -76,7 +76,7 @@ export const NavigationBar: React.FC = () => {
                 ))}
 
                 <NavbarItem className="block sm:inline-block">
-                    <Button as={Link} color="primary" href="#" variant="flat">
+                    <Button as={Link} color="primary" href="/auth/login" variant="flat">
                         Get Started
                     </Button>
                 </NavbarItem>

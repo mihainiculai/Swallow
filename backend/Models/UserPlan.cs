@@ -3,7 +3,7 @@
     public class UserPlan
     {
         public int UserPlanId { get; set; }
-        public int UserId { get; set; }
+        public Guid UserId { get; set; }
         public virtual User User { get; set; } = null!;
         public int PlanId { get; set; }
         public virtual Plan Plan { get; set; } = null!;

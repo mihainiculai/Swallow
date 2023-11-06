@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { useTheme } from "next-themes";
 import Image from "next/image";
 
@@ -11,10 +12,15 @@ interface LogoProps {
 }
 
 export const Logo: React.FC<LogoProps> = ({ width, height, theme, className }) => {
-    const { resolvedTheme } = useTheme()
+    const { resolvedTheme } = useTheme();
+    const [logoPath, setLogoPath] = useState<string | null>(null);
 
-    const selectedTheme = theme || resolvedTheme;
-    const logoPath = `logo/${selectedTheme === "dark" ? "dark-logo.svg" : "light-logo.svg"}`;
+    useEffect(() => {
+        const selectedTheme = theme || resolvedTheme;
+        setLogoPath(`/logo/${selectedTheme === "dark" ? "dark-logo.svg" : "light-logo.svg"}`);
+    }, [resolvedTheme, theme]);
+
+    if (!logoPath) return null;
 
     return (
         <Image
@@ -24,5 +30,5 @@ export const Logo: React.FC<LogoProps> = ({ width, height, theme, className }) =
             className={className}
             alt="Swallow Logo"
         />
-    )
+    );
 }
