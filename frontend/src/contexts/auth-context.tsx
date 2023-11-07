@@ -37,9 +37,9 @@ const initialState: State = {
 };
 
 export interface AuthContextType {
-    signIn: (email: string, password: string) => Promise<void>;
+    signIn: (email: string, password: string, reCaptchaToken: string) => Promise<void>;
     signInWithGoogle: (accessToken: string) => Promise<void>;
-    signUp: (email: string, passwird:string, firstName: string, lastNmae: string) => Promise<void>;
+    signUp: (email: string, passwird:string, firstName: string, lastNmae: string, reCaptchaToken: string) => Promise<void>;
     signOut: () => Promise<void>;
     isAuthenticated: boolean;
     isLoading: boolean;
@@ -114,9 +114,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         return () => clearInterval(interval);
     }, []);
 
-    const signIn = async (email: string, password: string) => {
+    const signIn = async (email: string, password: string, reCaptchaToken: string) => {
         try {
-            const { data } = await axiosInstance.post('auth/login', { email, password });
+            const { data } = await axiosInstance.post('auth/login', { email, password, reCaptchaToken });
             dispatch({
                 type: HANDLERS.SIGN_IN,
                 payload: data
@@ -138,9 +138,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         }
     };
 
-    const signUp = async (email: string, password: string, firstName: string, lastName: string) => {
+    const signUp = async (email: string, password: string, firstName: string, lastName: string, reCaptchaToken: string) => {
         try {
-            const { data } = await axiosInstance.post('auth/register', { email, password, firstName, lastName });
+            const { data } = await axiosInstance.post('auth/register', { email, password, firstName, lastName, reCaptchaToken });
             dispatch({
                 type: HANDLERS.SIGN_IN,
                 payload: data

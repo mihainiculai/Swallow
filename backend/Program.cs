@@ -7,6 +7,8 @@ using Swallow.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Diagnostics;
+using Swallow.Utils;
+using Swallow.Services.Email;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -70,6 +72,8 @@ builder.Services.AddHostedService<UpdateCurrency>();
 
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 builder.Services.AddScoped<EmailSender>();
+
+builder.Services.AddHttpClient<ReCaptchaVerifier>();
 
 var app = builder.Build();
 

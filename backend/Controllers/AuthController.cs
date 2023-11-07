@@ -5,7 +5,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Swallow.Models;
-using Swallow.Services;
+using Swallow.Services.Email;
+using Swallow.Utils;
 using System.Net;
 
 namespace Swallow.Controllers
@@ -17,23 +18,31 @@ namespace Swallow.Controllers
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
         private readonly EmailSender _emailSender;
+        private readonly ReCaptchaVerifier _reCaptchaVerifier;
 
-        public AuthController(UserManager<User> userManager, SignInManager<User> signInManager, EmailSender emailSender)
+        public AuthController(UserManager<User> userManager, SignInManager<User> signInManager, EmailSender emailSender, ReCaptchaVerifier reCaptchaVerifier)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _emailSender = emailSender;
+            _reCaptchaVerifier = reCaptchaVerifier;
         }
 
         public class LoginModel
         {
             public required string Email { get; set; }
             public required string Password { get; set; }
+            public required string ReCaptchaToken { get; set; }
         }
 
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginModel model)
         {
+            if (!await _reCaptchaVerifier.VerifyAsync(model.ReCaptchaToken))
+            {
+                return BadRequest();
+            }
+
             var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, true, false);
 
             if (!result.Succeeded)
@@ -66,11 +75,17 @@ namespace Swallow.Controllers
             public required string Password { get; set; }
             public required string FirstName { get; set; }
             public required string LastName { get; set; }
+            public required string ReCaptchaToken { get; set; }
         }
 
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterModel model)
         {
+            if (!await _reCaptchaVerifier.VerifyAsync(model.ReCaptchaToken))
+            {
+                return BadRequest();
+            }
+
             User user = new User
             {
                 Email = model.Email,
@@ -107,10 +122,21 @@ namespace Swallow.Controllers
             return Ok();
         }
 
-        [HttpPost("forgot-password")]
-        public async Task<IActionResult> ForgotPassword([FromBody] string email)
+        public class ForgotPasswordModel
         {
-            User? user = await _userManager.FindByEmailAsync(email);
+            public required string Email { get; set; }
+            public required string ReCaptchaToken { get; set; }
+        }
+
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordModel model)
+        {
+            if (!await _reCaptchaVerifier.VerifyAsync(model.ReCaptchaToken))
+            {
+                return BadRequest();
+            }
+
+            User? user = await _userManager.FindByEmailAsync(model.Email);
 
             if (user == null || user.Email == null)
             {
@@ -118,9 +144,8 @@ namespace Swallow.Controllers
             }
 
             string token = await _userManager.GeneratePasswordResetTokenAsync(user);
-            string encodedToken = WebUtility.UrlEncode(token);
 
-            await _emailSender.SendEmailAsync(user.Email, "Reset Password", $@"<p>Click <a href=""http://localhost:3000/auth/reset-password?email={user.Email}&token={encodedToken}"">here</a> to reset your password.</p>");
+            await _emailSender.ResetPasswordAsync(user.Email, user.FullName, token);
 
             return Ok();
         }
@@ -160,11 +185,17 @@ namespace Swallow.Controllers
             public required string Email { get; set; }
             public required string Token { get; set; }
             public required string Password { get; set; }
+            public required string ReCaptchaToken { get; set; }
         }
 
         [HttpPost("reset-password")]
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordModel model)
         {
+            if (!await _reCaptchaVerifier.VerifyAsync(model.ReCaptchaToken))
+            {
+                return BadRequest();
+            }
+
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null)
             {

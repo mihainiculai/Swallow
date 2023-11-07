@@ -19,8 +19,8 @@ export const registrationSchema = yup.object({
         .matches(/[a-z]/, 'Password must contain at least one lowercase letter')
         .matches(/[A-Z]/, 'Password must contain at least one uppercase letter')
         .matches(/[0-9]/, 'Password must contain at least one number')
-        .matches(/[@$!%*#?&]/, 'Password must contain at least one special character')
-        .matches(/^[a-zA-Z0-9@$!%*#?&]+$/, 'Password can only contain letters, numbers, and special characters'),
+        .matches(/[@$!%*#?&+\-\[\]]/, 'Password must contain at least one special character')
+        .matches(/^[a-zA-Z0-9@$!%*#?&+\-\[\]]+$/, 'Password can only contain letters, numbers, and special characters'),
     confirmPassword: yup
         .string()
         .oneOf([yup.ref('password')], 'Passwords must match')
@@ -54,8 +54,8 @@ export const resetPasswordSchema = yup.object({
         .matches(/[a-z]/, 'Password must contain at least one lowercase letter')
         .matches(/[A-Z]/, 'Password must contain at least one uppercase letter')
         .matches(/[0-9]/, 'Password must contain at least one number')
-        .matches(/[@$!%*#?&]/, 'Password must contain at least one special character')
-        .matches(/^[a-zA-Z0-9@$!%*#?&]+$/, 'Password can only contain letters, numbers, and special characters'),
+        .matches(/[@$!%*#?&+\-\[\]]/, 'Password must contain at least one special character')
+        .matches(/^[a-zA-Z0-9@$!%*#?&+\-\[\]]+$/, 'Password can only contain letters, numbers, and special characters'),
     confirmPassword: yup
         .string()
         .oneOf([yup.ref('password')], 'Passwords must match')

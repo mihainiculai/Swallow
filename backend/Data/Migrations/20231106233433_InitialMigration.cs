@@ -613,7 +613,7 @@ namespace Swallow.Data.Migrations
             migrationBuilder.InsertData(
                 table: "PlatformSettings",
                 columns: new[] { "SettingsId", "MentenanceMode", "NextCurrencyUpdate" },
-                values: new object[] { (byte)1, false, new DateTime(2023, 11, 6, 15, 44, 17, 298, DateTimeKind.Utc).AddTicks(1038) });
+                values: new object[] { (byte)1, false, new DateTime(2023, 11, 6, 23, 34, 33, 260, DateTimeKind.Utc).AddTicks(71) });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Attractions_CityId",

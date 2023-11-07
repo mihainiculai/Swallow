@@ -6,10 +6,15 @@ import { Button, Input } from "@nextui-org/react";
 import { axiosInstance } from "@/components/axiosInstance";
 import { useFormik } from "formik";
 import { forgotPasswordSchema } from "../_components/validationSchemas";
+import ReCAPTCHA from "react-google-recaptcha";
+import { useTheme } from "next-themes";
 
 export default function ForgotPasswordPage() {
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState<string | null>(null);
+
+    const recaptchaRef = React.createRef<ReCAPTCHA>();
+    const { resolvedTheme } = useTheme()
 
     const formik = useFormik({
         initialValues: {
@@ -18,7 +23,10 @@ export default function ForgotPasswordPage() {
         validationSchema: forgotPasswordSchema,
         onSubmit: async (values) => {
             try {
-                await axiosInstance.post("auth/forgot-password", values.email);
+                const reCaptchaToken = await recaptchaRef.current?.executeAsync();
+                if (!reCaptchaToken) return;
+
+                await axiosInstance.post("auth/forgot-password", { email: values.email, reCaptchaToken });
                 setSuccess("If you have an account with us, you will receive an email with a link to reset your password shortly.");
                 setError(null);
             } catch (error) {
@@ -41,9 +49,12 @@ export default function ForgotPasswordPage() {
                     onClear={() => {
                         formik.setFieldValue("email", "");
                         formik.setFieldTouched("email", false);
+                        setError(null);
+                        setSuccess(null);
                     }}
                     type="email"
                     placeholder="Email"
+                    disabled={!!success}
                     errorMessage={formik.touched.email && formik.errors.email}
                     isInvalid={formik.touched.email && !!formik.errors.email}
                     {...formik.getFieldProps("email")}
@@ -64,6 +75,13 @@ export default function ForgotPasswordPage() {
                         Back to Login
                     </Button>
                 </div>
+
+                <ReCAPTCHA
+                    ref={recaptchaRef}
+                    size="invisible"
+                    sitekey={process.env.NEXT_PUBLIC_GOOGLE_RECAPTCHA_SITE_KEY as string}
+                    theme={resolvedTheme === "dark" ? "dark" : "light"}
+                />
             </form>
         </>
     );

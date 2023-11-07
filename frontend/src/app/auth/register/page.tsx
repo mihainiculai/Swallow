@@ -9,10 +9,15 @@ import { useFormik } from "formik";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { registrationSchema } from "../_components/validationSchemas";
 import { AuthContextType } from "@/contexts/auth-context";
+import ReCAPTCHA from "react-google-recaptcha";
+import { useTheme } from "next-themes";
 
 export default function RegisterPage() {
     const { signUp } = useAuthContext() as AuthContextType
     const router = useRouter()
+    
+    const recaptchaRef = React.createRef<ReCAPTCHA>();
+    const { resolvedTheme } = useTheme()
 
     const [isVisible, setIsVisible] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null)
@@ -29,7 +34,11 @@ export default function RegisterPage() {
         validationSchema: registrationSchema,
         onSubmit: async (values) => {
             try {
-                await signUp(values.email, values.password, values.firstName, values.lastName)
+                const reCaptchaToken = await recaptchaRef.current?.executeAsync();
+
+                if (!reCaptchaToken) return;
+
+                await signUp(values.email, values.password, values.firstName, values.lastName, reCaptchaToken)
                 router.push("/dashboard");
             } catch (error: any) {
                 if (error.response && error.response.status === 409) {
@@ -51,17 +60,19 @@ export default function RegisterPage() {
 
             <form onSubmit={formik.handleSubmit} className="space-y-6">
                 <Input
+                    label="Email"
                     type="email"
-                    placeholder="Email"
-                    errorMessage={formik.touched.email && formik.errors.email}
+                    autoComplete="email"
                     isInvalid={formik.touched.email && !!formik.errors.email}
+                    errorMessage={formik.touched.email && formik.errors.email}
                     {...formik.getFieldProps("email")}
                 />
                 <Input
+                    label="New Password"
                     type={isVisible ? "text" : "password"}
-                    placeholder="Password"
-                    errorMessage={formik.touched.password && formik.errors.password}
+                    autoComplete="new-password"
                     isInvalid={formik.touched.password && !!formik.errors.password}
+                    errorMessage={formik.touched.password && formik.errors.password}
                     {...formik.getFieldProps("password")}
                     endContent={
                         <button className="focus:outline-none" type="button" onClick={() => setIsVisible(!isVisible)}>
@@ -70,24 +81,28 @@ export default function RegisterPage() {
                     }
                 />
                 <Input
+                    label="Confirm Password"
                     type="password"
-                    placeholder="Confirm Password"
-                    errorMessage={formik.touched.confirmPassword && formik.errors.confirmPassword}
+                    autoComplete="new-password"
                     isInvalid={formik.touched.confirmPassword && !!formik.errors.confirmPassword}
+                    errorMessage={formik.touched.confirmPassword && formik.errors.confirmPassword}
                     {...formik.getFieldProps("confirmPassword")}
                 />
                 <Input
+                    label="First Name"
                     type="text"
-                    placeholder="First Name"
+                    autoComplete="given-name"
+                    autoCapitalize="words"
                     errorMessage={formik.touched.firstName && formik.errors.firstName}
                     isInvalid={formik.touched.firstName && !!formik.errors.firstName}
                     {...formik.getFieldProps("firstName")}
                 />
                 <Input
-                    type="text"
-                    placeholder="Last Name"
-                    errorMessage={formik.touched.lastName && formik.errors.lastName}
+                    label="Last Name"
+                    autoComplete="family-name"
+                    autoCapitalize="words"
                     isInvalid={formik.touched.lastName && !!formik.errors.lastName}
+                    errorMessage={formik.touched.lastName && formik.errors.lastName}
                     {...formik.getFieldProps("lastName")}
                 />
                 <Checkbox
@@ -98,10 +113,10 @@ export default function RegisterPage() {
                 >
                     I accept the <Link href="/terms-and-conditions" className="hover:text-primary underline cursor-pointer">terms and conditions</Link>
                     {formik.touched.terms && formik.errors.terms && (
-                    <div className="text-sm text-danger">{formik.errors.terms}</div>
-                )}
+                        <div className="text-sm text-danger">{formik.errors.terms}</div>
+                    )}
                 </Checkbox>
-                
+
 
                 {error && <div className="text-sm text-danger">{error}</div>}
 
@@ -113,6 +128,13 @@ export default function RegisterPage() {
                         Already have an account? Sign in
                     </Button>
                 </div>
+
+                <ReCAPTCHA
+                    ref={recaptchaRef}
+                    size="invisible"
+                    sitekey={process.env.NEXT_PUBLIC_GOOGLE_RECAPTCHA_SITE_KEY as string}
+                    theme={resolvedTheme === "dark" ? "dark" : "light"}
+                />
             </form>
         </>
     )

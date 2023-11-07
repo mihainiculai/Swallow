@@ -12,7 +12,7 @@ using Swallow.Data;
 namespace Swallow.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20231106154417_InitialMigration")]
+    [Migration("20231106233433_InitialMigration")]
     partial class InitialMigration
     {
         /// <inheritdoc />
@@ -471,7 +471,7 @@ namespace Swallow.Data.Migrations
                         {
                             SettingsId = (byte)1,
                             MentenanceMode = false,
-                            NextCurrencyUpdate = new DateTime(2023, 11, 6, 15, 44, 17, 298, DateTimeKind.Utc).AddTicks(1038)
+                            NextCurrencyUpdate = new DateTime(2023, 11, 6, 23, 34, 33, 260, DateTimeKind.Utc).AddTicks(71)
                         });
                 });
 
