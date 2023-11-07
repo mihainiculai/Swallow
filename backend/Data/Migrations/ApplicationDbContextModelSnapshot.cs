@@ -468,7 +468,7 @@ namespace Swallow.Data.Migrations
                         {
                             SettingsId = (byte)1,
                             MentenanceMode = false,
-                            NextCurrencyUpdate = new DateTime(2023, 11, 6, 15, 44, 17, 298, DateTimeKind.Utc).AddTicks(1038)
+                            NextCurrencyUpdate = new DateTime(2023, 11, 6, 23, 34, 33, 260, DateTimeKind.Utc).AddTicks(71)
                         });
                 });
 

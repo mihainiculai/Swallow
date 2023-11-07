@@ -41,7 +41,6 @@
   <ItemGroup>
     <Folder Include="Data\Migrations\" />
     <Folder Include="Data\Resources\" />
-    <Folder Include="Utils\" />
   </ItemGroup>
 
 </Project>

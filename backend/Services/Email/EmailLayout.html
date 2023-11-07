@@ -1,0 +1,78 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{EmailTitle}}</title>
+    <style type="text/css">
+        body {
+            font-family: 'Averta', sans-serif;
+            color: #FFF;
+            margin: 0;
+            padding: 0;
+            width: 100% !important;
+        }
+
+        .email-container {
+            max-width: 600px;
+            margin: auto;
+            background: #FFF;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .email-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 20px;
+        }
+
+        .email-header img {
+            width: 48px;
+            height: 48px;
+            margin-right: 15px;
+        }
+
+        .email-header h1 {
+            font-size: 24px;
+            margin: 0;
+            line-height: 48px;
+        }
+
+        .email-body,
+        .email-footer {
+            padding: 20px;
+        }
+
+        .email-footer {
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+            background-color: #FD8524;
+            color: #FFF;
+        }
+
+        a {
+            text-decoration: none;
+            color: #FD8524;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <header class="email-header">
+            <img src="https://i.imgur.com/Y3F4xkk.png" alt="Swallow Logo" />
+            <h1>Swallow</h1>
+        </header>
+        <div class="email-body">
+            <h2 style="font-weight:bold;">{{EmailTitle}}</h2>
+            <p>{{EmailBody}}</p>
+        </div>
+        <footer class="email-footer">
+            © 2023 Swallow™. All Rights Reserved.
+        </footer>
+    </div>
+</body>
+</html>
