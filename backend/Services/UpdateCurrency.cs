@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Swallow.Data;
-using Swallow.Models;
+using Swallow.Models.DatabaseModels;
 using System.Globalization;
 
 namespace Swallow.Services

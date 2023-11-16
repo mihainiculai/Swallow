@@ -8,7 +8,7 @@ const HANDLERS = {
     SIGN_OUT: 'SIGN_OUT'
 };
 
-type User = {
+export type User = {
     email: string;
     firstName: string;
     lastName: string;

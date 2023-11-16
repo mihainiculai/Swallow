@@ -1,5 +1,5 @@
 ﻿using Swallow.Data;
-using Swallow.Models;
+using Swallow.Models.DatabaseModels;
 
 namespace Swallow.Services
 {

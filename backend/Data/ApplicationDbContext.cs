@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Swallow.Models;
+using Swallow.Models.DatabaseModels;
 
 namespace Swallow.Data
 {

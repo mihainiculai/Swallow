@@ -1,7 +1,7 @@
 ﻿using CsvHelper;
 using CsvHelper.Configuration;
 using Microsoft.EntityFrameworkCore;
-using Swallow.Models;
+using Swallow.Models.DatabaseModels;
 using System.Globalization;
 
 namespace Swallow.Data
