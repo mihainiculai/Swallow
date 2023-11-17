@@ -7,14 +7,9 @@ namespace Swallow.Services
         Task InitializeAsync();
     }
 
-    public class DatabaseInitializer : IDatabaseInitializer
+    public class DatabaseInitializer(ApplicationDbContext context) : IDatabaseInitializer
     {
-        private readonly ApplicationDbContext _context;
-
-        public DatabaseInitializer(ApplicationDbContext context)
-        {
-            _context = context;
-        }
+        private readonly ApplicationDbContext _context = context;
 
         public async Task InitializeAsync()
         {

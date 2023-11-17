@@ -1,4 +1,5 @@
 ﻿using Google.Apis.Oauth2.v2.Data;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Swallow.Models.DatabaseModels;
 using Swallow.Models.DTOs.Authentication;
@@ -27,6 +28,7 @@ namespace Swallow.Services.Authentication
         private readonly SignInManager<User> _signInManager;
         private readonly EmailSender _emailSender;
         private readonly ReCaptchaVerifier _reCaptchaVerifier;
+        private readonly AuthenticationProperties authenticationProperties;
 
         public AuthService(UserManager<User> userManager, SignInManager<User> signInManager, EmailSender emailSender, ReCaptchaVerifier reCaptchaVerifier)
         {
@@ -34,6 +36,13 @@ namespace Swallow.Services.Authentication
             _signInManager = signInManager;
             _emailSender = emailSender;
             _reCaptchaVerifier = reCaptchaVerifier;
+
+            authenticationProperties = new AuthenticationProperties
+            {
+                IsPersistent = true,
+                ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(60),
+                AllowRefresh = true
+            };
         }
 
         public async Task<ServiceResponse<Response>> LoginAsync(LoginModel model)
@@ -62,7 +71,7 @@ namespace Swallow.Services.Authentication
                 return ServiceResponse<Response>.Failure("Invalid reCAPTCHA verification token.", HttpStatusCode.BadRequest);
             }
 
-            User user = new User
+            User user = new()
             {
                 Email = model.Email,
                 UserName = model.Email,
@@ -82,7 +91,7 @@ namespace Swallow.Services.Authentication
                 return ServiceResponse<Response>.Failure("Failed to create user.", HttpStatusCode.InternalServerError);
             }
 
-            await _signInManager.SignInAsync(user, true);
+            await _signInManager.SignInAsync(user, authenticationProperties, "Register");
 
             return ServiceResponse<Response>.Success(UserResponse.Create(user));
         }
@@ -183,14 +192,15 @@ namespace Swallow.Services.Authentication
                     return ServiceResponse<Response>.Failure("Failed to create user.", HttpStatusCode.InternalServerError);
                 }
             }
-
-            await _signInManager.SignInAsync(user, true);
+            
+            await _signInManager.SignInAsync(user, authenticationProperties, "Google");
 
             return ServiceResponse<Response>.Success(UserResponse.Create(user));
         }
 
         public async Task<ServiceResponse<Response>> GetCurrentUserAsync(ClaimsPrincipal user)
         {
+
             User? currentUser = await _userManager.GetUserAsync(user);
 
             if (currentUser == null)

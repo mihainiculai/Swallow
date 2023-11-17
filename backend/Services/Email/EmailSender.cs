@@ -4,17 +4,11 @@ using System.Net.Mail;
 
 namespace Swallow.Services.Email
 {
-    public class EmailSender
+    public class EmailSender(IOptions<EmailSettings> emailSettings, IConfiguration configuration)
     {
-        private readonly EmailSettings _emailSettings;
-        private readonly string _websiteUrl;
-        private readonly string _supportEmail;
-        public EmailSender(IOptions<EmailSettings> emailSettings, IConfiguration configuration)
-        {
-            _emailSettings = emailSettings.Value;
-            _websiteUrl = configuration["WebsiteURL"] ?? "";
-            _supportEmail = configuration["SupportEmail"] ?? "";
-        }
+        private readonly EmailSettings _emailSettings = emailSettings.Value;
+        private readonly string _websiteUrl = configuration["WebsiteURL"] ?? "";
+        private readonly string _supportEmail = configuration["SupportEmail"] ?? "";
 
         public async Task SendEmailAsync(string to, string subject, string bodyContent)
         {
@@ -33,13 +27,11 @@ namespace Swallow.Services.Email
 
             mailMessage.To.Add(new MailAddress(to));
 
-            using (var smtpClient = new SmtpClient(_emailSettings.SmtpServer, _emailSettings.Port))
-            {
-                smtpClient.Credentials = new NetworkCredential(_emailSettings.Username, _emailSettings.Password);
-                smtpClient.EnableSsl = _emailSettings.EnableSSL;
+            using var smtpClient = new SmtpClient(_emailSettings.SmtpServer, _emailSettings.Port);
+            smtpClient.Credentials = new NetworkCredential(_emailSettings.Username, _emailSettings.Password);
+            smtpClient.EnableSsl = _emailSettings.EnableSSL;
 
-                await smtpClient.SendMailAsync(mailMessage);
-            }
+            await smtpClient.SendMailAsync(mailMessage);
         }
 
         public async Task ResetPasswordAsync(string email, string fullName, string token)
@@ -68,13 +60,11 @@ namespace Swallow.Services.Email
 
             mailMessage.To.Add(new MailAddress(email));
 
-            using (var smtpClient = new SmtpClient(_emailSettings.SmtpServer, _emailSettings.Port))
-            {
-                smtpClient.Credentials = new NetworkCredential(_emailSettings.Username, _emailSettings.Password);
-                smtpClient.EnableSsl = _emailSettings.EnableSSL;
+            using var smtpClient = new SmtpClient(_emailSettings.SmtpServer, _emailSettings.Port);
+            smtpClient.Credentials = new NetworkCredential(_emailSettings.Username, _emailSettings.Password);
+            smtpClient.EnableSsl = _emailSettings.EnableSSL;
 
-                await smtpClient.SendMailAsync(mailMessage);
-            }
+            await smtpClient.SendMailAsync(mailMessage);
         }
     }
 

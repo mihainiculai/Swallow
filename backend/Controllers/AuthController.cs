@@ -5,29 +5,12 @@ using Swallow.Services.Authentication;
 
 namespace Swallow.Controllers
 {
-    /// <summary>
-    /// Handles authentication-related actions such as login, registration, logout, and password management.
-    /// </summary>
     [Route("api/auth")]
     [ApiController]
-    public class AuthController : ControllerBase
+    public class AuthController(IAuthService authService) : ControllerBase
     {
-        private readonly IAuthService _authService;
+        private readonly IAuthService _authService = authService;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AuthController"/> class.
-        /// </summary>
-        /// <param name="authService">The authentication service.</param>
-        public AuthController(IAuthService authService)
-        {
-            _authService = authService;
-        }
-
-        /// <summary>
-        /// Logs in a user with the specified credentials.
-        /// </summary>
-        /// <param name="model">The login credentials.</param>
-        /// <returns>An action result containing the login response.</returns>
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginModel model)
         {

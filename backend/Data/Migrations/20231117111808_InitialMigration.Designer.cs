@@ -12,7 +12,7 @@ using Swallow.Data;
 namespace Swallow.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20231106233433_InitialMigration")]
+    [Migration("20231117111808_InitialMigration")]
     partial class InitialMigration
     {
         /// <inheritdoc />
@@ -43,7 +43,7 @@ namespace Swallow.Data.Migrations
                     b.ToTable("AttractionsToCategories");
                 });
 
-            modelBuilder.Entity("Swallow.Models.Attraction", b =>
+            modelBuilder.Entity("Swallow.Models.DatabaseModels.Attraction", b =>
                 {
                     b.Property<int>("AttractionId")
                         .ValueGeneratedOnAdd()
@@ -115,7 +115,7 @@ namespace Swallow.Data.Migrations
                     b.ToTable("Attractions");
                 });
 
-            modelBuilder.Entity("Swallow.Models.AttractionCategory", b =>
+            modelBuilder.Entity("Swallow.Models.DatabaseModels.AttractionCategory", b =>
                 {
                     b.Property<int>("AttractionCategoryId")
                         .ValueGeneratedOnAdd()
@@ -132,7 +132,7 @@ namespace Swallow.Data.Migrations
                     b.ToTable("AttractionCategories");
                 });
 
-            modelBuilder.Entity("Swallow.Models.City", b =>
+            modelBuilder.Entity("Swallow.Models.DatabaseModels.City", b =>
                 {
                     b.Property<int>("CityId")
                         .ValueGeneratedOnAdd()
@@ -169,7 +169,7 @@ namespace Swallow.Data.Migrations
                     b.ToTable("Cities");
                 });
 
-            modelBuilder.Entity("Swallow.Models.Country", b =>
+            modelBuilder.Entity("Swallow.Models.DatabaseModels.Country", b =>
                 {
                     b.Property<short>("CountryId")
                         .ValueGeneratedOnAdd()
@@ -207,7 +207,7 @@ namespace Swallow.Data.Migrations
                     b.ToTable("Countries");
                 });
 
-            modelBuilder.Entity("Swallow.Models.Currency", b =>
+            modelBuilder.Entity("Swallow.Models.DatabaseModels.Currency", b =>
                 {
                     b.Property<short>("CurrencyId")
                         .ValueGeneratedOnAdd()
@@ -240,7 +240,7 @@ namespace Swallow.Data.Migrations
                     b.ToTable("Currencies");
                 });
 
-            modelBuilder.Entity("Swallow.Models.CurrencyRate", b =>
+            modelBuilder.Entity("Swallow.Models.DatabaseModels.CurrencyRate", b =>
                 {
                     b.Property<int>("CurrencyRateId")
                         .ValueGeneratedOnAdd()
@@ -265,7 +265,7 @@ namespace Swallow.Data.Migrations
                     b.ToTable("CurrencyRates");
                 });
 
-            modelBuilder.Entity("Swallow.Models.ErrorLog", b =>
+            modelBuilder.Entity("Swallow.Models.DatabaseModels.ErrorLog", b =>
                 {
                     b.Property<int>("ErrorLogId")
                         .ValueGeneratedOnAdd()
@@ -289,7 +289,7 @@ namespace Swallow.Data.Migrations
                     b.ToTable("ErrorLogs");
                 });
 
-            modelBuilder.Entity("Swallow.Models.Expense", b =>
+            modelBuilder.Entity("Swallow.Models.DatabaseModels.Expense", b =>
                 {
                     b.Property<int>("ExpenseId")
                         .ValueGeneratedOnAdd()
@@ -332,7 +332,7 @@ namespace Swallow.Data.Migrations
                     b.ToTable("Expenses");
                 });
 
-            modelBuilder.Entity("Swallow.Models.ExpenseCategory", b =>
+            modelBuilder.Entity("Swallow.Models.DatabaseModels.ExpenseCategory", b =>
                 {
                     b.Property<short>("ExpenseCategoryId")
                         .ValueGeneratedOnAdd()
@@ -349,7 +349,7 @@ namespace Swallow.Data.Migrations
                     b.ToTable("ExpenseCategories");
                 });
 
-            modelBuilder.Entity("Swallow.Models.ItineraryAttraction", b =>
+            modelBuilder.Entity("Swallow.Models.DatabaseModels.ItineraryAttraction", b =>
                 {
                     b.Property<int>("ItineraryAttractionId")
                         .ValueGeneratedOnAdd()
@@ -388,7 +388,7 @@ namespace Swallow.Data.Migrations
                     b.ToTable("ItineraryAttractions");
                 });
 
-            modelBuilder.Entity("Swallow.Models.ItineraryDay", b =>
+            modelBuilder.Entity("Swallow.Models.DatabaseModels.ItineraryDay", b =>
                 {
                     b.Property<int>("ItineraryDayId")
                         .ValueGeneratedOnAdd()
@@ -409,7 +409,7 @@ namespace Swallow.Data.Migrations
                     b.ToTable("ItineraryDays");
                 });
 
-            modelBuilder.Entity("Swallow.Models.Plan", b =>
+            modelBuilder.Entity("Swallow.Models.DatabaseModels.Plan", b =>
                 {
                     b.Property<int>("PlanId")
                         .ValueGeneratedOnAdd()
@@ -451,7 +451,7 @@ namespace Swallow.Data.Migrations
                     b.ToTable("Plan");
                 });
 
-            modelBuilder.Entity("Swallow.Models.PlatformSettings", b =>
+            modelBuilder.Entity("Swallow.Models.DatabaseModels.PlatformSettings", b =>
                 {
                     b.Property<byte>("SettingsId")
                         .HasColumnType("tinyint");
@@ -471,11 +471,11 @@ namespace Swallow.Data.Migrations
                         {
                             SettingsId = (byte)1,
                             MentenanceMode = false,
-                            NextCurrencyUpdate = new DateTime(2023, 11, 6, 23, 34, 33, 260, DateTimeKind.Utc).AddTicks(71)
+                            NextCurrencyUpdate = new DateTime(2023, 11, 17, 11, 18, 8, 415, DateTimeKind.Utc).AddTicks(9054)
                         });
                 });
 
-            modelBuilder.Entity("Swallow.Models.Role", b =>
+            modelBuilder.Entity("Swallow.Models.DatabaseModels.Role", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -503,7 +503,7 @@ namespace Swallow.Data.Migrations
                     b.ToTable("Roles", (string)null);
                 });
 
-            modelBuilder.Entity("Swallow.Models.RoleClaim", b =>
+            modelBuilder.Entity("Swallow.Models.DatabaseModels.RoleClaim", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -527,7 +527,7 @@ namespace Swallow.Data.Migrations
                     b.ToTable("RoleClaims", (string)null);
                 });
 
-            modelBuilder.Entity("Swallow.Models.Schedule", b =>
+            modelBuilder.Entity("Swallow.Models.DatabaseModels.Schedule", b =>
                 {
                     b.Property<int>("AttractionId")
                         .HasColumnType("int");
@@ -548,7 +548,7 @@ namespace Swallow.Data.Migrations
                     b.ToTable("Schedules");
                 });
 
-            modelBuilder.Entity("Swallow.Models.TransportMode", b =>
+            modelBuilder.Entity("Swallow.Models.DatabaseModels.TransportMode", b =>
                 {
                     b.Property<byte>("TransportModeId")
                         .HasColumnType("tinyint");
@@ -562,7 +562,7 @@ namespace Swallow.Data.Migrations
                     b.ToTable("TransportModes");
                 });
 
-            modelBuilder.Entity("Swallow.Models.Trip", b =>
+            modelBuilder.Entity("Swallow.Models.DatabaseModels.Trip", b =>
                 {
                     b.Property<int>("TripId")
                         .HasColumnType("int");
@@ -586,7 +586,7 @@ namespace Swallow.Data.Migrations
                     b.ToTable("Trips");
                 });
 
-            modelBuilder.Entity("Swallow.Models.TripTransport", b =>
+            modelBuilder.Entity("Swallow.Models.DatabaseModels.TripTransport", b =>
                 {
                     b.Property<int>("TripId")
                         .HasColumnType("int");
@@ -623,7 +623,7 @@ namespace Swallow.Data.Migrations
                     b.ToTable("TripTransports");
                 });
 
-            modelBuilder.Entity("Swallow.Models.User", b =>
+            modelBuilder.Entity("Swallow.Models.DatabaseModels.User", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -709,7 +709,7 @@ namespace Swallow.Data.Migrations
                     b.ToTable("Users", (string)null);
                 });
 
-            modelBuilder.Entity("Swallow.Models.UserClaim", b =>
+            modelBuilder.Entity("Swallow.Models.DatabaseModels.UserClaim", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -733,7 +733,7 @@ namespace Swallow.Data.Migrations
                     b.ToTable("Claims", (string)null);
                 });
 
-            modelBuilder.Entity("Swallow.Models.UserLogin", b =>
+            modelBuilder.Entity("Swallow.Models.DatabaseModels.UserLogin", b =>
                 {
                     b.Property<string>("LoginProvider")
                         .HasColumnType("nvarchar(450)");
@@ -754,7 +754,7 @@ namespace Swallow.Data.Migrations
                     b.ToTable("UserLogins", (string)null);
                 });
 
-            modelBuilder.Entity("Swallow.Models.UserPlan", b =>
+            modelBuilder.Entity("Swallow.Models.DatabaseModels.UserPlan", b =>
                 {
                     b.Property<int>("UserPlanId")
                         .ValueGeneratedOnAdd()
@@ -786,7 +786,7 @@ namespace Swallow.Data.Migrations
                     b.ToTable("UserPlan");
                 });
 
-            modelBuilder.Entity("Swallow.Models.UserRole", b =>
+            modelBuilder.Entity("Swallow.Models.DatabaseModels.UserRole", b =>
                 {
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
@@ -801,7 +801,7 @@ namespace Swallow.Data.Migrations
                     b.ToTable("UserRoles", (string)null);
                 });
 
-            modelBuilder.Entity("Swallow.Models.UserToken", b =>
+            modelBuilder.Entity("Swallow.Models.DatabaseModels.UserToken", b =>
                 {
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
@@ -837,28 +837,28 @@ namespace Swallow.Data.Migrations
 
             modelBuilder.Entity("AttractionsToCategories", b =>
                 {
-                    b.HasOne("Swallow.Models.AttractionCategory", null)
+                    b.HasOne("Swallow.Models.DatabaseModels.AttractionCategory", null)
                         .WithMany()
                         .HasForeignKey("AttractionCategoriesAttractionCategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Swallow.Models.Attraction", null)
+                    b.HasOne("Swallow.Models.DatabaseModels.Attraction", null)
                         .WithMany()
                         .HasForeignKey("AttractionsAttractionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Swallow.Models.Attraction", b =>
+            modelBuilder.Entity("Swallow.Models.DatabaseModels.Attraction", b =>
                 {
-                    b.HasOne("Swallow.Models.City", "City")
+                    b.HasOne("Swallow.Models.DatabaseModels.City", "City")
                         .WithMany("Attractions")
                         .HasForeignKey("CityId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Swallow.Models.Currency", "Currency")
+                    b.HasOne("Swallow.Models.DatabaseModels.Currency", "Currency")
                         .WithMany("Attractions")
                         .HasForeignKey("CurrencyId");
 
@@ -867,9 +867,9 @@ namespace Swallow.Data.Migrations
                     b.Navigation("Currency");
                 });
 
-            modelBuilder.Entity("Swallow.Models.City", b =>
+            modelBuilder.Entity("Swallow.Models.DatabaseModels.City", b =>
                 {
-                    b.HasOne("Swallow.Models.Country", "Country")
+                    b.HasOne("Swallow.Models.DatabaseModels.Country", "Country")
                         .WithMany("Cities")
                         .HasForeignKey("CountryId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -878,18 +878,18 @@ namespace Swallow.Data.Migrations
                     b.Navigation("Country");
                 });
 
-            modelBuilder.Entity("Swallow.Models.Currency", b =>
+            modelBuilder.Entity("Swallow.Models.DatabaseModels.Currency", b =>
                 {
-                    b.HasOne("Swallow.Models.Country", "Country")
+                    b.HasOne("Swallow.Models.DatabaseModels.Country", "Country")
                         .WithMany("Currencies")
                         .HasForeignKey("CountryId");
 
                     b.Navigation("Country");
                 });
 
-            modelBuilder.Entity("Swallow.Models.CurrencyRate", b =>
+            modelBuilder.Entity("Swallow.Models.DatabaseModels.CurrencyRate", b =>
                 {
-                    b.HasOne("Swallow.Models.Currency", "Currency")
+                    b.HasOne("Swallow.Models.DatabaseModels.Currency", "Currency")
                         .WithMany("CurrencyRates")
                         .HasForeignKey("CurrencyId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -898,19 +898,19 @@ namespace Swallow.Data.Migrations
                     b.Navigation("Currency");
                 });
 
-            modelBuilder.Entity("Swallow.Models.Expense", b =>
+            modelBuilder.Entity("Swallow.Models.DatabaseModels.Expense", b =>
                 {
-                    b.HasOne("Swallow.Models.Currency", "Currency")
+                    b.HasOne("Swallow.Models.DatabaseModels.Currency", "Currency")
                         .WithMany("Expenses")
                         .HasForeignKey("CurrencyId");
 
-                    b.HasOne("Swallow.Models.ExpenseCategory", "ExpenseCategory")
+                    b.HasOne("Swallow.Models.DatabaseModels.ExpenseCategory", "ExpenseCategory")
                         .WithMany("Expenses")
                         .HasForeignKey("ExpenseCategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Swallow.Models.Trip", "Trip")
+                    b.HasOne("Swallow.Models.DatabaseModels.Trip", "Trip")
                         .WithMany("Expenses")
                         .HasForeignKey("TripId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -923,19 +923,19 @@ namespace Swallow.Data.Migrations
                     b.Navigation("Trip");
                 });
 
-            modelBuilder.Entity("Swallow.Models.ItineraryAttraction", b =>
+            modelBuilder.Entity("Swallow.Models.DatabaseModels.ItineraryAttraction", b =>
                 {
-                    b.HasOne("Swallow.Models.Attraction", "Attraction")
+                    b.HasOne("Swallow.Models.DatabaseModels.Attraction", "Attraction")
                         .WithMany("ItineraryAttractions")
                         .HasForeignKey("AttractionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Swallow.Models.Currency", "Currency")
+                    b.HasOne("Swallow.Models.DatabaseModels.Currency", "Currency")
                         .WithMany("ItineraryAttractions")
                         .HasForeignKey("CurrencyId");
 
-                    b.HasOne("Swallow.Models.ItineraryDay", "ItineraryDay")
+                    b.HasOne("Swallow.Models.DatabaseModels.ItineraryDay", "ItineraryDay")
                         .WithMany("ItineraryAttractions")
                         .HasForeignKey("ItineraryDayId")
                         .OnDelete(DeleteBehavior.NoAction)
@@ -948,9 +948,9 @@ namespace Swallow.Data.Migrations
                     b.Navigation("ItineraryDay");
                 });
 
-            modelBuilder.Entity("Swallow.Models.ItineraryDay", b =>
+            modelBuilder.Entity("Swallow.Models.DatabaseModels.ItineraryDay", b =>
                 {
-                    b.HasOne("Swallow.Models.Trip", "Trip")
+                    b.HasOne("Swallow.Models.DatabaseModels.Trip", "Trip")
                         .WithMany("ItineraryDays")
                         .HasForeignKey("TripId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -959,9 +959,9 @@ namespace Swallow.Data.Migrations
                     b.Navigation("Trip");
                 });
 
-            modelBuilder.Entity("Swallow.Models.RoleClaim", b =>
+            modelBuilder.Entity("Swallow.Models.DatabaseModels.RoleClaim", b =>
                 {
-                    b.HasOne("Swallow.Models.Role", "Role")
+                    b.HasOne("Swallow.Models.DatabaseModels.Role", "Role")
                         .WithMany("RoleClaims")
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -970,9 +970,9 @@ namespace Swallow.Data.Migrations
                     b.Navigation("Role");
                 });
 
-            modelBuilder.Entity("Swallow.Models.Schedule", b =>
+            modelBuilder.Entity("Swallow.Models.DatabaseModels.Schedule", b =>
                 {
-                    b.HasOne("Swallow.Models.Attraction", "Attraction")
+                    b.HasOne("Swallow.Models.DatabaseModels.Attraction", "Attraction")
                         .WithMany("Schedules")
                         .HasForeignKey("AttractionId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -989,15 +989,15 @@ namespace Swallow.Data.Migrations
                     b.Navigation("Weekday");
                 });
 
-            modelBuilder.Entity("Swallow.Models.Trip", b =>
+            modelBuilder.Entity("Swallow.Models.DatabaseModels.Trip", b =>
                 {
-                    b.HasOne("Swallow.Models.City", "City")
+                    b.HasOne("Swallow.Models.DatabaseModels.City", "City")
                         .WithMany("Trips")
                         .HasForeignKey("TripId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Swallow.Models.User", "User")
+                    b.HasOne("Swallow.Models.DatabaseModels.User", "User")
                         .WithMany("Trips")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1008,19 +1008,19 @@ namespace Swallow.Data.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Swallow.Models.TripTransport", b =>
+            modelBuilder.Entity("Swallow.Models.DatabaseModels.TripTransport", b =>
                 {
-                    b.HasOne("Swallow.Models.Currency", "Currency")
+                    b.HasOne("Swallow.Models.DatabaseModels.Currency", "Currency")
                         .WithMany("TripTransports")
                         .HasForeignKey("CurrencyId");
 
-                    b.HasOne("Swallow.Models.TransportMode", "TransportMode")
+                    b.HasOne("Swallow.Models.DatabaseModels.TransportMode", "TransportMode")
                         .WithMany("TripTransports")
                         .HasForeignKey("TransportModeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Swallow.Models.Trip", "Trip")
+                    b.HasOne("Swallow.Models.DatabaseModels.Trip", "Trip")
                         .WithMany("TripTransports")
                         .HasForeignKey("TripId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1033,9 +1033,9 @@ namespace Swallow.Data.Migrations
                     b.Navigation("Trip");
                 });
 
-            modelBuilder.Entity("Swallow.Models.UserClaim", b =>
+            modelBuilder.Entity("Swallow.Models.DatabaseModels.UserClaim", b =>
                 {
-                    b.HasOne("Swallow.Models.User", "User")
+                    b.HasOne("Swallow.Models.DatabaseModels.User", "User")
                         .WithMany("Claims")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1044,9 +1044,9 @@ namespace Swallow.Data.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Swallow.Models.UserLogin", b =>
+            modelBuilder.Entity("Swallow.Models.DatabaseModels.UserLogin", b =>
                 {
-                    b.HasOne("Swallow.Models.User", "User")
+                    b.HasOne("Swallow.Models.DatabaseModels.User", "User")
                         .WithMany("Logins")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1055,15 +1055,15 @@ namespace Swallow.Data.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Swallow.Models.UserPlan", b =>
+            modelBuilder.Entity("Swallow.Models.DatabaseModels.UserPlan", b =>
                 {
-                    b.HasOne("Swallow.Models.Plan", "Plan")
+                    b.HasOne("Swallow.Models.DatabaseModels.Plan", "Plan")
                         .WithMany("UserPlans")
                         .HasForeignKey("PlanId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Swallow.Models.User", "User")
+                    b.HasOne("Swallow.Models.DatabaseModels.User", "User")
                         .WithMany("UserPlans")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1074,15 +1074,15 @@ namespace Swallow.Data.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Swallow.Models.UserRole", b =>
+            modelBuilder.Entity("Swallow.Models.DatabaseModels.UserRole", b =>
                 {
-                    b.HasOne("Swallow.Models.Role", "Role")
+                    b.HasOne("Swallow.Models.DatabaseModels.Role", "Role")
                         .WithMany("UserRoles")
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Swallow.Models.User", "User")
+                    b.HasOne("Swallow.Models.DatabaseModels.User", "User")
                         .WithMany("UserRoles")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1093,9 +1093,9 @@ namespace Swallow.Data.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Swallow.Models.UserToken", b =>
+            modelBuilder.Entity("Swallow.Models.DatabaseModels.UserToken", b =>
                 {
-                    b.HasOne("Swallow.Models.User", "User")
+                    b.HasOne("Swallow.Models.DatabaseModels.User", "User")
                         .WithMany("Tokens")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1104,28 +1104,28 @@ namespace Swallow.Data.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Swallow.Models.Attraction", b =>
+            modelBuilder.Entity("Swallow.Models.DatabaseModels.Attraction", b =>
                 {
                     b.Navigation("ItineraryAttractions");
 
                     b.Navigation("Schedules");
                 });
 
-            modelBuilder.Entity("Swallow.Models.City", b =>
+            modelBuilder.Entity("Swallow.Models.DatabaseModels.City", b =>
                 {
                     b.Navigation("Attractions");
 
                     b.Navigation("Trips");
                 });
 
-            modelBuilder.Entity("Swallow.Models.Country", b =>
+            modelBuilder.Entity("Swallow.Models.DatabaseModels.Country", b =>
                 {
                     b.Navigation("Cities");
 
                     b.Navigation("Currencies");
                 });
 
-            modelBuilder.Entity("Swallow.Models.Currency", b =>
+            modelBuilder.Entity("Swallow.Models.DatabaseModels.Currency", b =>
                 {
                     b.Navigation("Attractions");
 
@@ -1138,34 +1138,34 @@ namespace Swallow.Data.Migrations
                     b.Navigation("TripTransports");
                 });
 
-            modelBuilder.Entity("Swallow.Models.ExpenseCategory", b =>
+            modelBuilder.Entity("Swallow.Models.DatabaseModels.ExpenseCategory", b =>
                 {
                     b.Navigation("Expenses");
                 });
 
-            modelBuilder.Entity("Swallow.Models.ItineraryDay", b =>
+            modelBuilder.Entity("Swallow.Models.DatabaseModels.ItineraryDay", b =>
                 {
                     b.Navigation("ItineraryAttractions");
                 });
 
-            modelBuilder.Entity("Swallow.Models.Plan", b =>
+            modelBuilder.Entity("Swallow.Models.DatabaseModels.Plan", b =>
                 {
                     b.Navigation("UserPlans");
                 });
 
-            modelBuilder.Entity("Swallow.Models.Role", b =>
+            modelBuilder.Entity("Swallow.Models.DatabaseModels.Role", b =>
                 {
                     b.Navigation("RoleClaims");
 
                     b.Navigation("UserRoles");
                 });
 
-            modelBuilder.Entity("Swallow.Models.TransportMode", b =>
+            modelBuilder.Entity("Swallow.Models.DatabaseModels.TransportMode", b =>
                 {
                     b.Navigation("TripTransports");
                 });
 
-            modelBuilder.Entity("Swallow.Models.Trip", b =>
+            modelBuilder.Entity("Swallow.Models.DatabaseModels.Trip", b =>
                 {
                     b.Navigation("Expenses");
 
@@ -1174,7 +1174,7 @@ namespace Swallow.Data.Migrations
                     b.Navigation("TripTransports");
                 });
 
-            modelBuilder.Entity("Swallow.Models.User", b =>
+            modelBuilder.Entity("Swallow.Models.DatabaseModels.User", b =>
                 {
                     b.Navigation("Claims");
 

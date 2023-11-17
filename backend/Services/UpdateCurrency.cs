@@ -14,15 +14,10 @@ namespace Swallow.Services
         public required Dictionary<string, decimal> Rates { get; set; }
     }
 
-    public class UpdateCurrency : IHostedService, IDisposable
+    public class UpdateCurrency(IServiceScopeFactory scopeFactory) : IHostedService, IDisposable
     {
-        private Timer _timer;
-        private readonly IServiceScopeFactory _scopeFactory;
-
-        public UpdateCurrency(IServiceScopeFactory scopeFactory)
-        {
-            _scopeFactory = scopeFactory;
-        }
+        private Timer? _timer;
+        private readonly IServiceScopeFactory _scopeFactory = scopeFactory;
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
@@ -30,67 +25,65 @@ namespace Swallow.Services
             return Task.CompletedTask;
         }
 
-        private async void Update(object state)
+        private async void Update(object? state)
         {
-            using (var scope = _scopeFactory.CreateScope())
+            using var scope = _scopeFactory.CreateScope();
+            var _context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+            var platformSettings = await _context.PlatformSettings.FirstOrDefaultAsync();
+
+            if (platformSettings == null)
             {
-                var _context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-
-                var platformSettings = await _context.PlatformSettings.FirstOrDefaultAsync();
-                
-                if (platformSettings == null)
-                {
-                    return;
-                }
-
-                var nextCurrencyUpdate = platformSettings.NextCurrencyUpdate;
-                
-                if (nextCurrencyUpdate > DateTime.UtcNow)
-                {
-                    return;
-                }
-
-                HttpClient client = new HttpClient();
-                var response = await client.GetStringAsync("https://open.er-api.com/v6/latest/USD");
-                var apiResponse = JsonConvert.DeserializeObject<ApiResponse>(response);
-                
-                if (apiResponse == null)
-                {
-                    return;
-                }
-
-                var lastUpdateUtc = DateTime.ParseExact(apiResponse.Time_Last_Update_Utc, "ddd, dd MMM yyyy HH:mm:ss '+0000'", CultureInfo.InvariantCulture);
-
-                if (lastUpdateUtc < nextCurrencyUpdate)
-                {
-                    return;
-                }
-
-                foreach (var rate in apiResponse.Rates)
-                {
-                    string currencyCode = rate.Key;
-                    decimal rateToUSD = rate.Value;
-
-                    var currency = await _context.Currencies.FirstOrDefaultAsync(c => c.Code == currencyCode);
-
-                    if (currency == null)
-                    {
-                        continue;
-                    }
-
-                    currency.CurrencyRates.Add(new CurrencyRate
-                    {
-                        RateToUSD = rateToUSD,
-                        Date = lastUpdateUtc
-                    });
-                }
-
-                var nextUpdateUtc = DateTime.ParseExact(apiResponse.Time_Next_Update_Utc, "ddd, dd MMM yyyy HH:mm:ss '+0000'", CultureInfo.InvariantCulture);
-                platformSettings.NextCurrencyUpdate = nextUpdateUtc;
-                _context.PlatformSettings.Update(platformSettings);
-
-                await _context.SaveChangesAsync();
+                return;
             }
+
+            var nextCurrencyUpdate = platformSettings.NextCurrencyUpdate;
+
+            if (nextCurrencyUpdate > DateTime.UtcNow)
+            {
+                return;
+            }
+
+            HttpClient client = new();
+            var response = await client.GetStringAsync("https://open.er-api.com/v6/latest/USD");
+            var apiResponse = JsonConvert.DeserializeObject<ApiResponse>(response);
+
+            if (apiResponse == null)
+            {
+                return;
+            }
+
+            var lastUpdateUtc = DateTime.ParseExact(apiResponse.Time_Last_Update_Utc, "ddd, dd MMM yyyy HH:mm:ss '+0000'", CultureInfo.InvariantCulture);
+
+            if (lastUpdateUtc < nextCurrencyUpdate)
+            {
+                return;
+            }
+
+            foreach (var rate in apiResponse.Rates)
+            {
+                string currencyCode = rate.Key;
+                decimal rateToUSD = rate.Value;
+
+                var currency = await _context.Currencies.FirstOrDefaultAsync(c => c.Code == currencyCode);
+
+                if (currency == null)
+                {
+                    continue;
+                }
+
+                currency.CurrencyRates.Add(new CurrencyRate
+                {
+                    RateToUSD = rateToUSD,
+                    Date = lastUpdateUtc
+                });
+            }
+
+            var nextUpdateUtc = DateTime.ParseExact(apiResponse.Time_Next_Update_Utc, "ddd, dd MMM yyyy HH:mm:ss '+0000'", CultureInfo.InvariantCulture);
+            platformSettings.NextCurrencyUpdate = nextUpdateUtc;
+            _context.PlatformSettings.Update(platformSettings);
+
+            await _context.SaveChangesAsync();
         }
 
         public Task StopAsync(CancellationToken cancellationToken)
@@ -101,6 +94,7 @@ namespace Swallow.Services
         public void Dispose()
         {
             _timer?.Dispose();
+            GC.SuppressFinalize(this);
         }
     }
 }

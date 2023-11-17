@@ -8,14 +8,9 @@ namespace Swallow.Services
         Task LogError(Exception exception);
     }
 
-    public class ErrorLogger : IErrorLogger
+    public class ErrorLogger(ApplicationDbContext context) : IErrorLogger
     {
-        private readonly ApplicationDbContext _context;
-
-        public ErrorLogger(ApplicationDbContext context)
-        {
-            _context = context;
-        }
+        private readonly ApplicationDbContext _context = context;
 
         public async Task LogError(Exception exception)
         {
