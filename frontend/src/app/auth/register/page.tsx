@@ -20,6 +20,7 @@ export default function RegisterPage() {
     const { resolvedTheme } = useTheme()
 
     const [isVisible, setIsVisible] = useState<boolean>(false);
+    const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null)
 
     const formik = useFormik({
@@ -34,9 +35,10 @@ export default function RegisterPage() {
         validationSchema: registrationSchema,
         onSubmit: async (values) => {
             try {
-                const reCaptchaToken = await recaptchaRef.current?.executeAsync();
+                setIsSubmitting(true);
 
-                if (!reCaptchaToken) return;
+                const reCaptchaToken = recaptchaRef.current?.execute();
+                if (!reCaptchaToken) throw new Error();
 
                 await signUp(values.email, values.password, values.firstName, values.lastName, reCaptchaToken)
                 router.push("/dashboard");
@@ -48,6 +50,8 @@ export default function RegisterPage() {
                     return
                 }
                 setError("An error occurred during registration.")
+            } finally {
+                setIsSubmitting(false);
             }
         }
     });
@@ -121,7 +125,7 @@ export default function RegisterPage() {
                 {error && <div className="text-sm text-danger">{error}</div>}
 
                 <div className="space-y-6">
-                    <Button color="primary" type="submit" fullWidth>
+                    <Button color="primary" type="submit" fullWidth isLoading={isSubmitting}>
                         Register
                     </Button>
                     <Button as={Link} href="/auth/login" color="primary" variant="flat" fullWidth>

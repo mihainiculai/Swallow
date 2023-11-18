@@ -3,6 +3,7 @@ import { LoginGuard } from "@/guard/login-guard"
 import Image from "next/image"
 import { Logo } from "@/components/Logo"
 import { Providers } from "./providers"
+import Link from "next/link"
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
     return (
@@ -24,10 +25,12 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
 
                     <div className="md:w-1/2 lg:w-1/3 overflow-auto">
                         <div className="flex flex-col justify-start items-start p-8">
-                            <div className="flex items-center space-x-2 mb-16">
-                                <Logo width={32} height={32} />
-                                <h1 className="text-xl font-bold">Swallow</h1>
-                            </div>
+                            <Link href="/home">
+                                <div className="flex items-center space-x-2 mb-16" >
+                                    <Logo width={32} height={32} />
+                                    <h1 className="text-xl font-bold">Swallow</h1>
+                                </div>
+                            </Link>
                             <div className="w-full max-w-md mx-auto space-y-10">
                                 {children}
                             </div>

@@ -22,6 +22,7 @@ export default function ForgotPasswordPage() {
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [isVisible, setIsVisible] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
+    const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
     const [success, setSuccess] = useState<string | null>(null);
     const [tokenValid, setTokenValid] = useState<boolean>(false);
 
@@ -52,10 +53,11 @@ export default function ForgotPasswordPage() {
         onSubmit: async (values) => {
             if (!email || !token) return;
 
-            const reCaptchaToken = await recaptchaRef.current?.executeAsync();
-            if (!reCaptchaToken) return;
-
             try {
+                setIsSubmitting(true);
+                const reCaptchaToken = recaptchaRef.current?.execute();
+                if (!reCaptchaToken) throw new Error();
+
                 const decodedToken = decodeURIComponent(token);
                 await axiosInstance.post("auth/reset-password", { email, token: decodedToken, password: values.password, reCaptchaToken });
                 setSuccess("Your password has been reset successfully.");
@@ -63,6 +65,8 @@ export default function ForgotPasswordPage() {
             } catch (error) {
                 setError("There was a problem resetting your password. Please try again.");
                 setSuccess(null);
+            } finally {
+                setIsSubmitting(false);
             }
         }
     });
@@ -120,7 +124,7 @@ export default function ForgotPasswordPage() {
 
                     <div className="space-y-6">
                         {!success &&
-                            <Button color="primary" type="submit" fullWidth>
+                            <Button color="primary" type="submit" fullWidth isLoading={isSubmitting}>
                                 Reset Password
                             </Button>
                         }

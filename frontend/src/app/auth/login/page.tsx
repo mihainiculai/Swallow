@@ -18,12 +18,13 @@ import { useTheme } from "next-themes";
 export default function LoginPage() {
     const { signIn, signInWithGoogle } = useAuthContext() as AuthContextType
     const router = useRouter()
-    
+
     const recaptchaRef = React.createRef<ReCAPTCHA>();
     const { resolvedTheme } = useTheme()
 
     const [isVisible, setIsVisible] = useState<boolean>(false)
     const [error, setError] = useState<string | null>(null)
+    const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
 
     const credentials = useFormik({
         initialValues: {
@@ -32,16 +33,20 @@ export default function LoginPage() {
         },
         validationSchema: loginSchema,
         onSubmit: async (values) => {
-            const reCaptchaToken = await recaptchaRef.current?.executeAsync();
-
-            if (!reCaptchaToken) return;
-
             try {
+                setIsSubmitting(true)
+
+                const reCaptchaToken = recaptchaRef.current?.execute()
+                if (!reCaptchaToken) throw new Error()
+
                 await signIn(values.email, values.password, reCaptchaToken)
                 router.push("/dashboard")
             } catch (error) {
                 setError("Incorrect email or password")
-                recaptchaRef.current?.reset();
+                recaptchaRef.current?.reset()
+            }
+            finally {
+                setIsSubmitting(false)
             }
         }
     })
@@ -58,6 +63,19 @@ export default function LoginPage() {
         },
     });
 
+    const handleGoogleLogin = () => {
+        setIsSubmitting(true);
+
+        try {
+            googleLogin()
+            router.push("/dashboard")
+        } catch (error) {
+            setError("Error signing in with Google")
+        } finally {
+            setIsSubmitting(false)
+        }
+    };
+
     return (
         <>
             <div>
@@ -66,12 +84,13 @@ export default function LoginPage() {
 
             <div>
                 <Button
-                    onClick={() => googleLogin()}
+                    onClick={handleGoogleLogin}
                     size="lg"
                     variant="bordered"
                     fullWidth
                     className="bg-white text-black"
                     startContent={<FcGoogle className="text-xl" />}
+                    disabled={isSubmitting}
                 >
                     Continue with Google
                 </Button>
@@ -120,7 +139,7 @@ export default function LoginPage() {
                 </div>
 
                 <div className="space-y-6">
-                    <Button color="primary" type="submit" fullWidth>
+                    <Button color="primary" type="submit" fullWidth isLoading={isSubmitting}>
                         Sign in
                     </Button>
                     <Button as={Link} href="/auth/register" color="primary" variant="flat" fullWidth>
