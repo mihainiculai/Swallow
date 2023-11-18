@@ -12,6 +12,7 @@ import { useTheme } from "next-themes";
 export default function ForgotPasswordPage() {
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState<string | null>(null);
+    const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
     const recaptchaRef = React.createRef<ReCAPTCHA>();
     const { resolvedTheme } = useTheme()
@@ -23,8 +24,10 @@ export default function ForgotPasswordPage() {
         validationSchema: forgotPasswordSchema,
         onSubmit: async (values) => {
             try {
-                const reCaptchaToken = await recaptchaRef.current?.executeAsync();
-                if (!reCaptchaToken) return;
+                setIsSubmitting(true);
+
+                const reCaptchaToken = recaptchaRef.current?.execute();
+                if (!reCaptchaToken) throw new Error();
 
                 await axiosInstance.post("auth/forgot-password", { email: values.email, reCaptchaToken });
                 setSuccess("If you have an account with us, you will receive an email with a link to reset your password shortly.");
@@ -32,6 +35,8 @@ export default function ForgotPasswordPage() {
             } catch (error) {
                 setError("There was a problem resetting your password.");
                 setSuccess(null);
+            } finally {
+                setIsSubmitting(false);
             }
         }
     });
@@ -67,7 +72,7 @@ export default function ForgotPasswordPage() {
 
                 <div className="space-y-6">
                     {!success &&
-                        <Button color="primary" type="submit" fullWidth>
+                        <Button color="primary" type="submit" fullWidth isLoading={isSubmitting}>
                             Send Reset Link
                         </Button>
                     }
