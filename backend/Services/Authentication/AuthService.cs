@@ -22,28 +22,18 @@ namespace Swallow.Services.Authentication
         Task<ServiceResponse<Response>> GetCurrentUserAsync(ClaimsPrincipal user);
     }
 
-    public class AuthService : IAuthService
+    public class AuthService(UserManager<User> userManager, SignInManager<User> signInManager, EmailSender emailSender, ReCaptchaVerifier reCaptchaVerifier) : IAuthService
     {
-        private readonly UserManager<User> _userManager;
-        private readonly SignInManager<User> _signInManager;
-        private readonly EmailSender _emailSender;
-        private readonly ReCaptchaVerifier _reCaptchaVerifier;
-        private readonly AuthenticationProperties authenticationProperties;
-
-        public AuthService(UserManager<User> userManager, SignInManager<User> signInManager, EmailSender emailSender, ReCaptchaVerifier reCaptchaVerifier)
+        private readonly UserManager<User> _userManager = userManager;
+        private readonly SignInManager<User> _signInManager = signInManager;
+        private readonly EmailSender _emailSender = emailSender;
+        private readonly ReCaptchaVerifier _reCaptchaVerifier = reCaptchaVerifier;
+        private readonly AuthenticationProperties authenticationProperties = new AuthenticationProperties
         {
-            _userManager = userManager;
-            _signInManager = signInManager;
-            _emailSender = emailSender;
-            _reCaptchaVerifier = reCaptchaVerifier;
-
-            authenticationProperties = new AuthenticationProperties
-            {
-                IsPersistent = true,
-                ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(60),
-                AllowRefresh = true
-            };
-        }
+            IsPersistent = true,
+            ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(60),
+            AllowRefresh = true
+        };
 
         public async Task<ServiceResponse<Response>> LoginAsync(LoginModel model)
         {
@@ -99,6 +89,7 @@ namespace Swallow.Services.Authentication
         public async Task<ServiceResponse<string>> LogoutAsync()
         {
             await _signInManager.SignOutAsync();
+
             return ServiceResponse<string>.Success("Successfully logged out.");
         }
 
@@ -182,7 +173,8 @@ namespace Swallow.Services.Authentication
                     Email = payload.Email,
                     UserName = payload.Email,
                     FirstName = payload.GivenName,
-                    LastName = payload.FamilyName
+                    LastName = payload.FamilyName,
+                    ProfilePictureURL = payload.Picture
                 };
 
                 var result = await _userManager.CreateAsync(user);
@@ -192,7 +184,7 @@ namespace Swallow.Services.Authentication
                     return ServiceResponse<Response>.Failure("Failed to create user.", HttpStatusCode.InternalServerError);
                 }
             }
-            
+
             await _signInManager.SignInAsync(user, authenticationProperties, "Google");
 
             return ServiceResponse<Response>.Success(UserResponse.Create(user));
@@ -200,7 +192,6 @@ namespace Swallow.Services.Authentication
 
         public async Task<ServiceResponse<Response>> GetCurrentUserAsync(ClaimsPrincipal user)
         {
-
             User? currentUser = await _userManager.GetUserAsync(user);
 
             if (currentUser == null)
