@@ -36,7 +36,7 @@ export default function LoginPage() {
             try {
                 setIsSubmitting(true)
 
-                const reCaptchaToken = recaptchaRef.current?.execute()
+                const reCaptchaToken = await recaptchaRef.current?.executeAsync();
                 if (!reCaptchaToken) throw new Error()
 
                 await signIn(values.email, values.password, reCaptchaToken)

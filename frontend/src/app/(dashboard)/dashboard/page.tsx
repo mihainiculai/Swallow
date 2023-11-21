@@ -8,6 +8,7 @@ export default function Dashboard() {
         <div>
             <h1>Dashboard</h1>
             <p>Welcome, {user?.email}</p>
+            <p>{user?.firstName}</p>
         </div>
     )
 }

@@ -6,3 +6,5 @@
     background-color: #FD8524;
     color: #FFFFFF;
 }
+
+.grecaptcha-badge { visibility: hidden; }

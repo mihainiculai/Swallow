@@ -55,7 +55,7 @@ export default function ForgotPasswordPage() {
 
             try {
                 setIsSubmitting(true);
-                const reCaptchaToken = recaptchaRef.current?.execute();
+                const reCaptchaToken = await recaptchaRef.current?.executeAsync();
                 if (!reCaptchaToken) throw new Error();
 
                 const decodedToken = decodeURIComponent(token);

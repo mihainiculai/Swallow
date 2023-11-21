@@ -12,6 +12,7 @@ export type User = {
     email: string;
     firstName: string;
     lastName: string;
+    fullName: string;
     profilePictureURL?: string;
 };
 
@@ -49,6 +50,9 @@ export interface AuthContextType {
 const handlers = {
     [HANDLERS.INITIALIZE]: (state: State, action: Action) => {
         const user = action.payload;
+        if (user) {
+            user.fullName = `${user.firstName} ${user.lastName}`;
+        }
 
         return {
             ...state,
@@ -59,6 +63,7 @@ const handlers = {
     },
     [HANDLERS.SIGN_IN]: (state: State, action: Action) => {
         const user = action.payload;
+        user.fullName = `${user.firstName} ${user.lastName}`;
 
         return {
             ...state,

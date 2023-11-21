@@ -37,7 +37,7 @@ export default function RegisterPage() {
             try {
                 setIsSubmitting(true);
 
-                const reCaptchaToken = recaptchaRef.current?.execute();
+                const reCaptchaToken = await recaptchaRef.current?.executeAsync();
                 if (!reCaptchaToken) throw new Error();
 
                 await signUp(values.email, values.password, values.firstName, values.lastName, reCaptchaToken)
@@ -115,7 +115,7 @@ export default function RegisterPage() {
                     name="terms"
                     color="primary"
                 >
-                    I accept the <Link href="/terms-and-conditions" className="hover:text-primary underline cursor-pointer">terms and conditions</Link>
+                    I accept the <Link href="/terms-and-conditions" className="hover:text-primary underline cursor-pointer">Terms and Conditions</Link>
                     {formik.touched.terms && formik.errors.terms && (
                         <div className="text-sm text-danger">{formik.errors.terms}</div>
                     )}
