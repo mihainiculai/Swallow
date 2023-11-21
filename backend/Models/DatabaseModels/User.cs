@@ -15,7 +15,7 @@ namespace Swallow.Models.DatabaseModels
         [NotMapped]
         public string FullName { get => $"{FirstName ?? ""} {LastName ?? ""}".Trim(); }
         [Required]
-        public override string? Email { get => base.Email; set => base.Email = value; }
+        public bool? CustomProfilePicture { get; set; } = false;
         [MaxLength(255)]
         public string? ProfilePictureURL { get; set; }
 

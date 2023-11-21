@@ -17,7 +17,7 @@ namespace Swallow.Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.0-rc.2.23480.1")
+                .HasAnnotation("ProductVersion", "8.0.0")
                 .HasAnnotation("Proxies:ChangeTracking", false)
                 .HasAnnotation("Proxies:CheckEquality", false)
                 .HasAnnotation("Proxies:LazyLoading", true)
@@ -468,7 +468,7 @@ namespace Swallow.Data.Migrations
                         {
                             SettingsId = (byte)1,
                             MentenanceMode = false,
-                            NextCurrencyUpdate = new DateTime(2023, 11, 17, 11, 18, 8, 415, DateTimeKind.Utc).AddTicks(9054)
+                            NextCurrencyUpdate = new DateTime(2023, 11, 20, 9, 16, 59, 210, DateTimeKind.Utc).AddTicks(5412)
                         });
                 });
 
@@ -633,8 +633,11 @@ namespace Swallow.Data.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Email")
+                    b.Property<bool?>("CustomProfilePicture")
                         .IsRequired()
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Email")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
@@ -693,7 +696,8 @@ namespace Swallow.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("Email")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[Email] IS NOT NULL");
 
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");

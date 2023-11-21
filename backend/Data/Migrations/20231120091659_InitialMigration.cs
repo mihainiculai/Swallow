@@ -137,10 +137,11 @@ namespace Swallow.Data.Migrations
                     GoogleId = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     FirstName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     LastName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
+                    CustomProfilePicture = table.Column<bool>(type: "bit", nullable: false),
                     ProfilePictureURL = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedEmail = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     EmailConfirmed = table.Column<bool>(type: "bit", nullable: false),
                     PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -613,7 +614,7 @@ namespace Swallow.Data.Migrations
             migrationBuilder.InsertData(
                 table: "PlatformSettings",
                 columns: new[] { "SettingsId", "MentenanceMode", "NextCurrencyUpdate" },
-                values: new object[] { (byte)1, false, new DateTime(2023, 11, 17, 11, 18, 8, 415, DateTimeKind.Utc).AddTicks(9054) });
+                values: new object[] { (byte)1, false, new DateTime(2023, 11, 20, 9, 16, 59, 210, DateTimeKind.Utc).AddTicks(5412) });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Attractions_CityId",
@@ -758,7 +759,8 @@ namespace Swallow.Data.Migrations
                 name: "IX_Users_Email",
                 table: "Users",
                 column: "Email",
-                unique: true);
+                unique: true,
+                filter: "[Email] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "UserNameIndex",
