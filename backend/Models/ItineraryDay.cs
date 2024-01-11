@@ -4,7 +4,7 @@
     {
         public int ItineraryDayId { get; set; }
 
-        public int TripId { get; set; }
+        public Guid TripId { get; set; }
         public virtual Trip Trip { get; set; } = null!;
 
         public DateOnly Date { get; set; }

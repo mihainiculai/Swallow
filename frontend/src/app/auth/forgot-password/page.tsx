@@ -26,9 +26,9 @@ export default function ForgotPasswordPage() {
             try {
                 setIsSubmitting(true);
 
+                recaptchaRef.current?.reset();
                 const reCaptchaToken = await recaptchaRef.current?.executeAsync();
                 if (!reCaptchaToken) throw new Error();
-                console.log(reCaptchaToken);
 
                 await axiosInstance.post("auth/forgot-password", { email: values.email, reCaptchaToken });
                 setSuccess("If you have an account with us, you will receive an email with a link to reset your password shortly.");

@@ -1,4 +1,4 @@
-type DropdownItemType = {
+export type DropdownItemType = {
     name: string
     path: string
 }

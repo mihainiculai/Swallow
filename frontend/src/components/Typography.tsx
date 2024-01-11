@@ -60,6 +60,7 @@ interface TypographyProps {
     color?: 'violet' | 'yellow' | 'blue' | 'cyan' | 'green' | 'pink' | 'primary' | 'foreground';
     size?: 'sm' | 'md' | 'lg';
     fullWidth?: boolean;
+    className?: string;
     children: React.ReactNode;
 }
 
@@ -68,13 +69,14 @@ const Typography: FC<TypographyProps> = ({
     color,
     size = 'md',
     fullWidth = false,
-    children
+    className = '',
+    children,
 }) => {
     const classes = variant === 'title'
         ? titleClasses({ color, size, fullWidth })
         : subtitleClasses({ fullWidth });
 
-    return <span className={classes}>{children}</span>;
+    return <span className={`${classes} ${className}`}>{children}</span>;
 };
 
 export default Typography;

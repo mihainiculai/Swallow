@@ -20,7 +20,7 @@ const MenuItem: React.FC<{ name: string; path: string }> = ({ name, path }) => {
 const BarItem: React.FC<{ name: string; path: string; isActive: boolean; className?: string }> = ({ name, path, isActive, className }) => {
     return (
         <NavbarItem isActive={isActive} className={className}>
-            <Link href={path} className={`${isActive ? "text-primary" : "text-inherit"}`}>
+            <Link href={path} className={`${isActive ? "text-primary" : "text-inherit"} hover:text-primary`}>
                 {name}
             </Link>
         </NavbarItem>
@@ -81,6 +81,7 @@ export const NavigationBar: React.FC = () => {
                     </Button>
                 </NavbarItem>
             </NavbarContent>
+
 
             <NavbarMenu className="px-4 py-8">
                 {NavbarConfig.items.map((item, index) => (

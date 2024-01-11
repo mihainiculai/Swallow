@@ -72,10 +72,10 @@ namespace Swallow.Data
                 .HasForeignKey(e => e.CountryId)
                 .IsRequired();
 
-            modelBuilder.Entity<Trip>()
-                .HasOne(e => e.City)
-                .WithMany(e => e.Trips)
-                .HasForeignKey(e => e.TripId)
+            modelBuilder.Entity<City>()
+                .HasMany(e => e.Trips)
+                .WithOne(e => e.City)
+                .HasForeignKey(e => e.CityId)
                 .IsRequired();
 
             modelBuilder.Entity<City>()

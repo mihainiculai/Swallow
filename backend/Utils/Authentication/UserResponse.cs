@@ -1,13 +1,13 @@
-﻿using Swallow.Models.DatabaseModels;
-using Swallow.Models.DTOs.Authentication;
+﻿using Swallow.DTOs.Authentication;
+using Swallow.Models.DatabaseModels;
 
 namespace Swallow.Utils.Authentication
 {
     public class UserResponse
     {
-        public static Response Create(User user)
+        public static UserDto Create(User user)
         {
-            return new Response
+            return new UserDto
             {
                 Email = user.Email!,
                 FirstName = user.FirstName!,

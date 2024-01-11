@@ -1,4 +1,4 @@
-type NavbarItemType = {
+export type NavbarItemType = {
     name: string
     path: string
 }
@@ -10,7 +10,7 @@ type NavbarConfigType = {
 export const NavbarConfig: NavbarConfigType = {
     items: [
         {
-            name: 'dashboard',
+            name: 'Dashboard',
             path: '/dashboard',
         },
         {

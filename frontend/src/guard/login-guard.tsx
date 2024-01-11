@@ -3,12 +3,7 @@
 import { ReactNode, useEffect, useRef, useState, FC } from 'react';
 import { useRouter } from 'next/navigation';
 
-import { useAuthContext } from '@/contexts/auth-context';
-
-interface AuthContextType {
-    isAuthenticated: boolean;
-    isLoading: boolean;
-}
+import { useAuthContext, AuthContextType } from '@/contexts/auth-context';
 
 interface AuthGuardProps {
     children: ReactNode;

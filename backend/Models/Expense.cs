@@ -5,10 +5,10 @@ namespace Swallow.Models.DatabaseModels
 {
     public class Expense
     {
-        public int ExpenseId { get; set; }
+        public Guid ExpenseId { get; set; }
         public short ExpenseCategoryId { get; set; }
         public virtual ExpenseCategory ExpenseCategory { get; set; } = null!;
-        public int TripId { get; set; }
+        public Guid TripId { get; set; }
         public virtual Trip Trip { get; set; } = null!;
         [MaxLength(50)]
         public required string Name { get; set; }

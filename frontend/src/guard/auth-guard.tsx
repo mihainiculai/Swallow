@@ -3,12 +3,7 @@
 import { ReactNode, useEffect, useRef, useState, FC } from 'react';
 import { useRouter } from 'next/navigation';
 
-import { useAuthContext } from '@/contexts/auth-context';
-
-interface AuthContextType {
-    isAuthenticated: boolean;
-    isLoading: boolean;
-}
+import { useAuthContext, AuthContextType } from '@/contexts/auth-context';
 
 interface AuthGuardProps {
     children: ReactNode;
@@ -21,27 +16,22 @@ export const AuthGuard: FC<AuthGuardProps> = (props) => {
     const ignore = useRef(false);
     const [checked, setChecked] = useState(false);
 
-    useEffect(
-        () => {
-            if (ignore.current) {
-                return;
-            }
+    useEffect(() => {
 
-            if (isLoading) {
-                return;
-            }
 
-            ignore.current = true;
+        if (isLoading) {
+            return;
+        }
 
-            if (!isAuthenticated) {
-                console.log('Not authenticated, redirecting');
-                router.push('/auth/login');
-            } else {
-                setChecked(true);
-            }
-        },
-        [isAuthenticated, isLoading, router]
-    );
+
+        if (!isAuthenticated) {
+            setChecked(false);
+            console.log('Not authenticated, redirecting');
+            router.push('/auth/login');
+        } else {
+            setChecked(true);
+        }
+    }, [isAuthenticated, isLoading, router]);
 
     if (!checked) {
         return null;

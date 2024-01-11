@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Swallow.Models.DTOs.Authentication
+namespace Swallow.DTOs.Authentication
 {
-    public class LoginModel
+    public class LoginDto
     {
         [EmailAddress]
         public required string Email { get; set; }

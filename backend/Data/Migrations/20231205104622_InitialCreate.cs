@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Swallow.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialMigration : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -355,7 +355,7 @@ namespace Swallow.Data.Migrations
                 name: "Trips",
                 columns: table => new
                 {
-                    TripId = table.Column<int>(type: "int", nullable: false),
+                    TripId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CityId = table.Column<int>(type: "int", nullable: false),
                     StartDate = table.Column<DateOnly>(type: "date", nullable: false),
@@ -365,8 +365,8 @@ namespace Swallow.Data.Migrations
                 {
                     table.PrimaryKey("PK_Trips", x => x.TripId);
                     table.ForeignKey(
-                        name: "FK_Trips_Cities_TripId",
-                        column: x => x.TripId,
+                        name: "FK_Trips_Cities_CityId",
+                        column: x => x.CityId,
                         principalTable: "Cities",
                         principalColumn: "CityId",
                         onDelete: ReferentialAction.Cascade);
@@ -440,10 +440,9 @@ namespace Swallow.Data.Migrations
                 name: "Expenses",
                 columns: table => new
                 {
-                    ExpenseId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ExpenseId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ExpenseCategoryId = table.Column<short>(type: "smallint", nullable: false),
-                    TripId = table.Column<int>(type: "int", nullable: false),
+                    TripId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     AttachmentURL = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -478,7 +477,7 @@ namespace Swallow.Data.Migrations
                 {
                     ItineraryDayId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    TripId = table.Column<int>(type: "int", nullable: false),
+                    TripId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Date = table.Column<DateOnly>(type: "date", nullable: false)
                 },
                 constraints: table =>
@@ -496,7 +495,7 @@ namespace Swallow.Data.Migrations
                 name: "TripTransports",
                 columns: table => new
                 {
-                    TripId = table.Column<int>(type: "int", nullable: false),
+                    TripId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     TransportModeId = table.Column<byte>(type: "tinyint", nullable: false),
                     TransportNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     DepartureTime = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -614,7 +613,7 @@ namespace Swallow.Data.Migrations
             migrationBuilder.InsertData(
                 table: "PlatformSettings",
                 columns: new[] { "SettingsId", "MentenanceMode", "NextCurrencyUpdate" },
-                values: new object[] { (byte)1, false, new DateTime(2023, 11, 20, 9, 16, 59, 210, DateTimeKind.Utc).AddTicks(5412) });
+                values: new object[] { (byte)1, false, new DateTime(2023, 12, 5, 10, 46, 22, 177, DateTimeKind.Utc).AddTicks(2373) });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Attractions_CityId",
@@ -714,6 +713,11 @@ namespace Swallow.Data.Migrations
                 name: "IX_Schedules_WeekdayId",
                 table: "Schedules",
                 column: "WeekdayId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Trips_CityId",
+                table: "Trips",
+                column: "CityId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Trips_UserId",

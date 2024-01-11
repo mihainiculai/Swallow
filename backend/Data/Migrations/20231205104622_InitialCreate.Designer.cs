@@ -12,8 +12,8 @@ using Swallow.Data;
 namespace Swallow.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20231120091659_InitialMigration")]
-    partial class InitialMigration
+    [Migration("20231205104622_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -291,11 +291,9 @@ namespace Swallow.Data.Migrations
 
             modelBuilder.Entity("Swallow.Models.DatabaseModels.Expense", b =>
                 {
-                    b.Property<int>("ExpenseId")
+                    b.Property<Guid>("ExpenseId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ExpenseId"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("AttachmentURL")
                         .HasColumnType("nvarchar(max)");
@@ -318,8 +316,8 @@ namespace Swallow.Data.Migrations
                         .HasPrecision(10, 2)
                         .HasColumnType("decimal(10,2)");
 
-                    b.Property<int>("TripId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("TripId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("ExpenseId");
 
@@ -399,8 +397,8 @@ namespace Swallow.Data.Migrations
                     b.Property<DateOnly>("Date")
                         .HasColumnType("date");
 
-                    b.Property<int>("TripId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("TripId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("ItineraryDayId");
 
@@ -471,7 +469,7 @@ namespace Swallow.Data.Migrations
                         {
                             SettingsId = (byte)1,
                             MentenanceMode = false,
-                            NextCurrencyUpdate = new DateTime(2023, 11, 20, 9, 16, 59, 210, DateTimeKind.Utc).AddTicks(5412)
+                            NextCurrencyUpdate = new DateTime(2023, 12, 5, 10, 46, 22, 177, DateTimeKind.Utc).AddTicks(2373)
                         });
                 });
 
@@ -564,8 +562,9 @@ namespace Swallow.Data.Migrations
 
             modelBuilder.Entity("Swallow.Models.DatabaseModels.Trip", b =>
                 {
-                    b.Property<int>("TripId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("TripId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("CityId")
                         .HasColumnType("int");
@@ -581,6 +580,8 @@ namespace Swallow.Data.Migrations
 
                     b.HasKey("TripId");
 
+                    b.HasIndex("CityId");
+
                     b.HasIndex("UserId");
 
                     b.ToTable("Trips");
@@ -588,8 +589,8 @@ namespace Swallow.Data.Migrations
 
             modelBuilder.Entity("Swallow.Models.DatabaseModels.TripTransport", b =>
                 {
-                    b.Property<int>("TripId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("TripId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<byte>("TransportModeId")
                         .HasColumnType("tinyint");
@@ -997,7 +998,7 @@ namespace Swallow.Data.Migrations
                 {
                     b.HasOne("Swallow.Models.DatabaseModels.City", "City")
                         .WithMany("Trips")
-                        .HasForeignKey("TripId")
+                        .HasForeignKey("CityId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

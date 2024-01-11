@@ -36,6 +36,7 @@ export default function LoginPage() {
             try {
                 setIsSubmitting(true)
 
+                recaptchaRef.current?.reset()
                 const reCaptchaToken = await recaptchaRef.current?.executeAsync();
                 if (!reCaptchaToken) throw new Error()
 
@@ -43,7 +44,6 @@ export default function LoginPage() {
                 router.push("/dashboard")
             } catch (error) {
                 setError("Incorrect email or password")
-                recaptchaRef.current?.reset()
             }
             finally {
                 setIsSubmitting(false)

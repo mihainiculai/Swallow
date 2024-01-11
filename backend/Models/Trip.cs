@@ -2,7 +2,7 @@
 {
     public class Trip
     {
-        public int TripId { get; set; }
+        public Guid TripId { get; set; }
 
         public required Guid UserId { get; set; }
         public virtual User User { get; set; } = null!;

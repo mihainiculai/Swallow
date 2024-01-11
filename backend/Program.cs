@@ -3,10 +3,6 @@ using Swashbuckle.AspNetCore.Filters;
 using Microsoft.OpenApi.Models;
 using Swallow.Data;
 using Swallow.Services;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Identity;
-using Swallow.Services.Email;
-using Swallow.Models.DatabaseModels;
 using Swallow.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);

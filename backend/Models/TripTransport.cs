@@ -6,7 +6,7 @@ namespace Swallow.Models.DatabaseModels
     [PrimaryKey(nameof(TripId), nameof(TransportModeId))]
     public class TripTransport
     {
-        public int TripId { get; set; }
+        public Guid TripId { get; set; }
         public virtual Trip Trip { get; set; } = null!;
         public byte TransportModeId { get; set; }
         public virtual TransportMode TransportMode { get; set; } = null!;

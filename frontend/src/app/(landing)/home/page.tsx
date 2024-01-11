@@ -13,11 +13,9 @@ export default function Home() {
                 aria-label='Hero Section'
             >
                 <Image
+                    fill
                     src="/landing/hero-cover.webp"
                     alt="Hero Cover"
-                    fill
-                    layout="fill"
-                    objectFit="cover"
                     className="bg-cover bg-center"
                 />
                 <div

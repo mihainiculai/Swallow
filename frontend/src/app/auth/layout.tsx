@@ -33,7 +33,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
                             </Link>
                             <div className="w-full max-w-md mx-auto space-y-10">
                                 {children}
-                                <div className="text-xs text-zinc-500">
+                                <div className="text-xs text-default-400">
                                     This site is protected by reCAPTCHA and the Google<br />
                                     <Link href="https://policies.google.com/privacy" className="underline hover:text-primary">Privacy Policy</Link> and&nbsp;
                                     <Link href="https://policies.google.com/terms" className="underline hover:text-primary">Terms of Service</Link> apply.
