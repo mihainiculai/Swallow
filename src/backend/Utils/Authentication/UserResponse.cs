@@ -9,10 +9,12 @@ namespace Swallow.Utils.Authentication
         {
             return new UserDto
             {
+                Username = user.PublicUsername,
                 Email = user.Email!,
                 FirstName = user.FirstName!,
                 LastName = user.LastName!,
-                ProfilePictureURL = user.ProfilePictureURL
+                ProfilePictureURL = user.ProfilePictureURL,
+                Public = user.Public 
             };
         }
     }

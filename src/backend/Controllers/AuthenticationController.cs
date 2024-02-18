@@ -179,6 +179,18 @@ namespace Swallow.Controllers
                 }
             }
 
+            if (user.ProfilePictureURL != userInfo.Picture && user.CustomProfilePicture == false)
+            {
+                user.ProfilePictureURL = userInfo.Picture;
+
+                var result = await _userManager.UpdateAsync(user);
+
+                if (!result.Succeeded)
+                {
+                    return BadRequest("Failed to update user.");
+                }
+            }
+
             await _signInManager.SignInAsync(user, authenticationProperties, "Google");
 
             return Ok("Successfully logged in.");

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Swallow.Data;
 
@@ -11,9 +12,11 @@ using Swallow.Data;
 namespace Swallow.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240217153958_UpdateMigration1")]
+    partial class UpdateMigration1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -466,7 +469,7 @@ namespace Swallow.Data.Migrations
                         {
                             SettingsId = (byte)1,
                             MentenanceMode = false,
-                            NextCurrencyUpdate = new DateTime(2024, 2, 17, 23, 2, 35, 885, DateTimeKind.Utc).AddTicks(7423)
+                            NextCurrencyUpdate = new DateTime(2024, 2, 17, 15, 39, 58, 73, DateTimeKind.Utc).AddTicks(7901)
                         });
                 });
 
@@ -634,7 +637,8 @@ namespace Swallow.Data.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("CustomProfilePicture")
+                    b.Property<bool?>("CustomProfilePicture")
+                        .IsRequired()
                         .HasColumnType("bit");
 
                     b.Property<string>("Email")
@@ -682,9 +686,6 @@ namespace Swallow.Data.Migrations
                     b.Property<string>("ProfilePictureURL")
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
-
-                    b.Property<bool>("Public")
-                        .HasColumnType("bit");
 
                     b.Property<string>("PublicUsername")
                         .HasMaxLength(100)

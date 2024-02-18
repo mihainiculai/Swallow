@@ -27,51 +27,51 @@ export const Menubar = () => {
 
     return (
         <div className="overflow-x-auto whitespace-nowrap hide-scrollbar">
-                <Tabs
-                    aria-label="Options"
-                    color="primary"
-                    variant="light"
-                    selectedKey={selected}
-                    onSelectionChange={handleSelectionChange}
-                    className="my-4"
-                >
-                    <Tab
-                        key="account"
-                        title={
-                            <div className="flex items-center space-x-2">
-                                <MdAccountCircle />
-                                <span>Account</span>
-                            </div>
-                        }
-                    />
-                    <Tab
-                        key="preferences"
-                        title={
-                            <div className="flex items-center space-x-2">
-                                <MdSettings />
-                                <span>Preferences</span>
-                            </div>
-                        }
-                    />
-                    <Tab
-                        key="membership"
-                        title={
-                            <div className="flex items-center space-x-2">
-                                <MdWallet />
-                                <span>Membership</span>
-                            </div>
-                        }
-                    />
-                    <Tab
-                        key="change-password"
-                        title={
-                            <div className="flex items-center space-x-2">
-                                <MdLock />
-                                <span>Change Password</span>
-                            </div>
-                        }
-                    />
-                </Tabs>
-            </div>
+            <Tabs
+                aria-label="Options"
+                color="primary"
+                variant="light"
+                selectedKey={selected}
+                onSelectionChange={handleSelectionChange}
+                className="my-4"
+            >
+                <Tab
+                    key="account"
+                    title={
+                        <div className="flex items-center space-x-2">
+                            <MdAccountCircle />
+                            <span>Account</span>
+                        </div>
+                    }
+                />
+                <Tab
+                    key="security"
+                    title={
+                        <div className="flex items-center space-x-2">
+                            <MdLock />
+                            <span>Security</span>
+                        </div>
+                    }
+                />
+                <Tab
+                    key="preferences"
+                    title={
+                        <div className="flex items-center space-x-2">
+                            <MdSettings />
+                            <span>Preferences</span>
+                        </div>
+                    }
+                />
+                <Tab
+                    key="membership"
+                    title={
+                        <div className="flex items-center space-x-2">
+                            <MdWallet />
+                            <span>Membership</span>
+                        </div>
+                    }
+                />
+            </Tabs>
+        </div>
     )
 }
