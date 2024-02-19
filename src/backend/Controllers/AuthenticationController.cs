@@ -206,6 +206,12 @@ namespace Swallow.Controllers
                 return BadRequest("Invalid user.");
             }
 
+            if (user.CustomProfilePicture == true && user.ProfilePictureURL is not null)
+            {
+                string filename = Path.GetFileName(user.ProfilePictureURL);
+                user.ProfilePictureURL = "http://localhost:5086/files/profile-picture?" + filename;
+            }
+
             return Ok(UserResponse.Create(user));
         }
     }

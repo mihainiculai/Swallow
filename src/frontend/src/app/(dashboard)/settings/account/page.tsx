@@ -1,4 +1,5 @@
 "use client";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
     Card,
@@ -13,7 +14,8 @@ import {
     DropdownMenu,
     DropdownItem,
     CardFooter,
-    Divider
+    Divider,
+    useDisclosure,
 } from "@nextui-org/react";
 import { MdModeEdit } from "react-icons/md";
 import { useAuthContext, AuthContextType } from "@/contexts/auth-context";
@@ -22,18 +24,18 @@ import { useFormik } from "formik";
 import { axiosInstance } from '@/components/axiosInstance';
 import { mutate } from 'swr';
 import { FaEye, FaEyeSlash } from "react-icons/fa6";
-import axios from "axios";
+import { ProfilePictureModal } from "./_components/ProfilePictureModal";
 
 const validationSchema = yup.object({
     publicProfile: yup.boolean().required(),
-    username: yup.string().when("publicAccount", {
+    username: yup.string().when("publicProfile", {
         is: true,
         then: (schema) => schema.required("Username is required"),
     }),
     email: yup.string().email("Invalid email format").required("Email is required"),
     firstName: yup.string().required("First name is required"),
     lastName: yup.string().required("Last name is required"),
-    currentPassword: yup.string(),
+    password: yup.string(),
 });
 
 export default function AccountSettingsPage() {
@@ -46,7 +48,7 @@ export default function AccountSettingsPage() {
             email: user?.email || "",
             firstName: user?.firstName || "",
             lastName: user?.lastName || "",
-            currentPassword: "",
+            password: "",
         },
         validationSchema: validationSchema,
         onSubmit: (values) => {
@@ -59,15 +61,16 @@ export default function AccountSettingsPage() {
 
                     if (response) {
                         if (response.status === 400) {
-                            formik.setFieldError("currentPassword", response.data.message);
+                            formik.setFieldError("currentPassword", response.data);
                         }
 
                         if (response.status === 409) {
-                            if (response.data.message === "Email already exists.") {
-                                formik.setFieldError("email", response.data.message);
+                            if (response.data === "Email already exists.") {
+                                formik.setFieldError("email", response.data);
                             }
-                            if (response.data.message === "Username already exists.") {
-                                formik.setFieldError("username", response.data.message);
+                            if (response.data === "Username already exists.") {
+                                console.log(response.data);
+                                formik.setFieldError("username", response.data);
                             }
                         }
                     }
@@ -76,13 +79,15 @@ export default function AccountSettingsPage() {
     });
 
     const handleAccountVisibility = (value: boolean) => {
-        formik.setFieldValue("publicAccount", value);
+        formik.setFieldValue("publicProfile", value);
 
         if (!value) {
             formik.setFieldValue("username", "");
             formik.setFieldTouched("username", false);
         }
     }
+
+    const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
     return (
         <>
@@ -91,7 +96,7 @@ export default function AccountSettingsPage() {
                     <div className="flex gap-4 py-4">
                         <Badge
                             classNames={{
-                                badge: "w-5 h-5",
+                                badge: "w-6 h-6",
                             }}
                             color="primary"
                             content={
@@ -101,6 +106,7 @@ export default function AccountSettingsPage() {
                                     radius="full"
                                     size="sm"
                                     variant="light"
+                                    onClick={onOpen}
                                 >
                                     <MdModeEdit />
                                 </Button>
@@ -115,6 +121,7 @@ export default function AccountSettingsPage() {
                             <span className="text-small text-default-500">[PLAN NAME]</span>
                         </div>
                     </div>
+
                     <div>
                         <Dropdown placement="bottom-end">
                             <DropdownTrigger>
@@ -142,9 +149,11 @@ export default function AccountSettingsPage() {
                         </Dropdown>
                     </div>
                 </CardHeader>
+
                 <div className="px-4 pb-6">
                     <Divider />
                 </div>
+
                 <CardBody className="grid grid-cols-1 gap-8 md:grid-cols-2">
                     <Input
                         label="Username"
@@ -185,9 +194,9 @@ export default function AccountSettingsPage() {
                                 type="password"
                                 label="Current Password"
                                 isRequired
-                                isInvalid={formik.touched.currentPassword && !!formik.errors.currentPassword}
-                                errorMessage={formik.touched.currentPassword && formik.errors.currentPassword}
-                                {...formik.getFieldProps("currentPassword")}
+                                isInvalid={formik.touched.password && !!formik.errors.password}
+                                errorMessage={formik.touched.password && formik.errors.password}
+                                {...formik.getFieldProps("password")}
                             />
                             <div className="text-default-500 text-small">
                                 Password is required to update your email.
@@ -207,6 +216,12 @@ export default function AccountSettingsPage() {
                     </Button>
                 </CardFooter>
             </Card>
+
+            <ProfilePictureModal
+                isOpen={isOpen}
+                onOpenChange={onOpenChange}
+                user={user}
+            />
         </>
     );
 }
