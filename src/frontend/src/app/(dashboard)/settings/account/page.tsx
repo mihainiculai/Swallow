@@ -91,7 +91,7 @@ export default function AccountSettingsPage() {
 
     return (
         <>
-            <Card className="full-width p-2">
+            <Card className="full-width p-4">
                 <CardHeader className="flex justify-between items-center px-10 py-4">
                     <div className="flex gap-4 py-4">
                         <Badge
