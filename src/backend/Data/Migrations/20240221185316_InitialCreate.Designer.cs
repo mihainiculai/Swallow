@@ -12,8 +12,8 @@ using Swallow.Data;
 namespace Swallow.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240217153958_UpdateMigration1")]
-    partial class UpdateMigration1
+    [Migration("20240221185316_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -180,11 +180,11 @@ namespace Swallow.Data.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ISO2")
+                    b.Property<string>("Iso2")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("ISO3")
+                    b.Property<string>("Iso3")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
@@ -198,10 +198,10 @@ namespace Swallow.Data.Migrations
 
                     b.HasKey("CountryId");
 
-                    b.HasIndex("ISO2")
+                    b.HasIndex("Iso2")
                         .IsUnique();
 
-                    b.HasIndex("ISO3")
+                    b.HasIndex("Iso3")
                         .IsUnique();
 
                     b.ToTable("Countries");
@@ -469,7 +469,7 @@ namespace Swallow.Data.Migrations
                         {
                             SettingsId = (byte)1,
                             MentenanceMode = false,
-                            NextCurrencyUpdate = new DateTime(2024, 2, 17, 15, 39, 58, 73, DateTimeKind.Utc).AddTicks(7901)
+                            NextCurrencyUpdate = new DateTime(2024, 2, 21, 18, 53, 15, 902, DateTimeKind.Utc).AddTicks(6904)
                         });
                 });
 
@@ -637,8 +637,7 @@ namespace Swallow.Data.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool?>("CustomProfilePicture")
-                        .IsRequired()
+                    b.Property<bool>("CustomProfilePicture")
                         .HasColumnType("bit");
 
                     b.Property<string>("Email")
@@ -686,6 +685,9 @@ namespace Swallow.Data.Migrations
                     b.Property<string>("ProfilePictureURL")
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
+
+                    b.Property<bool>("Public")
+                        .HasColumnType("bit");
 
                     b.Property<string>("PublicUsername")
                         .HasMaxLength(100)

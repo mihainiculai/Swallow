@@ -5,20 +5,16 @@ using Swallow.Repositories.Interfaces;
 
 namespace Swallow.Repositories.Implementations
 {
-    public class CountryRepository(ApplicationDbContext context) : IReadOnlyRepository<Country, int>
+    public class CountryRepository(ApplicationDbContext context) : IReadOnlyRepository<Country, short>
     {
-        private readonly ApplicationDbContext _context = context;
-
-        public int Count => throw new NotImplementedException();
-
         public async Task<IEnumerable<Country>> GetAllAsync()
         {
-            return await _context.Countries.ToListAsync();
+            return await context.Countries.ToListAsync();
         }
 
-        public async Task<Country?> GetByIdAsync(int id)
+        public async Task<Country?> GetByIdAsync(short id)
         {
-            return await _context.Countries.FirstOrDefaultAsync(c => c.CountryId == id);
+            return await context.Countries.FirstOrDefaultAsync(c => c.CountryId == id);
         }
     }
 }

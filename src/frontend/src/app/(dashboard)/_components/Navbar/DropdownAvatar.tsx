@@ -50,7 +50,7 @@ export const DropdownAvatar: React.FC = () => {
                 </DropdownSection>
 
                 <DropdownSection showDivider>
-                    <DropdownItem key="settings" as={Link} href="/dashboard/settings">
+                    <DropdownItem key="settings" as={Link} href="/administration">
                         Administration
                     </DropdownItem>
                 </DropdownSection>

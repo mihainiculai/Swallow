@@ -85,11 +85,11 @@ namespace Swallow.Data
                 .IsRequired();
 
             modelBuilder.Entity<Country>()
-                .HasIndex(e => e.ISO2)
+                .HasIndex(e => e.Iso2)
                 .IsUnique();
 
             modelBuilder.Entity<Country>()
-                .HasIndex(e => e.ISO3)
+                .HasIndex(e => e.Iso3)
                 .IsUnique();
 
             modelBuilder.Entity<Attraction>()

@@ -20,17 +20,15 @@ namespace Swallow.Data
 
         public static async Task LoadWorldCities(ApplicationDbContext _context)
         {
+
             Dictionary<string, Country> countries = [];
 
             using StreamReader reader = new("Data/Resources/Cities.csv");
             using CsvReader csv = new(reader, new CsvConfiguration(CultureInfo.InvariantCulture));
 
+            using var transaction = await _context.Database.BeginTransactionAsync();
+
             _context.ChangeTracker.AutoDetectChangesEnabled = false;
-
-            const int batchSize = 1000;
-            int recordCount = 0;
-
-            List<Country> batchList = [];
 
             while (csv.Read())
             {
@@ -44,36 +42,26 @@ namespace Swallow.Data
                     country = new Country
                     {
                         Name = record.Country,
-                        ISO2 = record.ISO2,
-                        ISO3 = record.ISO3,
+                        Iso2 = record.ISO2,
+                        Iso3 = record.ISO3,
                     };
                     countries.Add(record.ISO2, country);
-                    batchList.Add(country);
+                    _context.Countries.Add(country);
                 }
 
-                country.Cities.Add(new City
+                City city = new()
                 {
                     Name = record.City,
                     Latitude = decimal.Parse(record.Lat),
                     Longitude = decimal.Parse(record.Lng),
                     Country = country
-                });
+                };
 
-                recordCount++;
-
-                if (recordCount % batchSize == 0)
-                {
-                    await _context.AddRangeAsync(batchList);
-                    await _context.SaveChangesAsync();
-                    batchList.Clear();
-                }
+                _context.Cities.Add(city);
             }
 
-            if (batchList.Count != 0)
-            {
-                await _context.AddRangeAsync(batchList);
-                await _context.SaveChangesAsync();
-            }
+            await _context.SaveChangesAsync();
+            await transaction.CommitAsync();
 
             _context.ChangeTracker.AutoDetectChangesEnabled = true;
         }

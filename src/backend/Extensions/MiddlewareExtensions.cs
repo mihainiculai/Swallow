@@ -24,7 +24,7 @@ namespace Swallow.Extensions
                         var errorLogService = context.RequestServices.GetRequiredService<IErrorLogger>();
                         await errorLogService.LogError(exception);
 
-                        var result = JsonConvert.SerializeObject(new { error = "Internal Server Error" });
+                        var result = JsonConvert.SerializeObject(new { error = exception.Message });
                         await context.Response.WriteAsync(result);
                     }
                 });

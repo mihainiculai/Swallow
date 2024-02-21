@@ -177,11 +177,11 @@ namespace Swallow.Data.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ISO2")
+                    b.Property<string>("Iso2")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("ISO3")
+                    b.Property<string>("Iso3")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
@@ -195,10 +195,10 @@ namespace Swallow.Data.Migrations
 
                     b.HasKey("CountryId");
 
-                    b.HasIndex("ISO2")
+                    b.HasIndex("Iso2")
                         .IsUnique();
 
-                    b.HasIndex("ISO3")
+                    b.HasIndex("Iso3")
                         .IsUnique();
 
                     b.ToTable("Countries");
@@ -466,7 +466,7 @@ namespace Swallow.Data.Migrations
                         {
                             SettingsId = (byte)1,
                             MentenanceMode = false,
-                            NextCurrencyUpdate = new DateTime(2024, 2, 17, 23, 2, 35, 885, DateTimeKind.Utc).AddTicks(7423)
+                            NextCurrencyUpdate = new DateTime(2024, 2, 21, 18, 53, 15, 902, DateTimeKind.Utc).AddTicks(6904)
                         });
                 });
 

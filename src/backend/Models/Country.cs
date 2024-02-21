@@ -8,8 +8,8 @@ namespace Swallow.Models.DatabaseModels
         [MaxLength(100)]
         public required string Name { get; set; }
         public string? Description { get; set; }
-        public required string ISO2 { get; set; }
-        public required string ISO3 { get; set; }
+        public required string Iso2 { get; set; }
+        public required string Iso3 { get; set; }
         public string? PhotoURL { get; set; }
 
         public virtual ICollection<City> Cities { get; } = new List<City>();

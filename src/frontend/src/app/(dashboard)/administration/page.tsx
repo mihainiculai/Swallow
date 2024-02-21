@@ -1,7 +1,6 @@
-export const AdminPage = () => {
-    return (
-        <div>
-        <h1>Admin Page</h1>
-        </div>
-    )
+import { redirect } from 'next/navigation'
+
+export default function SettingsPage() {
+    redirect('/administration/stats');
+    return null;
 }

@@ -1,37 +1,50 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swallow.DTOs.Country;
 using Swallow.Models.DatabaseModels;
+using Swallow.Repositories.Implementations;
 using Swallow.Repositories.Interfaces;
 
 namespace Swallow.Controllers
 {
+    [Authorize]
     [Route("api/countries")]
     [ApiController]
-    public class CountryController(IReadOnlyRepository<Country, int> countryRepository, IMapper mapper) : ControllerBase
+    public class CountryController(IReadOnlyRepository<Country, short> countryRepository, IMapper mapper) : ControllerBase
     {
-        private readonly IReadOnlyRepository<Country, int> _countryRepository = countryRepository;
-        private readonly IMapper _mapper = mapper; 
-
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CountryDto>>> GetAllCountries()
         {
-            var countries = await _countryRepository.GetAllAsync();
+            var countries = await countryRepository.GetAllAsync();
 
-            return Ok(_mapper.Map<IEnumerable<CountryDto>>(countries));
+            return Ok(mapper.Map<IEnumerable<CountryDto>>(countries));
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<CountryDto>> GetCountryById(int id)
+        public async Task<ActionResult<CountryDto>> GetCountryById(short id)
         {
-            var country = await _countryRepository.GetByIdAsync(id);
+            var country = await countryRepository.GetByIdAsync(id);
 
             if (country == null)
             {
                 return NotFound();
             }
 
-            return Ok(_mapper.Map<CountryDto>(country));
+            return Ok(mapper.Map<CountryDto>(country));
+        }
+
+        [HttpGet("{id}/cities")]
+        public async Task<ActionResult<IEnumerable<CountryCityDto>>> GetCitiesByCountryId(short id)
+        {
+            var country = await countryRepository.GetByIdAsync(id);
+
+            if (country == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(mapper.Map<IEnumerable<CountryCityDto>>(country.Cities));
         }
     }
 }

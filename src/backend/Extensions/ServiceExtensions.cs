@@ -29,7 +29,9 @@ namespace Swallow.Extensions
 
             services.AddAutoMapper(typeof(AutoMapperProfiles));
 
-            services.AddScoped<IReadOnlyRepository<Country, int>, CountryRepository>();
+            services.AddScoped<IReadOnlyRepository<Country, short>, CountryRepository>();
+            services.AddScoped<IReadOnlyRepository<City, int>, CityRepository>();
+
             return services;
         }
 

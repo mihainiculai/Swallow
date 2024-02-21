@@ -32,8 +32,8 @@ namespace Swallow.Data.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ISO2 = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    ISO3 = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Iso2 = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Iso3 = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     PhotoURL = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
@@ -135,9 +135,11 @@ namespace Swallow.Data.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     GoogleId = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    PublicUsername = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     FirstName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     LastName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     CustomProfilePicture = table.Column<bool>(type: "bit", nullable: false),
+                    Public = table.Column<bool>(type: "bit", nullable: false),
                     ProfilePictureURL = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -613,7 +615,7 @@ namespace Swallow.Data.Migrations
             migrationBuilder.InsertData(
                 table: "PlatformSettings",
                 columns: new[] { "SettingsId", "MentenanceMode", "NextCurrencyUpdate" },
-                values: new object[] { (byte)1, false, new DateTime(2023, 12, 5, 10, 46, 22, 177, DateTimeKind.Utc).AddTicks(2373) });
+                values: new object[] { (byte)1, false, new DateTime(2024, 2, 21, 18, 53, 15, 902, DateTimeKind.Utc).AddTicks(6904) });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Attractions_CityId",
@@ -641,15 +643,15 @@ namespace Swallow.Data.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Countries_ISO2",
+                name: "IX_Countries_Iso2",
                 table: "Countries",
-                column: "ISO2",
+                column: "Iso2",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Countries_ISO3",
+                name: "IX_Countries_Iso3",
                 table: "Countries",
-                column: "ISO3",
+                column: "Iso3",
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -765,6 +767,13 @@ namespace Swallow.Data.Migrations
                 column: "Email",
                 unique: true,
                 filter: "[Email] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_PublicUsername",
+                table: "Users",
+                column: "PublicUsername",
+                unique: true,
+                filter: "[PublicUsername] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "UserNameIndex",
