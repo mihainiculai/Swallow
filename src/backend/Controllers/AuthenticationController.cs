@@ -1,5 +1,6 @@
 ﻿using Google.Apis.Oauth2.v2.Data;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Swallow.DTOs.Authentication;
@@ -196,6 +197,7 @@ namespace Swallow.Controllers
             return Ok("Successfully logged in.");
         }
 
+        [Authorize]
         [HttpGet("me")]
         public async Task<IActionResult> Me()
         {

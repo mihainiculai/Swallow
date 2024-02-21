@@ -66,6 +66,39 @@ namespace Swallow.Services.Email
 
             await smtpClient.SendMailAsync(mailMessage);
         }
+
+        public async Task SendAccountDeletionEmailAsync(string email, string fullName, string token)
+        {
+            var deleteAccountTemplate = File.ReadAllText("Services/Email/Templates/DeleteAccountTemplate.html");
+
+            string accountDeletionLink = $"{_websiteUrl}/delete-account?email={Uri.EscapeDataString(email)}&token={Uri.EscapeDataString(token)}";
+
+            var emailBody = deleteAccountTemplate.Replace("{{FullName}}", fullName)
+                                                 .Replace("{{AccountDeletionLink}}", accountDeletionLink)
+                                                 .Replace("{{SupportEmail}}", _supportEmail)
+                                                 .Replace("{{AccountDeletionUrl}}", accountDeletionLink);
+
+            var emailTemplate = File.ReadAllText("Services/Email/EmailLayout.html");
+
+            var htmlContent = emailTemplate.Replace("{{EmailTitle}}", "Account Deletion")
+                                           .Replace("{{EmailBody}}", emailBody);
+
+            var mailMessage = new MailMessage()
+            {
+                From = new MailAddress(_emailSettings.From),
+                Subject = "Account Deletion",
+                Body = htmlContent,
+                IsBodyHtml = true
+            };
+
+            mailMessage.To.Add(new MailAddress(email));
+
+            using var smtpClient = new SmtpClient(_emailSettings.SmtpServer, _emailSettings.Port);
+            smtpClient.Credentials = new NetworkCredential(_emailSettings.Username, _emailSettings.Password);
+            smtpClient.EnableSsl = _emailSettings.EnableSSL;
+
+            await smtpClient.SendMailAsync(mailMessage);
+        }
     }
 
     

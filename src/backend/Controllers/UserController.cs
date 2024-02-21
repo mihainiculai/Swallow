@@ -1,4 +1,5 @@
 using AutoMapper;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -6,14 +7,18 @@ using Microsoft.EntityFrameworkCore;
 using Swallow.Data;
 using Swallow.DTOs.User;
 using Swallow.Models.DatabaseModels;
+using Swallow.Services.Email;
 
 namespace Swallow.Controllers
 {
     [Authorize]
     [Route("api/users")]
     [ApiController]
-    public class UserController(UserManager<User> userManager, ApplicationDbContext context) : ControllerBase
+    public class UserController(UserManager<User> userManager, ApplicationDbContext context, EmailSender emailSender) : ControllerBase
     {
+        private readonly EmailSender _emailSender = emailSender;
+        private readonly UserManager<User> _userManager = userManager;
+
         #region ProfilePicture
         const int MAX_PROFILE_PICTURE_SIZE = 5 * 1024 * 1024; // 5 MB
 
@@ -93,10 +98,16 @@ namespace Swallow.Controllers
                     return NoContent();
                 }
 
-                return BadRequest(addResult.Errors);
+                return BadRequest("Failed to add password.");
             }
 
             if (model.CurrentPassword == null) return BadRequest("Current password is required.");
+
+            var passwordCheckResult = await userManager.CheckPasswordAsync(user, model.CurrentPassword);
+            if (!passwordCheckResult)
+            {
+                return BadRequest("Invalid current password.");
+            }
 
             var result = await userManager.ChangePasswordAsync(user, model.CurrentPassword, model.NewPassword);
 
@@ -105,11 +116,11 @@ namespace Swallow.Controllers
                 return NoContent();
             }
 
-            return BadRequest(result.Errors);
+            return BadRequest("Failed to change password.");
         }
         #endregion
 
-        #region UpdateProfile
+        #region Profile
         [HttpPut("update-profile")]
         public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileDto model)
         {
@@ -171,6 +182,60 @@ namespace Swallow.Controllers
 
             return BadRequest(updateResult.Errors);
         }
+
+        [HttpPost("request-delete-account")]
+        public async Task<IActionResult> DeleteAccount([FromBody] DeleteAccountRequestDto model)
+        {
+            var user = await userManager.GetUserAsync(User);
+            if (user == null) return BadRequest("User not found.");
+
+            string password = model.Password;
+
+            var passwordCheckResult = await userManager.CheckPasswordAsync(user, password);
+            if (!passwordCheckResult)
+            {
+                return BadRequest("Invalid password.");
+            }
+
+            var token = await _userManager.GenerateUserTokenAsync(user, "Default", "DeleteAccount");
+            
+            await _emailSender.SendAccountDeletionEmailAsync(user.Email!, user.FullName, token);
+
+            return NoContent();
+        }
+
+        [AllowAnonymous]
+        [HttpPost("verify-delete-account")]
+        public async Task<IActionResult> VerifyDeleteAccount([FromBody] DeleteAccountDto model)
+        {
+            var user = await context.Users.FirstOrDefaultAsync(u => u.Email == model.Email);
+            if (user == null) return BadRequest("User not found.");
+
+            var result = await userManager.VerifyUserTokenAsync(user, "Default", "DeleteAccount", model.Token);
+
+            return result ? Ok() : BadRequest("Invalid token.");
+        }
+
+        [AllowAnonymous]
+        [HttpPost("delete-account")]
+        public async Task<IActionResult> DeleteAccount([FromBody] DeleteAccountDto model)
+        {
+            var user = await context.Users.FirstOrDefaultAsync(u => u.Email == model.Email);
+
+            if (user == null) return BadRequest("User not found.");
+
+            var result = await userManager.VerifyUserTokenAsync(user, "Default", "DeleteAccount", model.Token);
+
+            if (result)
+            {
+                await userManager.DeleteAsync(user);
+
+                return NoContent();
+            }
+
+            return BadRequest("Invalid token.");
+        }
+
         #endregion
     }
 }

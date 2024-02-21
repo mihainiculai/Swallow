@@ -87,7 +87,7 @@ export const ProfilePictureModal: React.FC<ProfilePictureModalProps> = ({ isOpen
     };
 
     return (
-        <Modal isOpen={isOpen} placement="center" onOpenChange={onOpenChange}>
+        <Modal placement="center" isOpen={isOpen} onOpenChange={onOpenChange}>
             <ModalContent>
                 <ModalHeader>Profile Picture</ModalHeader>
                 <ModalBody className="flex flex-col items-center gap-10">
@@ -119,7 +119,7 @@ export const ProfilePictureModal: React.FC<ProfilePictureModalProps> = ({ isOpen
                             Upload Image
                         </Button>
                     </label>
-                    {uploadError && <p style={{ color: 'red' }}>{uploadError}</p>}
+                    {uploadError && <p className='text-danger'>{uploadError}</p>}
                 </ModalBody>
                 <ModalFooter>
                     <Button variant="light" onClick={() => onOpenChange(false)}>Cancel</Button>
