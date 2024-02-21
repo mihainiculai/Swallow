@@ -17,12 +17,9 @@ export const AuthGuard: FC<AuthGuardProps> = (props) => {
     const [checked, setChecked] = useState(false);
 
     useEffect(() => {
-
-
         if (isLoading) {
             return;
         }
-
 
         if (!isAuthenticated) {
             setChecked(false);
