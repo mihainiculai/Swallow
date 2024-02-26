@@ -2,16 +2,9 @@
 
 namespace Swallow.Utils.Authentication
 {
-    public class ReCaptchaVerifier
+    public class ReCaptchaVerifier(HttpClient httpClient, IConfiguration configuration)
     {
-        private readonly HttpClient _httpClient;
-        private readonly string _reCaptchaSecret;
-
-        public ReCaptchaVerifier(HttpClient httpClient, IConfiguration configuration)
-        {
-            _httpClient = httpClient;
-            _reCaptchaSecret = configuration["Google:ReCaptchaSecretKey"] ?? "";
-        }
+        private readonly string _reCaptchaSecret = configuration["Google:ReCaptchaSecretKey"] ?? "";
 
         public async Task<bool> VerifyAsync(string reCaptchaToken)
         {
@@ -20,9 +13,9 @@ namespace Swallow.Utils.Authentication
             {
             new KeyValuePair<string, string>("secret", _reCaptchaSecret),
             new KeyValuePair<string, string>("response", reCaptchaToken)
-        });
+            });
 
-            var response = await _httpClient.PostAsync(reCaptchaVerificationUrl, postData);
+            var response = await httpClient.PostAsync(reCaptchaVerificationUrl, postData);
             if (response.IsSuccessStatusCode)
             {
                 var jsonResult = await response.Content.ReadAsStringAsync();
