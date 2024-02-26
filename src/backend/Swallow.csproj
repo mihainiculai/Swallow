@@ -21,27 +21,33 @@
 
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="13.0.1" />
-    <PackageReference Include="CsvHelper" Version="30.1.0" />
-    <PackageReference Include="Google.Apis.Oauth2.v2" Version="1.66.0.1869" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.1" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.1">
+    <PackageReference Include="CsvHelper" Version="31.0.0" />
+    <PackageReference Include="Google.Apis.Oauth2.v2" Version="1.67.0.1869" />
+    <PackageReference Include="HtmlAgilityPack" Version="1.11.59" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.2">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="8.0.1" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.1" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.1">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="8.0.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.2">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
+    <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="7.3.1" />
+    <PackageReference Include="OpenAI" Version="1.10.0" />
+    <PackageReference Include="Selenium.WebDriver" Version="4.18.1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
-    <PackageReference Include="Swashbuckle.AspNetCore.Filters" Version="8.0.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore.Filters" Version="8.0.1" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.3.1" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Data\Migrations\" />
     <Folder Include="Data\Resources\" />
+    <Folder Include="Utils\AttractionDataProviders\" />
   </ItemGroup>
 
 </Project>
