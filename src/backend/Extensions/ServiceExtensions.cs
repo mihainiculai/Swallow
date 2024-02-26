@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Net.Http.Headers;
 using Swallow.Data;
 using Swallow.Mappings;
 using Swallow.Models.DatabaseModels;
@@ -8,7 +9,9 @@ using Swallow.Repositories.Interfaces;
 using Swallow.Services;
 using Swallow.Services.Email;
 using Swallow.Services.UserManagement;
+using Swallow.Utils;
 using Swallow.Utils.Authentication;
+using System.Net;
 
 namespace Swallow.Extensions
 {
@@ -25,6 +28,21 @@ namespace Swallow.Extensions
             services.AddScoped<IUserService, UserService>();
 
             //Utils
+            services.AddHttpClient<TripAdvisorAttractionsCollector>()
+                .ConfigurePrimaryHttpMessageHandler(() =>
+                {
+                    return new HttpClientHandler
+                    {
+                        AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate | DecompressionMethods.Brotli,
+                    };
+                })
+                .ConfigureHttpClient(httpClient =>
+                {
+                    httpClient.DefaultRequestHeaders.Add(HeaderNames.UserAgent, "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36");
+                    httpClient.DefaultRequestHeaders.Add(HeaderNames.Accept, "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7");
+                    httpClient.DefaultRequestHeaders.Add(HeaderNames.AcceptLanguage, "en-GB,en;q=0.9,ro-RO;q=0.8,ro;q=0.7,en-US;q=0.6");
+                    httpClient.DefaultRequestHeaders.Add(HeaderNames.AcceptEncoding, "gzip, deflate, br, zstd");
+                });
             services.AddHttpClient<ReCaptchaVerifier>();
 
             services.AddAutoMapper(typeof(AutoMapperProfiles));
@@ -46,7 +64,7 @@ namespace Swallow.Extensions
             {
                 options.Cookie.Name = "token";
                 options.Cookie.HttpOnly = true;
-                options.Cookie.SameSite = SameSiteMode.Strict;
+                options.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Strict;
                 options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
                 options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
                 options.SlidingExpiration = true;
