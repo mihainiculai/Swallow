@@ -1,4 +1,5 @@
 ﻿using HtmlAgilityPack;
+using Swallow.Utils.AttractionDataProviders;
 using System.Text.RegularExpressions;
 
 namespace Swallow.Utils
@@ -19,9 +20,9 @@ namespace Swallow.Utils
         [GeneratedRegex(@"(\d+\.\d+|\d+) of \d+ bubbles")]
         private static partial Regex RatingRegex();
 
-        public async Task<List<Attraction>> GetAttractionsAsync(string TripAdvisorUrl)
+        public async Task<List<TripAdvisorAttraction>> GetAttractionsAsync(string TripAdvisorUrl)
         {
-            List<Attraction> attractions = [];
+            List<TripAdvisorAttraction> attractions = [];
             string url = TripAdvisorUrl;
 
             while (!string.IsNullOrEmpty(url))
@@ -37,7 +38,7 @@ namespace Swallow.Utils
                     var tasks = sections.Select(section => FetchSingleAttractionAsync(section));
                     var results = await Task.WhenAll(tasks);
 
-                    attractions.AddRange(results.Where(result => result != null).Cast<Attraction>());
+                    attractions.AddRange(results.Where(result => result != null).Cast<TripAdvisorAttraction>());
                 }
 
                 var nextButton = document.DocumentNode.SelectSingleNode("//a[@aria-label='Next page']");
@@ -47,7 +48,7 @@ namespace Swallow.Utils
             return attractions;
         }
 
-        private async Task<Attraction?> FetchSingleAttractionAsync(HtmlNode section)
+        private async Task<TripAdvisorAttraction?> FetchSingleAttractionAsync(HtmlNode section)
         {
             var nameElement = section.SelectSingleNode(".//h3[contains(@class, 'biGQs')]");
             var linkElement = section.SelectSingleNode(".//div[contains(@class, 'alPVI')]/a");
@@ -67,7 +68,7 @@ namespace Swallow.Utils
                     return null;
                 }
 
-                return new Attraction
+                return new TripAdvisorAttraction
                 {
                     Name = name,
                     TripAdvisorLink = link,
@@ -90,9 +91,9 @@ namespace Swallow.Utils
             return document;
         }
 
-        private async Task<AttractionDetails> GetAttractionDetailsAsync(string attractionUrl)
+        private async Task<TripAdvisorAttractionDetails> GetAttractionDetailsAsync(string attractionUrl)
         {
-            var details = new AttractionDetails();
+            var details = new TripAdvisorAttractionDetails();
 
             var htmlDoc = await GetHtmlDocumentAsync(attractionUrl);
 
@@ -221,24 +222,5 @@ namespace Swallow.Utils
             }
             return null;
         }
-    }
-
-    public class Attraction
-    {
-        public required string Name { get; set; }
-        public required string TripAdvisorLink { get; set; }
-        public required AttractionDetails Details { get; set; }
-    }
-
-    public class AttractionDetails
-    {
-        public double? Rating { get; set; }
-        public int? Reviews { get; set; }
-        public List<string> Categories { get; set; } = [];
-        public string? VisitDuration { get; set; }
-        public Dictionary<string, string> OpeningHours { get; set; } = [];
-        public string? Price { get; set; }
-        public string? ImageUrl { get; set; }
-        public string? Description { get; set; }
     }
 }
