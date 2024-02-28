@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swallow.DTOs.Country;
 using Swallow.Models.DatabaseModels;
-using Swallow.Repositories.Implementations;
 using Swallow.Repositories.Interfaces;
 
 namespace Swallow.Controllers

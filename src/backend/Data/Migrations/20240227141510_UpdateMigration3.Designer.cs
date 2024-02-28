@@ -3,17 +3,20 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Swallow.Data;
 
 #nullable disable
 
-namespace Swallow.Data.Migrations
+namespace Swallow.data.migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240227141510_UpdateMigration3")]
+    partial class UpdateMigration3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -66,7 +69,8 @@ namespace Swallow.Data.Migrations
                         .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("GooglePlaceId")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(25)
+                        .HasColumnType("nvarchar(25)");
 
                     b.Property<decimal?>("Latitude")
                         .HasPrecision(10, 6)
@@ -475,7 +479,7 @@ namespace Swallow.Data.Migrations
                         {
                             SettingsId = (byte)1,
                             MentenanceMode = false,
-                            NextCurrencyUpdate = new DateTime(2024, 2, 28, 19, 26, 19, 7, DateTimeKind.Utc).AddTicks(6058)
+                            NextCurrencyUpdate = new DateTime(2024, 2, 27, 14, 15, 9, 560, DateTimeKind.Utc).AddTicks(5151)
                         });
                 });
 

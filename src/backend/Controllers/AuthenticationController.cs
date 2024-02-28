@@ -1,4 +1,5 @@
-﻿using Google.Apis.Oauth2.v2.Data;
+﻿using AutoMapper;
+using Google.Apis.Oauth2.v2.Data;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -12,28 +13,24 @@ namespace Swallow.Controllers
 {
     [Route("api/auth")]
     [ApiController]
-    public class AuthenticationController(UserManager<User> userManager, SignInManager<User> signInManager, EmailSender emailSender, ReCaptchaVerifier reCaptchaVerifier) : ControllerBase
+    public class AuthenticationController(UserManager<User> userManager, SignInManager<User> signInManager, EmailSender emailSender, ReCaptchaVerifier reCaptchaVerifier, IMapper mapper) : ControllerBase
     {
-        private readonly UserManager<User> _userManager = userManager;
-        private readonly SignInManager<User> _signInManager = signInManager;
-        private readonly EmailSender _emailSender = emailSender;
-        private readonly ReCaptchaVerifier _reCaptchaVerifier = reCaptchaVerifier;
         private readonly AuthenticationProperties authenticationProperties = new()
         {
             IsPersistent = true,
-            ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(60),
+            ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(400),
             AllowRefresh = true
         };
 
         [HttpPost("login")]
         public async Task<IActionResult> LogIn([FromBody] LoginDto loginDto)
         {
-            if (!await _reCaptchaVerifier.VerifyAsync(loginDto.ReCaptchaToken))
+            if (!await reCaptchaVerifier.VerifyAsync(loginDto.ReCaptchaToken))
             {
                 return BadRequest("Invalid reCAPTCHA verification token.");
             }
 
-            var result = await _signInManager.PasswordSignInAsync(loginDto.Email, loginDto.Password, true, false);
+            var result = await signInManager.PasswordSignInAsync(loginDto.Email, loginDto.Password, true, false);
 
             if (!result.Succeeded)
             {
@@ -46,7 +43,7 @@ namespace Swallow.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
         {
-            if (!await _reCaptchaVerifier.VerifyAsync(registerDto.ReCaptchaToken))
+            if (!await reCaptchaVerifier.VerifyAsync(registerDto.ReCaptchaToken))
             {
                 return BadRequest("Invalid reCAPTCHA verification token.");
             }
@@ -59,19 +56,19 @@ namespace Swallow.Controllers
                 LastName = registerDto.LastName
             };
 
-            if(await _userManager.FindByEmailAsync(registerDto.Email) is not null)
+            if(await userManager.FindByEmailAsync(registerDto.Email) is not null)
             {
                 return Conflict("Email already exists.");
             }
 
-            var result = await _userManager.CreateAsync(user, registerDto.Password);
+            var result = await userManager.CreateAsync(user, registerDto.Password);
 
             if (!result.Succeeded)
             {
                 return BadRequest("Invalid email or password.");
             }
 
-            await _signInManager.SignInAsync(user, authenticationProperties, "Register");
+            await signInManager.SignInAsync(user, authenticationProperties, "Register");
 
             return Ok("Successfully registered user.");
         }
@@ -79,7 +76,7 @@ namespace Swallow.Controllers
         [HttpPost("logout")]
         public async Task<IActionResult> LogOut()
         {
-            await _signInManager.SignOutAsync();
+            await signInManager.SignOutAsync();
             
             return Ok("Successfully logged out.");
         }
@@ -87,18 +84,18 @@ namespace Swallow.Controllers
         [HttpPost("forgot-password")]
         public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto forgotPasswordDto)
         {
-            if (!await _reCaptchaVerifier.VerifyAsync(forgotPasswordDto.ReCaptchaToken))
+            if (!await reCaptchaVerifier.VerifyAsync(forgotPasswordDto.ReCaptchaToken))
             {
                 return BadRequest("Invalid reCAPTCHA verification token.");
             }
 
-            User? user = await _userManager.FindByEmailAsync(forgotPasswordDto.Email);
+            User? user = await userManager.FindByEmailAsync(forgotPasswordDto.Email);
 
             if (user is not null)
             {
-                string token = await _userManager.GeneratePasswordResetTokenAsync(user);
+                string token = await userManager.GeneratePasswordResetTokenAsync(user);
 
-                await _emailSender.ResetPasswordAsync(user.Email!, user.FullName, token);
+                await emailSender.ResetPasswordAsync(user.Email!, user.FullName, token);
             }
 
             return Ok("Successfully sent password reset email.");
@@ -107,14 +104,14 @@ namespace Swallow.Controllers
         [HttpPost("verify-reset-token")]
         public async Task<IActionResult> VerifyResetToken([FromBody] VerifyTokenDto verifyTokenDto)
         {
-            User? user = await _userManager.FindByEmailAsync(verifyTokenDto.Email);
+            User? user = await userManager.FindByEmailAsync(verifyTokenDto.Email);
 
             if (user is null)
             {
                 return BadRequest("Invalid email.");
             }
 
-            var result = await _userManager.VerifyUserTokenAsync(user, _userManager.Options.Tokens.PasswordResetTokenProvider, "ResetPassword", verifyTokenDto.Token);
+            var result = await userManager.VerifyUserTokenAsync(user, userManager.Options.Tokens.PasswordResetTokenProvider, "ResetPassword", verifyTokenDto.Token);
 
             if (!result)
             {
@@ -127,19 +124,19 @@ namespace Swallow.Controllers
         [HttpPost("reset-password")]
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto resetPasswordDto)
         {
-            if (!await _reCaptchaVerifier.VerifyAsync(resetPasswordDto.ReCaptchaToken))
+            if (!await reCaptchaVerifier.VerifyAsync(resetPasswordDto.ReCaptchaToken))
             {
                 return BadRequest("Invalid reCAPTCHA verification token.");
             }
 
-            User? user = await _userManager.FindByEmailAsync(resetPasswordDto.Email);
+            User? user = await userManager.FindByEmailAsync(resetPasswordDto.Email);
 
             if (user is null)
             {
                 return BadRequest("Invalid email.");
             }
 
-            var result = await _userManager.ResetPasswordAsync(user, resetPasswordDto.Token, resetPasswordDto.Password);
+            var result = await userManager.ResetPasswordAsync(user, resetPasswordDto.Token, resetPasswordDto.Password);
 
             if (!result.Succeeded)
             {
@@ -159,7 +156,7 @@ namespace Swallow.Controllers
                 return BadRequest("Invalid Google access token.");
             }
 
-            User? user = await _userManager.FindByEmailAsync(userInfo.Email);
+            User? user = await userManager.FindByEmailAsync(userInfo.Email);
 
             if (user is null)
             {
@@ -172,7 +169,7 @@ namespace Swallow.Controllers
                     ProfilePictureURL = userInfo.Picture
                 };
 
-                var result = await _userManager.CreateAsync(user);
+                var result = await userManager.CreateAsync(user);
 
                 if (!result.Succeeded)
                 {
@@ -184,7 +181,7 @@ namespace Swallow.Controllers
             {
                 user.ProfilePictureURL = userInfo.Picture;
 
-                var result = await _userManager.UpdateAsync(user);
+                var result = await userManager.UpdateAsync(user);
 
                 if (!result.Succeeded)
                 {
@@ -192,7 +189,7 @@ namespace Swallow.Controllers
                 }
             }
 
-            await _signInManager.SignInAsync(user, authenticationProperties, "Google");
+            await signInManager.SignInAsync(user, authenticationProperties, "Google");
 
             return Ok("Successfully logged in.");
         }
@@ -201,7 +198,7 @@ namespace Swallow.Controllers
         [HttpGet("me")]
         public async Task<IActionResult> Me()
         {
-            User? user = await _userManager.GetUserAsync(User);
+            User? user = await userManager.GetUserAsync(User);
 
             if (user is null)
             {
@@ -214,7 +211,7 @@ namespace Swallow.Controllers
                 user.ProfilePictureURL = "http://localhost:5086/files/profile-picture?" + filename;
             }
 
-            return Ok(UserResponse.Create(user));
+            return Ok(mapper.Map<UserDto>(user));
         }
     }
 }

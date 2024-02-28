@@ -17,7 +17,6 @@ namespace Swallow.Services
     public class UpdateCurrency(IServiceScopeFactory scopeFactory) : IHostedService, IDisposable
     {
         private Timer? _timer;
-        private readonly IServiceScopeFactory _scopeFactory = scopeFactory;
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
@@ -27,7 +26,7 @@ namespace Swallow.Services
 
         private async void Update(object? state)
         {
-            using var scope = _scopeFactory.CreateScope();
+            using var scope = scopeFactory.CreateScope();
             var _context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
             var platformSettings = await _context.PlatformSettings.FirstOrDefaultAsync();

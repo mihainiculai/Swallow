@@ -9,12 +9,10 @@
 
     public class TripAdvisorAttractionDetails
     {
-        public double? Rating { get; set; }
-        public int? Reviews { get; set; }
         public List<string> Categories { get; set; } = [];
         public string? VisitDuration { get; set; }
         public Dictionary<string, string> OpeningHours { get; set; } = [];
-        public string? Price { get; set; }
+        public decimal? Price { get; set; }
         public string? ImageUrl { get; set; }
         public string? Description { get; set; }
     }

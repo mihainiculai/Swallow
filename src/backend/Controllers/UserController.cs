@@ -16,9 +16,6 @@ namespace Swallow.Controllers
     [ApiController]
     public class UserController(UserManager<User> userManager, ApplicationDbContext context, EmailSender emailSender) : ControllerBase
     {
-        private readonly EmailSender _emailSender = emailSender;
-        private readonly UserManager<User> _userManager = userManager;
-
         #region ProfilePicture
         const int MAX_PROFILE_PICTURE_SIZE = 5 * 1024 * 1024; // 5 MB
 
@@ -197,9 +194,9 @@ namespace Swallow.Controllers
                 return BadRequest("Invalid password.");
             }
 
-            var token = await _userManager.GenerateUserTokenAsync(user, "Default", "DeleteAccount");
+            var token = await userManager.GenerateUserTokenAsync(user, "Default", "DeleteAccount");
             
-            await _emailSender.SendAccountDeletionEmailAsync(user.Email!, user.FullName, token);
+            await emailSender.SendAccountDeletionEmailAsync(user.Email!, user.FullName, token);
 
             return NoContent();
         }

@@ -11,14 +11,8 @@ namespace Swallow.Utils
         [GeneratedRegex(@"^\d+\.\s")]
         private static partial Regex TitleRegex();
 
-        [GeneratedRegex(@"([\d,]+)\sreviews?")]
-        private static partial Regex ReviewRegex();
-
         [GeneratedRegex(@"from\s+\$(\d+\.\d+|\d+)")]
         private static partial Regex PriceRegex();
-
-        [GeneratedRegex(@"(\d+\.\d+|\d+) of \d+ bubbles")]
-        private static partial Regex RatingRegex();
 
         public async Task<List<TripAdvisorAttraction>> GetAttractionsAsync(string TripAdvisorUrl)
         {
@@ -29,7 +23,7 @@ namespace Swallow.Utils
             {
                 var document = await GetHtmlDocumentAsync(url);
 
-                if (document == null) continue;
+                if (document == null) break;
 
                 var sections = document.DocumentNode.SelectNodes("//section[@data-automation='WebPresentation_SingleFlexCardSection']");
 
@@ -99,8 +93,6 @@ namespace Swallow.Utils
 
             if (htmlDoc == null) return details;
 
-            details.Rating = GetRating(htmlDoc);
-            details.Reviews = GetReviews(htmlDoc);
             details.Categories = GetCategories(htmlDoc);
             details.VisitDuration = GetVisitDuration(htmlDoc);
             details.OpeningHours = GetOpeningHours(htmlDoc);
@@ -109,21 +101,6 @@ namespace Swallow.Utils
             details.Description = GetDescription(htmlDoc);
 
             return details;
-        }
-
-        private static double? GetRating(HtmlDocument htmlDoc)
-        {
-            var ratingDiv = htmlDoc.DocumentNode.SelectSingleNode("//div[@aria-label]");
-            if (ratingDiv != null)
-            {
-                var ariaLabel = ratingDiv.GetAttributeValue("aria-label", "");
-                var match = RatingRegex().Match(ariaLabel);
-                if (match.Success)
-                {
-                    return double.Parse(match.Groups[1].Value);
-                }
-            }
-            return null;
         }
 
         private static string? GetImageUrl(HtmlDocument htmlDoc)
@@ -140,37 +117,23 @@ namespace Swallow.Utils
             return null;
         }
 
-        private static int? GetReviews(HtmlDocument htmlDoc)
-        {
-            var reviewElement = htmlDoc.DocumentNode.SelectSingleNode("//div[contains(@class, 'KxBGd')]//span");
-            if (reviewElement != null)
-            {
-                var reviewText = reviewElement.InnerText.Trim();
-                var match = ReviewRegex().Match(reviewText);
-                if (match.Success)
-                {
-                    return int.Parse(match.Groups[1].Value.Replace(",", ""));
-                }
-            }
-            return null;
-        }
-
         private static List<string> GetCategories(HtmlDocument htmlDoc)
         {
             var categoryElements = htmlDoc.DocumentNode.SelectNodes("//span[contains(@class, 'eojVo')]");
             return categoryElements?.Select(node => node.InnerText).ToList() ?? [];
         }
 
-        private static string? GetPrice(HtmlDocument htmlDoc)
+        private static decimal? GetPrice(HtmlDocument htmlDoc)
         {
-            var priceElement = htmlDoc.DocumentNode.SelectSingleNode("//div[contains(@class, 'ncFvv')]//div[contains(@class, 'f')]");
+            var priceElement = htmlDoc.DocumentNode.SelectSingleNode("//div[contains(@class, 'YqMbD')]//div[contains(@class, 'uuBRH')]");
             if (priceElement != null)
             {
                 var priceText = priceElement.InnerText.Trim();
                 var match = PriceRegex().Match(priceText);
                 if (match.Success)
                 {
-                    return match.Groups[1].Value;
+                    string price = match.Groups[1].Value;
+                    return decimal.TryParse(price, out decimal result) ? result : null;
                 }
             }
             return null;

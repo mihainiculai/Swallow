@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Swallow.Data;
 
@@ -11,9 +12,11 @@ using Swallow.Data;
 namespace Swallow.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240226061856_UpdateMigration1")]
+    partial class UpdateMigration1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -61,12 +64,13 @@ namespace Swallow.Data.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("GoogleMapsUrl")
+                    b.Property<string>("GoogleMapsURL")
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("GooglePlaceId")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(25)
+                        .HasColumnType("nvarchar(25)");
 
                     b.Property<decimal?>("Latitude")
                         .HasPrecision(10, 6)
@@ -85,7 +89,7 @@ namespace Swallow.Data.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
-                    b.Property<string>("PictureUrl")
+                    b.Property<string>("PictureURL")
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
@@ -93,20 +97,9 @@ namespace Swallow.Data.Migrations
                         .HasPrecision(10, 2)
                         .HasColumnType("decimal(10,2)");
 
-                    b.Property<decimal?>("Rating")
-                        .HasPrecision(3, 1)
-                        .HasColumnType("decimal(3,1)");
-
-                    b.Property<string>("TripAdvisorUrl")
+                    b.Property<string>("TripAdvisorURL")
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
-
-                    b.Property<int?>("UserRatingsTotal")
-                        .HasColumnType("int");
-
-                    b.Property<string>("VisitDuration")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("Website")
                         .HasMaxLength(255)
@@ -475,7 +468,7 @@ namespace Swallow.Data.Migrations
                         {
                             SettingsId = (byte)1,
                             MentenanceMode = false,
-                            NextCurrencyUpdate = new DateTime(2024, 2, 28, 19, 26, 19, 7, DateTimeKind.Utc).AddTicks(6058)
+                            NextCurrencyUpdate = new DateTime(2024, 2, 26, 6, 18, 56, 494, DateTimeKind.Utc).AddTicks(8659)
                         });
                 });
 
