@@ -1,5 +1,6 @@
 ﻿using HtmlAgilityPack;
 using Swallow.Utils.AttractionDataProviders;
+using System.Net;
 using System.Text.RegularExpressions;
 
 namespace Swallow.Utils
@@ -49,7 +50,7 @@ namespace Swallow.Utils
 
             if (nameElement != null && linkElement != null)
             {
-                var name = TitleRegex().Replace(nameElement.InnerText.Trim(), "");
+                var name = WebUtility.HtmlDecode(TitleRegex().Replace(nameElement.InnerText.Trim(), ""));
                 var link = BaseUrl + linkElement.Attributes["href"].Value;
 
                 var details = await GetAttractionDetailsAsync(link);
@@ -120,7 +121,7 @@ namespace Swallow.Utils
         private static List<string> GetCategories(HtmlDocument htmlDoc)
         {
             var categoryElements = htmlDoc.DocumentNode.SelectNodes("//span[contains(@class, 'eojVo')]");
-            return categoryElements?.Select(node => node.InnerText).ToList() ?? [];
+            return categoryElements?.Select(node => WebUtility.HtmlDecode(node.InnerText)).ToList() ?? [];
         }
 
         private static decimal? GetPrice(HtmlDocument htmlDoc)
@@ -141,13 +142,14 @@ namespace Swallow.Utils
 
         private static string? GetVisitDuration(HtmlDocument htmlDoc)
         {
-            var durationElement = htmlDoc.DocumentNode.SelectSingleNode("//div[contains(text(), 'Suggested duration')]");
+            var durationElement = htmlDoc.DocumentNode.SelectSingleNode("//div[contains(text(), 'Duration:')]");
             if (durationElement != null)
             {
-                var nextSibling = durationElement.SelectSingleNode("following-sibling::div");
-                if (nextSibling != null)
+                var durationText = durationElement.InnerText;
+                var splitText = durationText.Split(':');
+                if (splitText.Length > 1)
                 {
-                    return nextSibling.InnerText.Trim();
+                    return WebUtility.HtmlDecode(splitText[1].Trim());
                 }
             }
             return null;
@@ -180,7 +182,7 @@ namespace Swallow.Utils
                     var lines = description.Split('\n');
                     var filteredLines = lines.Where(line => !line.Trim().Contains("Tripadvisor")).Select(line => line.Trim());
                     var filteredDescription = string.Join("\n", filteredLines).Trim();
-                    return filteredDescription.Replace("\n\n", "\n");
+                    return WebUtility.HtmlDecode(filteredDescription.Replace("\n\n", "\n"));
                 }
             }
             return null;
