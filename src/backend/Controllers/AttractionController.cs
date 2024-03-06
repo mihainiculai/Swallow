@@ -18,11 +18,13 @@ namespace Swallow.Controllers
         {
             City? city = await cityRepository.GetByIdAsync(postTripAdvisorDto.CityId);
             if (city == null) return NotFound("City not found");
+            //if (city.TripAdvisorUrl == null) return BadRequest("City TripAdvisor URL not found");
 
             Currency? currency = await currencyRepository.GetByCodeAsync("USD");
             if (currency == null) return StatusCode(500);
 
             List<TripAdvisorAttraction> attractions = await tripAdvisorAttractionsCollector.GetAttractionsAsync(postTripAdvisorDto.TripAdvisorUrl);
+            //List<TripAdvisorAttraction> attractions = await tripAdvisorAttractionsCollector.GetAttractionsAsync(city.TripAdvisorUrl);
 
             await attractionRepository.CreateOrUpdateAsync(attractions, city, currency);
 
@@ -55,6 +57,17 @@ namespace Swallow.Controllers
 
                 return Ok("All attractions details founded on Google Maps updated successfully");
             }
+        }
+
+        [HttpPost("clear-city/{cityId}")]
+        public async Task<ActionResult> ClearCity(int cityId)
+        {
+            City? city = await cityRepository.GetByIdAsync(cityId);
+            if (city == null) return NotFound("City not found");
+
+            await attractionRepository.ClearCityAsync(city);
+
+            return Ok("City attractions cleared successfully");
         }
     }
 }

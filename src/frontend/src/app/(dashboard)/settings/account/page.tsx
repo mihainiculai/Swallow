@@ -1,10 +1,11 @@
 "use client";
-import { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import {
     Card,
     CardHeader,
     CardBody,
+    CardFooter,
     Button,
     Avatar,
     Badge,
@@ -13,7 +14,6 @@ import {
     DropdownTrigger,
     DropdownMenu,
     DropdownItem,
-    CardFooter,
     Divider,
     useDisclosure,
 } from "@nextui-org/react";
@@ -41,6 +41,8 @@ const validationSchema = yup.object({
 export default function AccountSettingsPage() {
     const { user } = useAuthContext() as AuthContextType;
 
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
     const formik = useFormik({
         initialValues: {
             publicProfile: user?.public || false,
@@ -52,6 +54,7 @@ export default function AccountSettingsPage() {
         },
         validationSchema: validationSchema,
         onSubmit: (values) => {
+            setIsSubmitting(true);
             axiosInstance.put("/users/update-profile", values)
                 .then(() => {
                     mutate("auth/me");
@@ -74,6 +77,9 @@ export default function AccountSettingsPage() {
                             }
                         }
                     }
+                })
+                .finally(() => {
+                    setIsSubmitting(false);
                 });
         }
     });
@@ -164,7 +170,6 @@ export default function AccountSettingsPage() {
                         errorMessage={formik.touched.username && formik.errors.username}
                         {...formik.getFieldProps("username")}
                     />
-
                     <Input
                         type="email"
                         label="Email"
@@ -211,7 +216,7 @@ export default function AccountSettingsPage() {
                     <Button variant="light">
                         Cancel
                     </Button>
-                    <Button color="primary" onClick={formik.submitForm}>
+                    <Button color="primary" onClick={formik.submitForm} isLoading={isSubmitting}>
                         Save Changes
                     </Button>
                 </CardFooter>

@@ -1,4 +1,6 @@
-﻿namespace Swallow.Repositories.Interfaces
+﻿using Swallow.Models.DatabaseModels;
+
+namespace Swallow.Repositories.Interfaces
 {
     public interface IReadOnlyRepository<T, TId> where T : class
     {

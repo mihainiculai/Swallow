@@ -13,6 +13,9 @@ namespace Swallow.Models.DatabaseModels
         [MaxLength(100)]
         public required string Name { get; set; }
         public string? Description { get; set; }
+        [MaxLength(255)]
+        public string? TripAdvisorUrl { get; set; }
+
         [Precision(10, 6)]
         public required decimal Latitude { get; set; }
         [Precision(10, 6)]

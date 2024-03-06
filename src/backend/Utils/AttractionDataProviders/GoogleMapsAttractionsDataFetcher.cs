@@ -33,8 +33,15 @@ namespace Swallow.Utils.AttractionDataProviders
 
             foreach (Attraction attraction in attractions)
             {
-                Attraction? attractionWithDetails = await AddAttractionDetails(attraction);
-                if (attractionWithDetails is not null) attractionsWithDetails.Add(attractionWithDetails);
+                try
+                {
+                    Attraction? attractionWithDetails = await AddAttractionDetails(attraction);
+                    if (attractionWithDetails is not null) attractionsWithDetails.Add(attractionWithDetails);
+                }
+                catch (Exception)
+                {
+                    continue;
+                }
             }
 
             return attractionsWithDetails;
@@ -67,20 +74,6 @@ namespace Swallow.Utils.AttractionDataProviders
             if (detailsResponse is null || detailsResponse.Status != "OK") return null;
 
             return detailsResponse.Result;
-        }
-
-        public static Attraction AddGoogleDetailsToAttraction(Attraction attraction, GoogleMapsDetailsResponseResult details)
-        {
-            attraction.Latitude = details.Geometry.Location.Latitude;
-            attraction.Longitude = details.Geometry.Location.Longitude;
-            attraction.Address = details.FormattedAddress;
-            attraction.Phone = details.InternationalPhoneNumber;
-            attraction.Website = details.Website;
-            attraction.Rating = details.Rating;
-            attraction.UserRatingsTotal = details.UserRatingsTotal;
-            attraction.GoogleMapsUrl = details.Url;
-
-            return attraction;
         }
     }
 }

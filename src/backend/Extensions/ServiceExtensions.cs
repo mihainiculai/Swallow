@@ -50,7 +50,7 @@ namespace Swallow.Extensions
             services.AddAutoMapper(typeof(AutoMapperProfiles));
 
             services.AddScoped<IReadOnlyRepository<Country, short>, CountryRepository>();
-            services.AddScoped<IReadOnlyRepository<City, int>, CityRepository>();
+            services.AddScoped<IRepository<City, int>, CityRepository>();
             services.AddScoped<CurrencyRepository>();
             services.AddScoped<AttractionCategoryRepository>();
             services.AddScoped<AttractionRepository>();

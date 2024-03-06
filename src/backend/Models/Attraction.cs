@@ -23,6 +23,7 @@ namespace Swallow.Models.DatabaseModels
         public string? Website { get; set; }
         [Precision(3, 1)]
         public decimal? Rating { get; set; }
+        public int? Popularity { get; set; }
         public int? UserRatingsTotal { get; set; }
         [MaxLength(50)]
         public string? VisitDuration { get; set; }

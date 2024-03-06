@@ -21,7 +21,7 @@ namespace Swallow.Utils.AttractionDataProviders
         [JsonPropertyName("website")]
         public string? Website { get; set; }
         [JsonPropertyName("rating")]
-        public required decimal Rating { get; set; }
+        public decimal? Rating { get; set; }
         [JsonPropertyName("user_ratings_total")]
         public int? UserRatingsTotal { get; set; }
         [JsonPropertyName("url")]

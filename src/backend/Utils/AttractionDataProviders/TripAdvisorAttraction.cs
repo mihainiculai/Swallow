@@ -3,6 +3,7 @@
     public class TripAdvisorAttraction
     {
         public required string Name { get; set; }
+        public required int Popularity { get; set; }
         public required string TripAdvisorLink { get; set; }
         public required TripAdvisorAttractionDetails Details { get; set; }
     }

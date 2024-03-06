@@ -30,6 +30,8 @@ namespace Swallow.Repositories.Implementations
                 CityId = city.CityId,
                 Name = tripAdvisorAttraction.Name,
                 Description = tripAdvisorAttraction.Details.Description,
+                Popularity = tripAdvisorAttraction.Popularity,
+                TripAdvisorUrl = tripAdvisorAttraction.TripAdvisorLink,
                 PictureUrl = tripAdvisorAttraction.Details.ImageUrl,
                 VisitDuration = tripAdvisorAttraction.Details.VisitDuration,
                 Price = tripAdvisorAttraction.Details.Price,
@@ -61,6 +63,8 @@ namespace Swallow.Repositories.Implementations
 
         public async Task<IEnumerable<Attraction>> CreateOrUpdateAsync(IEnumerable<TripAdvisorAttraction> tripadvisorAttractions, City city, Currency currency)
         {
+            await RemovePopularity(city.CityId);
+
             List<Attraction> attractions = [];
 
             foreach (TripAdvisorAttraction attraction in tripadvisorAttractions)
@@ -78,7 +82,9 @@ namespace Swallow.Repositories.Implementations
 
         public async Task<Attraction> UpdateAsync(Attraction attraction, TripAdvisorAttraction tripAdvisorAttraction, Currency currency, List<AttractionCategory> attractionCategories)
         {
+            attraction.Popularity = tripAdvisorAttraction.Popularity;
             attraction.Description = tripAdvisorAttraction.Details.Description;
+            attraction.TripAdvisorUrl = tripAdvisorAttraction.TripAdvisorLink;
             attraction.PictureUrl = tripAdvisorAttraction.Details.ImageUrl;
             attraction.VisitDuration = tripAdvisorAttraction.Details.VisitDuration;
             attraction.Price = tripAdvisorAttraction.Details.Price;
@@ -106,6 +112,33 @@ namespace Swallow.Repositories.Implementations
             await context.SaveChangesAsync();
 
             return attraction;
+        }
+
+        public async Task RemovePopularity (int cityId)
+        {
+            IEnumerable<Attraction> attractions = await GetByCityIdAsync(cityId);
+
+            foreach (Attraction attraction in attractions)
+            {
+                attraction.Popularity = null;
+            }
+
+            await context.SaveChangesAsync();
+        }
+
+        public async Task ClearCityAsync(City city)
+        {
+            IEnumerable<Attraction> attractions = await GetByCityIdAsync(city.CityId);
+
+            foreach (Attraction attraction in attractions)
+            {
+                if (attraction.Popularity is null)
+                {
+                    context.Attractions.Remove(attraction);
+                }
+            }
+
+            await context.SaveChangesAsync();
         }
     }
 }

@@ -16,7 +16,7 @@ namespace Swallow.Controllers
 {
     [Route("api/cities")]
     [ApiController]
-    public class CityController(ApplicationDbContext context, IReadOnlyRepository<City, int> cityRepository, CurrencyRepository currencyRepository, AttractionRepository attractionRepository, GoogleMapsAttractionsDataFetcher googleMapsAttractionsDataFetcher, IMapper mapper, IConfiguration configuration, TripAdvisorAttractionsCollector attractionUtils) : ControllerBase
+    public class CityController(ApplicationDbContext context, IRepository<City, int> cityRepository, CurrencyRepository currencyRepository, AttractionRepository attractionRepository, GoogleMapsAttractionsDataFetcher googleMapsAttractionsDataFetcher, IMapper mapper, IConfiguration configuration, TripAdvisorAttractionsCollector attractionUtils) : ControllerBase
     {
         [HttpGet("{id}")]
         public async Task<ActionResult<CityDto>> GetCityById(int id)
@@ -41,25 +41,23 @@ namespace Swallow.Controllers
                 return NotFound();
             }
 
-            return Ok("Description of " + city.Name + ", " + city.Country + ".");
+            OpenAIAPI api = new(configuration["OpenAI:AdminKey"]!);
 
-            //OpenAIAPI api = new(configuration["OpenAI:AdminKey"]!);
+            ChatRequest chatRequest = new()
+            {
+                Model = new Model("gpt-4-0125-preview") { OwnedBy = "openai" },
+                Temperature = 0.0,
+                MaxTokens = 500,
+                ResponseFormat = ChatRequest.ResponseFormats.Text,
+                Messages = [
+                    new(ChatMessageRole.System, "You are a helpful assistant for a trip website. You must return a 75 words one paragraph description of the city."),
+                    new(ChatMessageRole.User, "Make a description of the city of " + city.Name + ", " + city.Country + ".")
+                ]
+            };
 
-            //ChatRequest chatRequest = new()
-            //{
-            //    Model = new Model("gpt-4-0125-preview") { OwnedBy = "openai" },
-            //    Temperature = 0.0,
-            //    MaxTokens = 500,
-            //    ResponseFormat = ChatRequest.ResponseFormats.Text,
-            //    Messages = [
-            //        new(ChatMessageRole.System, "You are a helpful assistant for a trip website. You must return a one paragraph description of the city."),
-            //        new(ChatMessageRole.User, "Make a description of the city of " + city.Name + ", " + city.Country + ".")
-            //    ]
-            //};
+            ChatResult results = await api.Chat.CreateChatCompletionAsync(chatRequest);
 
-            //ChatResult results = await api.Chat.CreateChatCompletionAsync(chatRequest);
-
-            //return Ok(results.Choices[0].Message.TextContent);
+            return Ok(results.Choices[0].Message.TextContent);
         }
 
         [HttpPost("{id}/attractions")]
@@ -74,6 +72,19 @@ namespace Swallow.Controllers
             List<TripAdvisorAttraction> attractions = await attractionUtils.GetAttractionsAsync(postAttractionsDto.TripAdvisorUrl);
 
             await attractionRepository.CreateOrUpdateAsync(attractions, city, currency);
+
+            return Ok();
+        }
+
+        [HttpPut("{id}")]
+        public async Task<ActionResult> UpdateCity(int id, [FromBody] CityDto cityDto)
+        {
+            City? city = await cityRepository.GetByIdAsync(id);
+            if (city == null) return NotFound();
+
+            city = mapper.Map(cityDto, city);
+
+            await cityRepository.UpdateAsync(city);
 
             return Ok();
         }

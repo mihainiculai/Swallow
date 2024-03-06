@@ -9,7 +9,7 @@ namespace Swallow.Utils
     {
         private static readonly string BaseUrl = "https://www.tripadvisor.com";
 
-        [GeneratedRegex(@"^\d+\.\s")]
+        [GeneratedRegex(@"^(\d+)\.\s*(.*)")]
         private static partial Regex TitleRegex();
 
         [GeneratedRegex(@"from\s+\$(\d+\.\d+|\d+)")]
@@ -50,15 +50,20 @@ namespace Swallow.Utils
 
             if (nameElement != null && linkElement != null)
             {
-                var name = WebUtility.HtmlDecode(TitleRegex().Replace(nameElement.InnerText.Trim(), ""));
+                var innerText = nameElement.InnerText.Trim();
+                var match = TitleRegex().Match(innerText);
+
+                if (!match.Success) return null;
+
+                var popularity = int.Parse(match.Groups[1].Value);
+                var name = WebUtility.HtmlDecode(match.Groups[2].Value);
                 var link = BaseUrl + linkElement.Attributes["href"].Value;
 
                 var details = await GetAttractionDetailsAsync(link);
 
                 if (details == null) return null;
 
-                var categories = details.Categories;
-                if (categories.Any(c => c.Contains("Trips") || c.Contains("Tours")))
+                if (details.Categories.Any(c => c.Contains("Trips") || c.Contains("Tours")))
                 {
                     return null;
                 }
@@ -66,6 +71,7 @@ namespace Swallow.Utils
                 return new TripAdvisorAttraction
                 {
                     Name = name,
+                    Popularity = popularity,
                     TripAdvisorLink = link,
                     Details = details
                 };
