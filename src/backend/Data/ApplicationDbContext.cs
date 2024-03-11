@@ -6,7 +6,7 @@ using Swallow.Models.DatabaseModels;
 namespace Swallow.Data
 {
     public class ApplicationDbContext
-        : IdentityDbContext< User, Role, Guid, UserClaim, UserRole, UserLogin, RoleClaim, UserToken>
+        : IdentityDbContext<User, Role, Guid, UserClaim, UserRole, UserLogin, RoleClaim, UserToken>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
@@ -42,6 +42,16 @@ namespace Swallow.Data
                     MentenanceMode = false,
                     NextCurrencyUpdate = DateTime.UtcNow
                 }
+            );
+
+            modelBuilder.Entity<Weekday>().HasData(
+                new Weekday { WeekdayId = 1, Name = "Monday" },
+                new Weekday { WeekdayId = 2, Name = "Tuesday" },
+                new Weekday { WeekdayId = 3, Name = "Wednesday" },
+                new Weekday { WeekdayId = 4, Name = "Thursday" },
+                new Weekday { WeekdayId = 5, Name = "Friday" },
+                new Weekday { WeekdayId = 6, Name = "Saturday" },
+                new Weekday { WeekdayId = 7, Name = "Sunday" }
             );
 
             modelBuilder.Entity<User>()

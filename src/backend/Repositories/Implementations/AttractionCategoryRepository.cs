@@ -30,7 +30,7 @@ namespace Swallow.Repositories.Implementations
 
         public async Task<IEnumerable<AttractionCategory>> GetAllAsync()
         {
-            return await context.AttractionCategories.ToListAsync();
+            return await context.AttractionCategories.OrderBy(c => c.Name).ToListAsync();
         }
 
         public async Task<AttractionCategory?> GetByIdAsync(int id)

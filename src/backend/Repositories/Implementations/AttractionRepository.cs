@@ -10,7 +10,7 @@ namespace Swallow.Repositories.Implementations
     {
         public async Task<IEnumerable<Attraction>> GetAllAsync()
         {
-            return await context.Attractions.ToListAsync();
+            return await context.Attractions.OrderBy(a => a.Popularity).ToListAsync();
         }
 
         public async Task<Attraction?> GetByIdAsync(int id)
@@ -20,12 +20,12 @@ namespace Swallow.Repositories.Implementations
 
         public async Task<IEnumerable<Attraction>> GetByCityIdAsync(int cityId)
         {
-            return await context.Attractions.Where(a => a.CityId == cityId).ToListAsync();
+            return await context.Attractions.Where(a => a.CityId == cityId).OrderBy(a => a.Popularity).ToListAsync();
         }
 
         public async Task<Attraction> CreateAttractionAsync(TripAdvisorAttraction tripAdvisorAttraction, City city, Currency currency, List<AttractionCategory> attractionCategories)
         {
-            Attraction attraction = new Attraction
+            Attraction attraction = new()
             {
                 CityId = city.CityId,
                 Name = tripAdvisorAttraction.Name,
@@ -40,6 +40,7 @@ namespace Swallow.Repositories.Implementations
 
             attraction.AttractionCategories.AddRange(attractionCategories);
 
+            context.Attractions.Add(attraction);
             await context.SaveChangesAsync();
 
             return attraction;
@@ -109,12 +110,31 @@ namespace Swallow.Repositories.Implementations
             attraction.UserRatingsTotal = googleMapsDetailsResponseResult.UserRatingsTotal;
             attraction.GoogleMapsUrl = googleMapsDetailsResponseResult.Url;
 
+            if (googleMapsDetailsResponseResult.OpeningHours is not null && googleMapsDetailsResponseResult.OpeningHours.Periods is not null)
+            {
+                attraction.Schedules.Clear();
+
+                var periods = googleMapsDetailsResponseResult.OpeningHours.Periods;
+                foreach (var period in periods)
+                {
+                    Schedule schedule = new()
+                    {
+                        AttractionId = attraction.AttractionId,
+                        WeekdayId = (byte)(period.Open.Day + 1),
+                        OpenTime = TimeOnly.ParseExact(period.Open.Time, "HHmm"),
+                        CloseTime = period.Close is not null ? TimeOnly.ParseExact(period.Close.Time, "HHmm") : null,
+                    };
+
+                    attraction.Schedules.Add(schedule);
+                }
+            }
+
             await context.SaveChangesAsync();
 
             return attraction;
         }
 
-        public async Task RemovePopularity (int cityId)
+        public async Task RemovePopularity(int cityId)
         {
             IEnumerable<Attraction> attractions = await GetByCityIdAsync(cityId);
 

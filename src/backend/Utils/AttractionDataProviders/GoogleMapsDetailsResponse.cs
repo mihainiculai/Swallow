@@ -63,7 +63,7 @@ namespace Swallow.Utils.AttractionDataProviders
     public class GoogleMapsDetailsResponseResultOpeningHoursPeriodTime
     {
         [JsonPropertyName("day")]
-        public required int Day { get; set; }
+        public required byte Day { get; set; }
         [JsonPropertyName("time")]
         public required string Time { get; set; }
     }

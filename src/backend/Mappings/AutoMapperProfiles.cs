@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Swallow.DTOs.Attraction;
 using Swallow.DTOs.Authentication;
 using Swallow.DTOs.City;
 using Swallow.DTOs.Country;
@@ -15,12 +16,17 @@ namespace Swallow.Mappings
             CreateMap<City, CountryCityDto>().ReverseMap();
             CreateMap<City, CityDto>().ReverseMap();
             CreateMap<User, UserDto>()
-                .ForMember(dto => dto.Username, opt => opt.MapFrom(src => src.PublicUsername))
-                .ForMember(dto => dto.Email, opt => opt.MapFrom(src => src.Email))
-                .ForMember(dto => dto.FirstName, opt => opt.MapFrom(src => src.FirstName))
-                .ForMember(dto => dto.LastName, opt => opt.MapFrom(src => src.LastName))
-                .ForMember(dto => dto.ProfilePictureURL, opt => opt.MapFrom(src => src.ProfilePictureURL))
-                .ForMember(dto => dto.Public, opt => opt.MapFrom(src => src.Public));
+                .ForMember(dto => dto.Username, opt => opt.MapFrom(src => src.PublicUsername));
+            CreateMap<Attraction, GetAttractionsDto>()
+                .ForMember(dest => dest.Categories, opt => opt.MapFrom(src => src.AttractionCategories.Select(ac => ac.AttractionCategoryId)))
+                .ForMember(dest => dest.Schedules, opt => opt.MapFrom(src => src.Schedules.Select(s => new GetAttractionsDto.ScheduleDto
+                {
+                    WeekdayId = s.WeekdayId,
+                    WeekdayName = s.Weekday.Name,
+                    OpenTime = s.OpenTime,
+                    CloseTime = s.CloseTime
+                })));
+            CreateMap<AttractionCategory, GetAttractionCategoryDto>();
         }
     }
 }
