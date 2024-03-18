@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Swallow.Utils.AttractionDataProviders
+namespace Swallow.DTOs.Attraction
 {
     public class GoogleMapsFindPlaceResponse
     {

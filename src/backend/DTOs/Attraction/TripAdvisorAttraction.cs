@@ -1,4 +1,4 @@
-﻿namespace Swallow.Utils.AttractionDataProviders
+﻿namespace Swallow.DTOs.Attraction
 {
     public class TripAdvisorAttraction
     {

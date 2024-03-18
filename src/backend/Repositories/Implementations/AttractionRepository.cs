@@ -1,21 +1,22 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using Swallow.Data;
-using Swallow.Models.DatabaseModels;
+using Swallow.DTOs.Attraction;
+using Swallow.Models;
 using Swallow.Repositories.Interfaces;
-using Swallow.Utils.AttractionDataProviders;
 
 namespace Swallow.Repositories.Implementations
 {
-    public class AttractionRepository(ApplicationDbContext context, AttractionCategoryRepository attractionCategoryRepository) : IReadOnlyRepository<Attraction, int>
+    public class AttractionRepository(ApplicationDbContext context, IAttractionCategoryRepository attractionCategoryRepository, ICurrencyRepository currencyRepository, IMapper mapper) : IAttractionRepository
     {
-        public async Task<IEnumerable<Attraction>> GetAllAsync()
+        public async Task<IEnumerable<Attraction>> GetAllAsync(int? cityId = null)
         {
-            return await context.Attractions.OrderBy(a => a.Popularity).ToListAsync();
-        }
+            if (cityId is not null)
+            {
+                return await context.Attractions.Where(a => a.CityId == cityId).OrderBy(a => a.Popularity).ToListAsync();
+            }
 
-        public async Task<Attraction?> GetByIdAsync(int id)
-        {
-            return await context.Attractions.FirstOrDefaultAsync(a => a.AttractionId == id);
+            return await context.Attractions.OrderBy(a => a.Popularity).ToListAsync();
         }
 
         public async Task<IEnumerable<Attraction>> GetByCityIdAsync(int cityId)
@@ -23,54 +24,33 @@ namespace Swallow.Repositories.Implementations
             return await context.Attractions.Where(a => a.CityId == cityId).OrderBy(a => a.Popularity).ToListAsync();
         }
 
-        public async Task<Attraction> CreateAttractionAsync(TripAdvisorAttraction tripAdvisorAttraction, City city, Currency currency, List<AttractionCategory> attractionCategories)
+        public async Task<Attraction?> CreateOrUpdateAsync(TripAdvisorAttraction tripadvisorAttraction, City city, Currency? currency)
         {
-            Attraction attraction = new()
-            {
-                CityId = city.CityId,
-                Name = tripAdvisorAttraction.Name,
-                Description = tripAdvisorAttraction.Details.Description,
-                Popularity = tripAdvisorAttraction.Popularity,
-                TripAdvisorUrl = tripAdvisorAttraction.TripAdvisorLink,
-                PictureUrl = tripAdvisorAttraction.Details.ImageUrl,
-                VisitDuration = tripAdvisorAttraction.Details.VisitDuration,
-                Price = tripAdvisorAttraction.Details.Price,
-                Currency = tripAdvisorAttraction.Details.Price != null ? currency : null,
-            };
+            var attraction = city.Attractions.FirstOrDefault(a => a.Name == tripadvisorAttraction.Name);
 
-            attraction.AttractionCategories.AddRange(attractionCategories);
+            var attractionCategories = await attractionCategoryRepository.GetOrCreateAsync(tripadvisorAttraction.Details.Categories);
 
-            context.Attractions.Add(attraction);
-            await context.SaveChangesAsync();
-
-            return attraction;
-        }
-
-        public async Task<Attraction?> CreateOrUpdateAsync(TripAdvisorAttraction tripadvisorAttraction, City city, Currency currency)
-        {
-            Attraction? attraction = city.Attractions.FirstOrDefault(a => a.Name == tripadvisorAttraction.Name);
-
-            List<AttractionCategory> attractionCategories = await attractionCategoryRepository.GetOrCreateAsync(tripadvisorAttraction.Details.Categories);
+            currency ??= await currencyRepository.GetUSDAsync();
 
             if (attraction == null)
             {
                 return await CreateAttractionAsync(tripadvisorAttraction, city, currency, attractionCategories);
             }
-            else
-            {
-                return await UpdateAsync(attraction, tripadvisorAttraction, currency, attractionCategories);
-            }
+            
+            return await UpdateAsync(attraction, tripadvisorAttraction, currency, attractionCategories);
         }
 
-        public async Task<IEnumerable<Attraction>> CreateOrUpdateAsync(IEnumerable<TripAdvisorAttraction> tripadvisorAttractions, City city, Currency currency)
+        public async Task<IEnumerable<Attraction>> CreateOrUpdateAsync(IEnumerable<TripAdvisorAttraction> tripadvisorAttractions, City city)
         {
-            await RemovePopularity(city.CityId);
+            await ClearPopularityAsync(city.CityId);
 
             List<Attraction> attractions = [];
 
-            foreach (TripAdvisorAttraction attraction in tripadvisorAttractions)
+            var currency = await currencyRepository.GetUSDAsync();
+
+            foreach (var attraction in tripadvisorAttractions)
             {
-                Attraction? addedAttraction = await CreateOrUpdateAsync(attraction, city, currency);
+                var addedAttraction = await CreateOrUpdateAsync(attraction, city, currency);
 
                 if (addedAttraction != null)
                 {
@@ -81,14 +61,24 @@ namespace Swallow.Repositories.Implementations
             return attractions;
         }
 
+        public async Task<Attraction> CreateAttractionAsync(TripAdvisorAttraction tripAdvisorAttraction, City city, Currency currency, List<AttractionCategory> attractionCategories)
+        {
+            var attraction = mapper.Map<Attraction>(tripAdvisorAttraction);
+
+            attraction.CityId = city.CityId;
+            attraction.Currency = tripAdvisorAttraction.Details.Price != null ? currency : null;
+            attraction.AttractionCategories.AddRange(attractionCategories);
+
+            context.Attractions.Add(attraction);
+            await context.SaveChangesAsync();
+
+            return attraction;
+        }
+
         public async Task<Attraction> UpdateAsync(Attraction attraction, TripAdvisorAttraction tripAdvisorAttraction, Currency currency, List<AttractionCategory> attractionCategories)
         {
-            attraction.Popularity = tripAdvisorAttraction.Popularity;
-            attraction.Description = tripAdvisorAttraction.Details.Description;
-            attraction.TripAdvisorUrl = tripAdvisorAttraction.TripAdvisorLink;
-            attraction.PictureUrl = tripAdvisorAttraction.Details.ImageUrl;
-            attraction.VisitDuration = tripAdvisorAttraction.Details.VisitDuration;
-            attraction.Price = tripAdvisorAttraction.Details.Price;
+            mapper.Map(tripAdvisorAttraction, attraction);
+
             attraction.Currency = tripAdvisorAttraction.Details.Price != null ? currency : null;
 
             attraction.AttractionCategories.Clear();
@@ -101,44 +91,44 @@ namespace Swallow.Repositories.Implementations
 
         public async Task<Attraction> UpdateAsync(Attraction attraction, GoogleMapsDetailsResponseResult googleMapsDetailsResponseResult)
         {
-            attraction.Latitude = googleMapsDetailsResponseResult.Geometry.Location.Latitude;
-            attraction.Longitude = googleMapsDetailsResponseResult.Geometry.Location.Longitude;
-            attraction.Address = googleMapsDetailsResponseResult.FormattedAddress;
-            attraction.Phone = googleMapsDetailsResponseResult.InternationalPhoneNumber;
-            attraction.Website = googleMapsDetailsResponseResult.Website;
-            attraction.Rating = googleMapsDetailsResponseResult.Rating;
-            attraction.UserRatingsTotal = googleMapsDetailsResponseResult.UserRatingsTotal;
-            attraction.GoogleMapsUrl = googleMapsDetailsResponseResult.Url;
-
-            if (googleMapsDetailsResponseResult.OpeningHours is not null && googleMapsDetailsResponseResult.OpeningHours.Periods is not null)
-            {
-                attraction.Schedules.Clear();
-
-                var periods = googleMapsDetailsResponseResult.OpeningHours.Periods;
-                foreach (var period in periods)
-                {
-                    Schedule schedule = new()
-                    {
-                        AttractionId = attraction.AttractionId,
-                        WeekdayId = (byte)(period.Open.Day + 1),
-                        OpenTime = TimeOnly.ParseExact(period.Open.Time, "HHmm"),
-                        CloseTime = period.Close is not null ? TimeOnly.ParseExact(period.Close.Time, "HHmm") : null,
-                    };
-
-                    attraction.Schedules.Add(schedule);
-                }
-            }
+            mapper.Map(googleMapsDetailsResponseResult, attraction);
 
             await context.SaveChangesAsync();
+
+            if (googleMapsDetailsResponseResult.OpeningHours is not null)
+            {
+                await UpdateSchedulesAsync(attraction, googleMapsDetailsResponseResult.OpeningHours);
+            }
 
             return attraction;
         }
 
-        public async Task RemovePopularity(int cityId)
+        public async Task UpdateSchedulesAsync(Attraction attraction, GoogleMapsDetailsResponseResultOpeningHours openingHours)
         {
-            IEnumerable<Attraction> attractions = await GetByCityIdAsync(cityId);
+            attraction.Schedules.Clear();
 
-            foreach (Attraction attraction in attractions)
+            var periods = openingHours.Periods;
+            foreach (var period in periods)
+            {
+                Schedule schedule = new()
+                {
+                    AttractionId = attraction.AttractionId,
+                    WeekdayId = (byte)(period.Open.Day + 1),
+                    OpenTime = TimeOnly.ParseExact(period.Open.Time, "HHmm"),
+                    CloseTime = period.Close is not null ? TimeOnly.ParseExact(period.Close.Time, "HHmm") : null,
+                };
+
+                attraction.Schedules.Add(schedule);
+            }
+
+            await context.SaveChangesAsync();
+        }
+
+        public async Task ClearPopularityAsync(int cityId)
+        {
+            var attractions = await GetByCityIdAsync(cityId);
+
+            foreach (var attraction in attractions)
             {
                 attraction.Popularity = null;
             }
@@ -146,13 +136,18 @@ namespace Swallow.Repositories.Implementations
             await context.SaveChangesAsync();
         }
 
-        public async Task ClearCityAsync(City city)
+        public async Task ClearTrashAsync(City city)
         {
-            IEnumerable<Attraction> attractions = await GetByCityIdAsync(city.CityId);
+            var attractions = await GetByCityIdAsync(city.CityId);
 
-            foreach (Attraction attraction in attractions)
+            foreach (var attraction in attractions)
             {
                 if (attraction.Popularity is null)
+                {
+                    context.Attractions.Remove(attraction);
+                }
+
+                if (attraction.GooglePlaceId is null)
                 {
                     context.Attractions.Remove(attraction);
                 }

@@ -1,4 +1,4 @@
-﻿namespace Swallow.Models.DatabaseModels
+﻿namespace Swallow.Models
 {
     public class UserPlan
     {
@@ -11,6 +11,6 @@
         public DateOnly StartDate { get; set; }
         public DateOnly? EndDate { get; set; }
 
-        public required int TripCount { get; set; } = 0;
+        public required int TripCount { get; set; }
     }
 }

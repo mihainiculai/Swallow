@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
-namespace Swallow.Models.DatabaseModels
+namespace Swallow.Models
 {
     public class ItineraryAttraction
     {
@@ -15,7 +15,7 @@ namespace Swallow.Models.DatabaseModels
         [Precision(10, 2)]
         public decimal? Price { get; set; }
         public short? CurrencyId { get; set; }
-        public virtual Currency? Currency { get; set; } = null!;
+        public virtual Currency? Currency { get; set; }
 
         [MaxLength(255)]
         public string? TicketsURL { get; set; }

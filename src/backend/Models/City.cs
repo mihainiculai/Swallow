@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
-namespace Swallow.Models.DatabaseModels
+namespace Swallow.Models
 {
     public class City
     {
@@ -12,6 +12,7 @@ namespace Swallow.Models.DatabaseModels
 
         [MaxLength(100)]
         public required string Name { get; set; }
+        [MaxLength(1000)]
         public string? Description { get; set; }
         [MaxLength(255)]
         public string? TripAdvisorUrl { get; set; }
@@ -20,9 +21,10 @@ namespace Swallow.Models.DatabaseModels
         public required decimal Latitude { get; set; }
         [Precision(10, 6)]
         public required decimal Longitude { get; set; }
-        public string? PictureURL { get; set; }
+        [MaxLength(255)]
+        public string? PictureUrl { get; set; }
 
-        public virtual ICollection<Trip> Trips { get; } = new List<Trip>();
-        public virtual ICollection<Attraction> Attractions { get; } = new List<Attraction>();
+        public virtual ICollection<Trip> Trips { get; } = [];
+        public virtual ICollection<Attraction> Attractions { get; } = [];
     }
 }

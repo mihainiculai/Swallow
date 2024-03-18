@@ -1,13 +1,19 @@
-﻿using HtmlAgilityPack;
-using Swallow.Utils.AttractionDataProviders;
+﻿using System.Globalization;
 using System.Net;
 using System.Text.RegularExpressions;
+using HtmlAgilityPack;
+using Swallow.DTOs.Attraction;
 
-namespace Swallow.Utils
+namespace Swallow.Utils.AttractionDataProviders
 {
-    public partial class TripAdvisorAttractionsCollector(HttpClient httpClient)
+    public interface ITripAdvisorAttractionsCollector
     {
-        private static readonly string BaseUrl = "https://www.tripadvisor.com";
+        Task<List<TripAdvisorAttraction>> GetAttractionsAsync(string TripAdvisorUrl);
+    }
+
+    public partial class TripAdvisorAttractionsCollector(HttpClient httpClient) : ITripAdvisorAttractionsCollector
+    {
+        private const string BaseUrl = "https://www.tripadvisor.com";
 
         [GeneratedRegex(@"^(\d+)\.\s*(.*)")]
         private static partial Regex TitleRegex();
@@ -55,13 +61,11 @@ namespace Swallow.Utils
 
                 if (!match.Success) return null;
 
-                var popularity = int.Parse(match.Groups[1].Value);
+                var popularity = int.Parse(match.Groups[1].Value, CultureInfo.InvariantCulture);
                 var name = WebUtility.HtmlDecode(match.Groups[2].Value);
                 var link = BaseUrl + linkElement.Attributes["href"].Value;
 
                 var details = await GetAttractionDetailsAsync(link);
-
-                if (details == null) return null;
 
                 if (details.Categories.Any(c => c.Contains("Trips") || c.Contains("Tours")))
                 {
@@ -83,7 +87,7 @@ namespace Swallow.Utils
         private async Task<HtmlDocument?> GetHtmlDocumentAsync(string url)
         {
             var response = await httpClient.GetAsync(url);
-            
+
             if (!response.IsSuccessStatusCode) return null;
 
             var content = await response.Content.ReadAsStringAsync();

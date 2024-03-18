@@ -1,4 +1,4 @@
-﻿namespace Swallow.Models.DatabaseModels
+﻿namespace Swallow.Models
 {
     public class ItineraryDay
     {
@@ -9,6 +9,6 @@
 
         public DateOnly Date { get; set; }
 
-        public virtual ICollection<ItineraryAttraction> ItineraryAttractions { get; } = new List<ItineraryAttraction>();
+        public virtual ICollection<ItineraryAttraction> ItineraryAttractions { get; } = [];
     }
 }

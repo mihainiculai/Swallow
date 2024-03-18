@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
-namespace Swallow.Models.DatabaseModels
+namespace Swallow.Models
 {
     [PrimaryKey(nameof(TripId), nameof(TransportModeId))]
     public class TripTransport
@@ -11,6 +11,7 @@ namespace Swallow.Models.DatabaseModels
         public byte TransportModeId { get; set; }
         public virtual TransportMode TransportMode { get; set; } = null!;
 
+        [MaxLength(10)]
         public string? TransportNumber { get; set; }
         public DateTime? DepartureTime { get; set; }
         public DateTime? ArrivalTime { get; set; }
@@ -18,7 +19,7 @@ namespace Swallow.Models.DatabaseModels
         [Precision(10, 2)]
         public decimal? Price { get; set; }
         public short? CurrencyId { get; set; }
-        public virtual Currency? Currency { get; set; } = null!;
+        public virtual Currency? Currency { get; set; }
 
         [MaxLength(255)]
         public string? TicketsURL { get; set; }

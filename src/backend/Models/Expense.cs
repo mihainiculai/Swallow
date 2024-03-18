@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
-namespace Swallow.Models.DatabaseModels
+namespace Swallow.Models
 {
     public class Expense
     {
@@ -12,12 +12,14 @@ namespace Swallow.Models.DatabaseModels
         public virtual Trip Trip { get; set; } = null!;
         [MaxLength(50)]
         public required string Name { get; set; }
+        [MaxLength(500)]
         public string? Description { get; set; }
-        public string? AttachmentURL { get; set; }
+        [MaxLength(255)]
+        public string? AttachmentUrl { get; set; }
 
         [Precision(10, 2)]
         public decimal? Price { get; set; }
         public short? CurrencyId { get; set; }
-        public virtual Currency? Currency { get; set; } = null!;
+        public virtual Currency? Currency { get; set; }
     }
 }

@@ -4,18 +4,34 @@ using System.Net.Mail;
 
 namespace Swallow.Services.Email
 {
-    public class EmailSender(IOptions<EmailSettings> emailSettings, IConfiguration configuration)
+    public interface IEmailSender
+    {
+        Task ResetPasswordAsync(string email, string fullName, string token);
+        Task SendAccountDeletionEmailAsync(string email, string fullName, string token);
+    }
+
+    public class EmailSender(IOptions<EmailSettings> emailSettings, IConfiguration configuration) : IEmailSender
     {
         private readonly EmailSettings _emailSettings = emailSettings.Value;
         private readonly string _websiteUrl = configuration["WebsiteURL"] ?? "";
         private readonly string _supportEmail = configuration["SupportEmail"] ?? "";
 
-        public async Task SendEmailAsync(string to, string subject, string bodyContent)
+        private async Task SendEmailAsync(string to, string subject, string template, Dictionary<string, string> replacements)
         {
-            var emailTemplate = File.ReadAllText("Services/Email/EmailLayout.html");
+            var templatePath = $"Services/Email/Layouts/{template}.html";
+
+            var emailBody = await File.ReadAllTextAsync(templatePath);
+
+            foreach (var replacement in replacements)
+            {
+                emailBody = emailBody.Replace($"{{{{{replacement.Key}}}}}", replacement.Value);
+            }
+
+            var emailTemplate = await File.ReadAllTextAsync("Services/Email/Layouts/EmailLayout.html");
 
             var htmlContent = emailTemplate.Replace("{{EmailTitle}}", subject)
-                                           .Replace("{{EmailBody}}", bodyContent);
+                                           .Replace("{{EmailBody}}", emailBody)
+                                           .Replace("{{year}}", DateTime.Now.Year.ToString(System.Globalization.CultureInfo.InvariantCulture));
 
             var mailMessage = new MailMessage()
             {
@@ -36,70 +52,32 @@ namespace Swallow.Services.Email
 
         public async Task ResetPasswordAsync(string email, string fullName, string token)
         {
-            var resetPasswordTemplate = File.ReadAllText("Services/Email/Templates/ResetPasswordTemplate.html");
-
             string resetPasswordLink = $"{_websiteUrl}/auth/reset-password?email={Uri.EscapeDataString(email)}&token={Uri.EscapeDataString(token)}";
 
-            var emailBody = resetPasswordTemplate.Replace("{{FullName}}", fullName)
-                                                 .Replace("{{ResetPasswordLink}}", resetPasswordLink)
-                                                 .Replace("{{SupportEmail}}", _supportEmail)
-                                                 .Replace("{{ResetPasswordUrl}}", resetPasswordLink);
-
-            var emailTemplate = File.ReadAllText("Services/Email/EmailLayout.html");
-
-            var htmlContent = emailTemplate.Replace("{{EmailTitle}}", "Reset Password")
-                                           .Replace("{{EmailBody}}", emailBody);
-
-            var mailMessage = new MailMessage()
+            Dictionary<string, string> replacements = new()
             {
-                From = new MailAddress(_emailSettings.From),
-                Subject = "Reset Password",
-                Body = htmlContent,
-                IsBodyHtml = true
+                { "FullName", fullName },
+                { "ResetPasswordLink", resetPasswordLink },
+                { "SupportEmail", _supportEmail },
+                { "ResetPasswordUrl", resetPasswordLink }
             };
 
-            mailMessage.To.Add(new MailAddress(email));
-
-            using var smtpClient = new SmtpClient(_emailSettings.SmtpServer, _emailSettings.Port);
-            smtpClient.Credentials = new NetworkCredential(_emailSettings.Username, _emailSettings.Password);
-            smtpClient.EnableSsl = _emailSettings.EnableSSL;
-
-            await smtpClient.SendMailAsync(mailMessage);
+            await SendEmailAsync(email, "Reset Password", "ResetPasswordLayout", replacements);
         }
 
         public async Task SendAccountDeletionEmailAsync(string email, string fullName, string token)
         {
-            var deleteAccountTemplate = File.ReadAllText("Services/Email/Templates/DeleteAccountTemplate.html");
-
             string accountDeletionLink = $"{_websiteUrl}/delete-account?email={Uri.EscapeDataString(email)}&token={Uri.EscapeDataString(token)}";
 
-            var emailBody = deleteAccountTemplate.Replace("{{FullName}}", fullName)
-                                                 .Replace("{{AccountDeletionLink}}", accountDeletionLink)
-                                                 .Replace("{{SupportEmail}}", _supportEmail)
-                                                 .Replace("{{AccountDeletionUrl}}", accountDeletionLink);
-
-            var emailTemplate = File.ReadAllText("Services/Email/EmailLayout.html");
-
-            var htmlContent = emailTemplate.Replace("{{EmailTitle}}", "Account Deletion")
-                                           .Replace("{{EmailBody}}", emailBody);
-
-            var mailMessage = new MailMessage()
+            Dictionary<string, string> replacements = new()
             {
-                From = new MailAddress(_emailSettings.From),
-                Subject = "Account Deletion",
-                Body = htmlContent,
-                IsBodyHtml = true
+                { "FullName", fullName },
+                { "AccountDeletionLink", accountDeletionLink },
+                { "SupportEmail", _supportEmail },
+                { "AccountDeletionUrl", accountDeletionLink }
             };
 
-            mailMessage.To.Add(new MailAddress(email));
-
-            using var smtpClient = new SmtpClient(_emailSettings.SmtpServer, _emailSettings.Port);
-            smtpClient.Credentials = new NetworkCredential(_emailSettings.Username, _emailSettings.Password);
-            smtpClient.EnableSsl = _emailSettings.EnableSSL;
-
-            await smtpClient.SendMailAsync(mailMessage);
+            await SendEmailAsync(email, "Account Deletion", "DeleteAccountLayout", replacements);
         }
     }
-
-    
 }

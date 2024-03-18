@@ -485,3 +485,9 @@ $RECYCLE.BIN/
 
 # AppSettings
 appsettings*
+
+# Log Folder
+Logs/
+
+# EF Migrations
+Data/Migrations/

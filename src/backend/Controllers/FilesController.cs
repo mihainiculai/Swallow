@@ -1,30 +1,19 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Swallow.Models.DatabaseModels;
+using Swallow.Repositories.Interfaces;
 
 namespace Swallow.Controllers
 {
     [Route("files")]
     [ApiController]
     [Authorize]
-    public class FilesController(UserManager<User> userManager) : ControllerBase
+    public class FilesController(IUserRepository userRepository) : ControllerBase
     {
         [HttpGet("profile-picture")]
-        public async Task<IActionResult> GetProfilePicture()
+        public IActionResult GetProfilePicture([FromQuery] Guid photoId)
         {
-            var user = await userManager.GetUserAsync(User);
-
-            if (user == null) return BadRequest("User not found.");
-
-            if (user.CustomProfilePicture && user.ProfilePictureURL != null && System.IO.File.Exists(user.ProfilePictureURL))
-            {
-                var file = System.IO.File.OpenRead(user.ProfilePictureURL);
-                return File(file, "image/jpeg");
-            }
-
-            return NotFound();
+            var profilePicture = userRepository.GetProfilePictureAsync(photoId);
+            return File(profilePicture, "image/webp");
         }
     }
 }

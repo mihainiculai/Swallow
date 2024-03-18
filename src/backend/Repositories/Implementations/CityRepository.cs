@@ -1,50 +1,27 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using Swallow.Data;
-using Swallow.Models.DatabaseModels;
+using Swallow.DTOs.City;
+using Swallow.Exceptions.CustomExceptions;
+using Swallow.Models;
 using Swallow.Repositories.Interfaces;
 
 namespace Swallow.Repositories.Implementations
 {
-    public class CityRepository(ApplicationDbContext context) : IRepository<City, int>
+    public class CityRepository(ApplicationDbContext context, IMapper mapper) : ICityRepository
     {
-        public async Task<IEnumerable<City>> GetAllAsync()
+        public async Task<City> GetByIdAsync(int id)
         {
-            return await context.Cities.ToListAsync();
+            return await context.Cities.FirstOrDefaultAsync(c => c.CityId == id) ?? throw new NotFoundException("City not found");
         }
 
-        public async Task<City?> GetByIdAsync(int id)
+        public async Task UpdateAsync(CityDto cityDto)
         {
-            return await context.Cities.FirstOrDefaultAsync(c => c.CityId == id);
-        }
+            var city = await GetByIdAsync(cityDto.CityId);
+            city = mapper.Map(cityDto, city);
 
-        public async Task<IEnumerable<City>> GetAllByCountryIdAsync(short countryId)
-        {
-            return await context.Cities.Where(c => c.CountryId == countryId).ToListAsync();
-        }
-
-        public Task<City> CreateAsync(City entity)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task<City?> UpdateAsync(City entity)
-        {
-            City? city = await GetByIdAsync(entity.CityId);
-
-            if (city == null)
-            {
-                return null;
-            }
-
-            context.Entry(city).CurrentValues.SetValues(entity);
+            context.Cities.Update(city);
             await context.SaveChangesAsync();
-
-            return city;
-        }
-
-        public Task<City?> DeleteAsync(int id)
-        {
-            throw new NotImplementedException();
         }
     }
 }

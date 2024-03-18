@@ -1,14 +1,23 @@
-﻿using Swallow.Models.DatabaseModels;
-using Swallow.Repositories.Implementations;
+﻿using Swallow.DTOs.Attraction;
+using Swallow.Models;
+using Swallow.Repositories.Interfaces;
 using System.Net;
 using System.Text.Json;
 
 namespace Swallow.Utils.AttractionDataProviders
 {
-    public class GoogleMapsAttractionsDataFetcher(HttpClient httpClient, IConfiguration configuration, AttractionRepository attractionRepository)
+    public interface IGoogleMapsAttractionsDataFetcher
     {
-        private static readonly string FindPlaceUrl = "https://maps.googleapis.com/maps/api/place/findplacefromtext/json";
-        private static readonly string DetailsUrl = "https://maps.googleapis.com/maps/api/place/details/json";
+        Task<Attraction?> AddAttractionDetails(Attraction attraction);
+        Task<List<Attraction>> AddAttractionsDetails(IEnumerable<Attraction> attractions);
+        Task<GoogleMapsDetailsResponseResult?> GetPlaceDetails(string placeId);
+        Task<string?> GetPlaceId(Attraction attraction);
+    }
+
+    public class GoogleMapsAttractionsDataFetcher(HttpClient httpClient, IConfiguration configuration, IAttractionRepository attractionRepository) : IGoogleMapsAttractionsDataFetcher
+    {
+        private const string GOOGLE_MAPS_FIND_PLACE_URL = "https://maps.googleapis.com/maps/api/place/findplacefromtext/json";
+        private const string GOOGLE_MAPS_DETAILS_URL = "https://maps.googleapis.com/maps/api/place/details/json";
         private readonly string GoogleMapsApiKey = configuration["Google:GoogleMapsApiKey"] ?? "";
 
         public async Task<Attraction?> AddAttractionDetails(Attraction attraction)
@@ -21,7 +30,7 @@ namespace Swallow.Utils.AttractionDataProviders
                 if (attraction.GooglePlaceId is null) return null;
             }
 
-            GoogleMapsDetailsResponseResult? details = await GetPlaceDetails(attraction.GooglePlaceId);
+            var details = await GetPlaceDetails(attraction.GooglePlaceId);
             if (details is null) return null;
 
             return await attractionRepository.UpdateAsync(attraction, details);
@@ -29,28 +38,28 @@ namespace Swallow.Utils.AttractionDataProviders
 
         public async Task<List<Attraction>> AddAttractionsDetails(IEnumerable<Attraction> attractions)
         {
-            List<Attraction> attractionsWithDetails = new();
+            List<Attraction> attractionsWithDetails = [];
 
-            foreach (Attraction attraction in attractions)
+            foreach (var attraction in attractions)
             {
                 try
                 {
-                    Attraction? attractionWithDetails = await AddAttractionDetails(attraction);
+                    var attractionWithDetails = await AddAttractionDetails(attraction);
                     if (attractionWithDetails is not null) attractionsWithDetails.Add(attractionWithDetails);
                 }
                 catch (Exception)
                 {
-                    continue;
+                    // ignored
                 }
             }
 
             return attractionsWithDetails;
         }
 
-        public async Task<string?> GetPlaceId (Attraction attraction)
+        public async Task<string?> GetPlaceId(Attraction attraction)
         {
             var encodedAttractionName = WebUtility.UrlEncode(attraction.Name + ", " + attraction.City.Name);
-            var response = await httpClient.GetAsync(FindPlaceUrl + "?input=" + encodedAttractionName + "&inputtype=textquery&locationbias=circle:50000@" + attraction.Latitude + "," + attraction.Longitude + "&fields=place_id&key=" + GoogleMapsApiKey);
+            var response = await httpClient.GetAsync(GOOGLE_MAPS_FIND_PLACE_URL + "?input=" + encodedAttractionName + "&inputtype=textquery&locationbias=circle:50000@" + attraction.Latitude + "," + attraction.Longitude + "&fields=place_id&key=" + GoogleMapsApiKey);
 
             if (!response.IsSuccessStatusCode) return null;
 
@@ -62,9 +71,9 @@ namespace Swallow.Utils.AttractionDataProviders
             return findPlaceResponse.Candidates[0].PlaceId;
         }
 
-        public async Task<GoogleMapsDetailsResponseResult?> GetPlaceDetails (string placeId)
+        public async Task<GoogleMapsDetailsResponseResult?> GetPlaceDetails(string placeId)
         {
-            var response = await httpClient.GetAsync(DetailsUrl + "?place_id=" + placeId + "&fields=geometry/location,formatted_address,international_phone_number,website,rating,user_ratings_total,url,opening_hours&key=" + GoogleMapsApiKey);
+            var response = await httpClient.GetAsync(GOOGLE_MAPS_DETAILS_URL + "?place_id=" + placeId + "&fields=geometry/location,formatted_address,international_phone_number,website,rating,user_ratings_total,url,opening_hours&key=" + GoogleMapsApiKey);
 
             if (!response.IsSuccessStatusCode) return null;
 

@@ -1,41 +1,15 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Swallow.Data;
-using Swallow.Models.DatabaseModels;
+using Swallow.Models;
 using Swallow.Repositories.Interfaces;
 
 namespace Swallow.Repositories.Implementations
 {
-    public class AttractionCategoryRepository(ApplicationDbContext context) : IRepository<AttractionCategory, int>
+    public class AttractionCategoryRepository(ApplicationDbContext context) : IAttractionCategoryRepository
     {
-        public async Task<AttractionCategory> CreateAsync(AttractionCategory entity)
-        {
-            await context.AttractionCategories.AddAsync(entity);
-            await context.SaveChangesAsync();
-            return entity;
-        }
-
-        public async Task<AttractionCategory?> DeleteAsync(int id)
-        {
-            AttractionCategory? entity = await context.AttractionCategories.FindAsync(id);
-
-            if (entity != null)
-            {
-                context.AttractionCategories.Remove(entity);
-                await context.SaveChangesAsync();
-                return entity;
-            }
-
-            return null;
-        }
-
         public async Task<IEnumerable<AttractionCategory>> GetAllAsync()
         {
             return await context.AttractionCategories.OrderBy(c => c.Name).ToListAsync();
-        }
-
-        public async Task<AttractionCategory?> GetByIdAsync(int id)
-        {
-            return await context.AttractionCategories.FindAsync(id);
         }
 
         public async Task<AttractionCategory?> GetByNameAsync(string name)
@@ -45,7 +19,7 @@ namespace Swallow.Repositories.Implementations
 
         public async Task<AttractionCategory> GetOrCreateAsync(string name)
         {
-            AttractionCategory? category = await GetByNameAsync(name);
+            var category = await GetByNameAsync(name);
 
             if (category == null)
             {
@@ -68,18 +42,11 @@ namespace Swallow.Repositories.Implementations
             return categories;
         }
 
-        public async Task<AttractionCategory?> UpdateAsync(AttractionCategory entity)
+        private async Task<AttractionCategory> CreateAsync(AttractionCategory entity)
         {
-            AttractionCategory? existingEntity = await context.AttractionCategories.FindAsync(entity.AttractionCategoryId);
-
-            if (existingEntity != null)
-            {
-                context.Entry(existingEntity).CurrentValues.SetValues(entity);
-                await context.SaveChangesAsync();
-                return existingEntity;
-            }
-
-            return null;
+            await context.AttractionCategories.AddAsync(entity);
+            await context.SaveChangesAsync();
+            return entity;
         }
     }
 }

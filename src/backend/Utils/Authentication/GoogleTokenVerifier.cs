@@ -1,30 +1,30 @@
-﻿using Google.Apis.Auth.OAuth2;
-using Google.Apis.Oauth2.v2.Data;
-using Google.Apis.Oauth2.v2;
-using Google.Apis.Services;
+﻿using Newtonsoft.Json;
+using Swallow.DTOs.Authentication;
+using Swallow.Exceptions.CustomExceptions;
 
 namespace Swallow.Utils.Authentication
 {
-    public static class GoogleTokenVerifier
+    public interface IGoogleTokenVerifier
     {
-        public static async Task<Userinfo?> VerifyTokenAndGetUserInfo(string accessToken)
+        Task<GoogleUserInfo> GetUserInfo(string accessToken);
+    }
+
+    public class GoogleTokenVerifier(HttpClient httpClient) : IGoogleTokenVerifier
+    {
+        public async Task<GoogleUserInfo> GetUserInfo(string accessToken)
         {
-            try
-            {
-                var credential = GoogleCredential.FromAccessToken(accessToken);
+            var userInfoResponse = await httpClient.GetAsync($"https://www.googleapis.com/oauth2/v3/userinfo?access_token={accessToken}");
 
-                var oauth2Service = new Oauth2Service(new BaseClientService.Initializer
-                {
-                    HttpClientInitializer = credential
-                });
-
-                var userInfoRequest = oauth2Service.Userinfo.Get();
-                return await userInfoRequest.ExecuteAsync();
-            }
-            catch (Exception)
+            if (!userInfoResponse.IsSuccessStatusCode)
             {
-                return null;
+                throw new BadRequestException("Invalid Google access token.");
             }
+
+            var userInfo = await userInfoResponse.Content.ReadAsStringAsync();
+
+            var googleUserInfo = JsonConvert.DeserializeObject<GoogleUserInfo>(userInfo)!;
+
+            return googleUserInfo;
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace Swallow.Models.DatabaseModels
+namespace Swallow.Models
 {
     public class CurrencyRate
     {

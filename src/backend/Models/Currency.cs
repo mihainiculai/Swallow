@@ -1,8 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
-namespace Swallow.Models.DatabaseModels
+namespace Swallow.Models
 {
     public class Currency
     {
@@ -19,14 +18,14 @@ namespace Swallow.Models.DatabaseModels
         public virtual Country? Country { get; set; }
 
         [JsonIgnore]
-        public virtual ICollection<Attraction> Attractions { get; } = new List<Attraction>();
+        public virtual ICollection<Attraction> Attractions { get; } = [];
         [JsonIgnore]
-        public virtual ICollection<ItineraryAttraction> ItineraryAttractions { get; } = new List<ItineraryAttraction>();
+        public virtual ICollection<ItineraryAttraction> ItineraryAttractions { get; } = [];
         [JsonIgnore]
-        public virtual ICollection<TripTransport> TripTransports { get; } = new List<TripTransport>();
+        public virtual ICollection<TripTransport> TripTransports { get; } = [];
         [JsonIgnore]
-        public virtual ICollection<Expense> Expenses { get; } = new List<Expense>();
+        public virtual ICollection<Expense> Expenses { get; } = [];
         [JsonIgnore]
-        public virtual ICollection<CurrencyRate> CurrencyRates { get; } = new List<CurrencyRate>();
+        public virtual ICollection<CurrencyRate> CurrencyRates { get; } = [];
     }
 }

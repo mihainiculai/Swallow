@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Swallow.Models.DatabaseModels
+namespace Swallow.Models
 {
     public class Plan
     {
@@ -17,6 +17,6 @@ namespace Swallow.Models.DatabaseModels
         public required bool TripTips { get; set; }
         public required bool Ads { get; set; }
 
-        public virtual ICollection<UserPlan> UserPlans { get; } = new List<UserPlan>();
+        public virtual ICollection<UserPlan> UserPlans { get; } = [];
     }
 }

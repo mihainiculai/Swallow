@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Swallow.Models.DatabaseModels
+namespace Swallow.Models
 {
     public class UserToken : IdentityUserToken<Guid>
     {

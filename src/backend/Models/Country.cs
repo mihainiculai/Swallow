@@ -1,18 +1,22 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Swallow.Models.DatabaseModels
+namespace Swallow.Models
 {
     public class Country
     {
         public short CountryId { get; set; }
         [MaxLength(100)]
         public required string Name { get; set; }
+        [MaxLength(1000)]
         public string? Description { get; set; }
+        [StringLength(2, MinimumLength = 2)]
         public required string Iso2 { get; set; }
+        [StringLength(3, MinimumLength = 3)]
         public required string Iso3 { get; set; }
-        public string? PhotoURL { get; set; }
+        [MaxLength(300)]
+        public string? PhotoUrl { get; set; }
 
-        public virtual ICollection<City> Cities { get; } = new List<City>();
-        public virtual ICollection<Currency> Currencies { get; } = new List<Currency>();
+        public virtual ICollection<City> Cities { get; } = [];
+        public virtual ICollection<Currency> Currencies { get; } = [];
     }
 }

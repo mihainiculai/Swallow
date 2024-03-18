@@ -1,18 +1,12 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Swallow.Models;
-using Swallow.Models.DatabaseModels;
 
 namespace Swallow.Data
 {
-    public class ApplicationDbContext
-        : IdentityDbContext<User, Role, Guid, UserClaim, UserRole, UserLogin, RoleClaim, UserToken>
+    public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+                : IdentityDbContext<User, Role, Guid, UserClaim, UserRole, UserLogin, RoleClaim, UserToken>(options)
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
-        {
-            this.ChangeTracker.LazyLoadingEnabled = true;
-        }
-
         public DbSet<PlatformSettings> PlatformSettings { get; set; }
         public DbSet<ErrorLog> ErrorLogs { get; set; }
         public DbSet<Trip> Trips { get; set; }
@@ -39,7 +33,7 @@ namespace Swallow.Data
                 new PlatformSettings
                 {
                     SettingsId = 1,
-                    MentenanceMode = false,
+                    MaintenanceMode = false,
                     NextCurrencyUpdate = DateTime.UtcNow
                 }
             );

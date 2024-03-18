@@ -2,8 +2,12 @@ using Microsoft.EntityFrameworkCore;
 using Swashbuckle.AspNetCore.Filters;
 using Microsoft.OpenApi.Models;
 using Swallow.Data;
-using Swallow.Services;
 using Swallow.Extensions;
+using Hangfire;
+using Swallow.Exceptions.Handlers;
+using Swallow.Services.Currency;
+using Serilog;
+using Serilog.Sinks.MSSqlServer;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,14 +36,37 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
            .UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
-// Authentication and authorization
+builder.Services.AddExceptionHandler<AppExceptionHandler>();
+builder.Services.AddExceptionHandler<GeneralExceptionHandler>();
 
 builder.Services.AddAuthenticationServices();
 builder.Services.AddCustomServices();
+builder.Services.AddHttpClients();
+builder.Services.AddRepositories();
+
+builder.Services.AddHangfire(configuration => configuration.UseSqlServerStorage(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddHangfireServer();
+
+builder.Host.UseSerilog();
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Warning()
+    .WriteTo.Console()
+    .WriteTo.MSSqlServer(
+        connectionString: builder.Configuration.GetConnectionString("DefaultConnection"),
+        sinkOptions: new MSSqlServerSinkOptions { TableName = "ErrorLogs" },
+        restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Error
+    )
+    .CreateLogger();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+app.UseSerilogRequestLogging();
+app.UseExceptionHandler(_ => { });
+
+app.UseHangfireDashboard();
+
+BackgroundJob.Enqueue<IDatabaseInitializer>(x => x.InitializeAsync());
+BackgroundJob.Enqueue<ICurrencyUpdater>(x => x.UpdateCurrenciesAsync());
 
 if (app.Environment.IsDevelopment())
 {
@@ -55,17 +82,6 @@ app.UseCors(builder => builder
 );
 
 app.UseHttpsRedirection();
-
-using (var scope = app.Services.CreateScope())
-{
-    var initializer = scope.ServiceProvider.GetRequiredService<IDatabaseInitializer>();
-    await initializer.InitializeAsync();
-}
-
-app.AddCustomMiddleware();
-
 app.UseAuthorization();
-
 app.MapControllers();
-
 app.Run();
