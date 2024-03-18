@@ -120,7 +120,7 @@ export default function AccountSettingsPage() {
                             placement="bottom-right"
                             shape="circle"
                         >
-                            <Avatar className="h-14 w-14" src={user?.profilePictureURL} />
+                            <Avatar className="h-14 w-14" src={user?.profilePictureUrl} />
                         </Badge>
                         <div className="flex flex-col items-start justify-center">
                             <p className="font-medium">{user?.fullName}</p>

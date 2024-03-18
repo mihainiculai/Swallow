@@ -64,9 +64,9 @@ export default function AdministrativeCitiesPage() {
         onSubmit: (values) => {
             setIsSubmitting(true);
 
-            axiosInstance.put(`cities/${selectedCity}`, values)
+            axiosInstance.put(`cities`, values)
                 .then(() => {
-                    mutate(`cities/${selectedCity}`, values);
+                    mutate(`cities/${selectedCity}`);
                 })
                 .finally(() => {
                     setIsSubmitting(false);

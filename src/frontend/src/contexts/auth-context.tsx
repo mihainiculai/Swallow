@@ -17,7 +17,7 @@ export type User = {
     firstName: string;
     lastName: string;
     fullName: string;
-    profilePictureURL?: string;
+    profilePictureUrl?: string;
     public: boolean;
 };
 

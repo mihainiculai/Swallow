@@ -113,7 +113,7 @@ const PlaceListItem = React.forwardRef<HTMLDivElement, PlaceListItemProps>(
                             </div>
                             {renderDescription()}
                             {price ? <p className="text-small font-medium text-default-500">${price}</p> : null}
-                            {schedules?.length && (
+                            {schedules?.length ? (
                                 <div className="flex flex-col gap-1">
                                     <h4 className="text-small font-medium text-default-700">Schedule</h4>
                                     <div className="flex flex-col gap-1">
@@ -127,7 +127,7 @@ const PlaceListItem = React.forwardRef<HTMLDivElement, PlaceListItemProps>(
                                         ))}
                                     </div>
                                 </div>
-                            )}
+                            ) : null}
                         </>
                     )}
                 </div>

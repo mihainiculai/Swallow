@@ -12,20 +12,21 @@ interface ProfilePictureModalProps {
 
 export const ProfilePictureModal: React.FC<ProfilePictureModalProps> = ({ isOpen, onOpenChange, user }) => {
     const [imageFile, setImageFile] = useState<File | null>(null);
-    const [imagePreview, setImagePreview] = useState<string | null | undefined>(user?.profilePictureURL);
+    const [imagePreview, setImagePreview] = useState<string | null | undefined>(user?.profilePictureUrl);
     const [uploadError, setUploadError] = useState('');
     const [imageChanged, setImageChanged] = useState(false);
+    const [isUploading, setIsUploading] = useState(false);
 
     useEffect(() => {
         setImageFile(null);
-        setImagePreview(user?.profilePictureURL);
+        setImagePreview(user?.profilePictureUrl);
         setUploadError('');
         setImageChanged(false);
-    }, [isOpen, user?.profilePictureURL]);
+    }, [isOpen, user?.profilePictureUrl]);
 
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    const allowedFileTypes = ['image/jpeg', 'image/png', 'image/gif'];
+    const allowedFileTypes = ['image/jpeg', 'image/png'];
     const allowedFileSize = 5 * 1024 * 1024; // 5MB
 
     const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -68,6 +69,7 @@ export const ProfilePictureModal: React.FC<ProfilePictureModalProps> = ({ isOpen
             formData.append('file', imageFile);
         }
 
+        setIsUploading(true);
         axiosInstance.post('/users/profile-picture', formData, {
             headers: {
                 'Content-Type': 'multipart/form-data',
@@ -77,13 +79,18 @@ export const ProfilePictureModal: React.FC<ProfilePictureModalProps> = ({ isOpen
         }).catch(error => {
             setUploadError(error.response.data);
         }).finally(() => {
+            setIsUploading(false);
             mutate('auth/me');
         });
     };
 
     const handleDelete = () => {
-        setImageFile(null);
-        setImagePreview(null);
+        if (imagePreview) {
+            setImageFile(null);
+            setImagePreview(null);
+            setUploadError('');
+            setImageChanged(true);
+        }
     };
 
     return (
@@ -123,7 +130,7 @@ export const ProfilePictureModal: React.FC<ProfilePictureModalProps> = ({ isOpen
                 </ModalBody>
                 <ModalFooter>
                     <Button variant="light" onClick={() => onOpenChange(false)}>Cancel</Button>
-                    <Button color="primary" onClick={handleUpload}>Update</Button>
+                    <Button color="primary" onClick={handleUpload} isLoading={isUploading}>Update</Button>
                 </ModalFooter>
             </ModalContent>
         </Modal>

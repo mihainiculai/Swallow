@@ -28,7 +28,7 @@ export const DropdownAvatar: React.FC = () => {
                     color="primary"
                     name={user?.fullName}
                     size="sm"
-                    src={user?.profilePictureURL}
+                    src={user?.profilePictureUrl}
                 />
             </DropdownTrigger>
             <DropdownMenu aria-label="Profile Actions" variant="flat">
