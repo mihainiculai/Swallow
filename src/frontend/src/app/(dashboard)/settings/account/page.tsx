@@ -21,7 +21,7 @@ import { MdModeEdit } from "react-icons/md";
 import { useAuthContext, AuthContextType } from "@/contexts/auth-context";
 import * as yup from "yup";
 import { useFormik } from "formik";
-import { axiosInstance } from '@/components/axiosInstance';
+import { axiosInstance } from '@/components/utilities/axiosInstance';
 import { mutate } from 'swr';
 import { FaEye, FaEyeSlash } from "react-icons/fa6";
 import { ProfilePictureModal } from "./_components/ProfilePictureModal";

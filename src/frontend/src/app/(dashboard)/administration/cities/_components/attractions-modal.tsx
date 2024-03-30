@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, use } from "react";
+import React, { FC, useState, useEffect } from "react";
 import dynamic from 'next/dynamic'
 
 import {
@@ -17,8 +17,8 @@ import {
 } from "@nextui-org/react";
 
 import useSWR, { mutate } from "swr";
-import { fetcher } from "@/components/fetcher";
-import { axiosInstance } from "@/components/axiosInstance";
+import { fetcher } from "@/components/utilities/fetcher";
+import { axiosInstance } from "@/components/utilities/axiosInstance";
 
 const PlaceListItem = dynamic(() => import("./place-list-item"), { ssr: false });
 
@@ -29,7 +29,7 @@ import { MdAutoAwesome } from "react-icons/md";
 interface AttractionsModalProps {
     isOpen: boolean;
     onOpenChange: () => void;
-    cityId: number | null;
+    cityId: number | undefined;
     cityName: string;
 }
 
@@ -57,7 +57,7 @@ interface ScheduleProps {
     closeTime: string;
 }
 
-export const AttractionsModal: React.FC<AttractionsModalProps> = ({ isOpen, onOpenChange, cityId, cityName }) => {
+export const AttractionsModal: FC<AttractionsModalProps> = ({ isOpen, onOpenChange, cityId, cityName }) => {
     const { data: attractions, isLoading } = useSWR<AttractionProps[]>(`attractions?cityId=${cityId}`, fetcher);
     const { data: categories } = useSWR<CategoryProps[]>('attractions/categories', fetcher);
 

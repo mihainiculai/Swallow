@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useSearchParams } from 'next/navigation'
 import { Button, Input, Spinner } from "@nextui-org/react";
-import { axiosInstance } from "@/components/axiosInstance";
+import { axiosInstance } from "@/components/utilities/axiosInstance";
 import { useFormik } from "formik";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { resetPasswordSchema } from "../_components/validationSchemas";
@@ -58,7 +58,12 @@ export default function ForgotPasswordPage() {
 
                 recaptchaRef.current?.reset()
                 const reCaptchaToken = await recaptchaRef.current?.executeAsync();
-                if (!reCaptchaToken) throw new Error();
+
+                if (!reCaptchaToken) {
+                    setError("There was a problem verifying reCAPTCHA. Please try again.");
+                    setSuccess(null);
+                    return;
+                }
 
                 const decodedToken = decodeURIComponent(token);
                 await axiosInstance.post("auth/reset-password", { email, token: decodedToken, password: values.password, reCaptchaToken });

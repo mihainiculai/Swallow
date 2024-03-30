@@ -9,7 +9,7 @@ import {
     ModalFooter,
     Input
 } from '@nextui-org/react';
-import { axiosInstance } from '@/components/axiosInstance';
+import { axiosInstance } from '@/components/utilities/axiosInstance';
 import * as yup from "yup";
 import { useFormik } from "formik";
 

@@ -7,7 +7,7 @@ import {
     useDisclosure,
 } from "@nextui-org/react";
 import { CellWrapper } from "@/components/cell-wrapper";
-import { SwitchCell } from "@/components/switch-cell";
+import { SwitchCell } from "@/components/ui-elements/switch-cell";
 import { ChangePasswordModal } from "./_components/change-password-modal";
 import { DeleteAccountModal } from "./_components/delete-account-modal";
 

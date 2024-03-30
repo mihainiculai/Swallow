@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect, ChangeEvent } from 'react';
 import { Badge, Avatar, Button, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from '@nextui-org/react';
 import { FaTrash } from "react-icons/fa6";
-import { axiosInstance } from '@/components/axiosInstance';
+import { axiosInstance } from '@/components/utilities/axiosInstance';
 import { mutate } from 'swr';
 
 interface ProfilePictureModalProps {

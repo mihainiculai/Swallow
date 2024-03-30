@@ -39,7 +39,11 @@ export default function RegisterPage() {
 
                 recaptchaRef.current?.reset();
                 const reCaptchaToken = await recaptchaRef.current?.executeAsync();
-                if (!reCaptchaToken) throw new Error();
+
+                if (!reCaptchaToken) {
+                    setError("There was a problem verifying reCAPTCHA. Please try again.");
+                    return;
+                }
 
                 await signUp(values.email, values.password, values.firstName, values.lastName, reCaptchaToken)
                 router.push("/dashboard");

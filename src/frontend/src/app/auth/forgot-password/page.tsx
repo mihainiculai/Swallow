@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { Button, Input } from "@nextui-org/react";
-import { axiosInstance } from "@/components/axiosInstance";
+import { axiosInstance } from "@/components/utilities/axiosInstance";
 import { useFormik } from "formik";
 import { forgotPasswordSchema } from "../_components/validationSchemas";
 import ReCAPTCHA from "react-google-recaptcha";
@@ -28,7 +28,12 @@ export default function ForgotPasswordPage() {
 
                 recaptchaRef.current?.reset();
                 const reCaptchaToken = await recaptchaRef.current?.executeAsync();
-                if (!reCaptchaToken) throw new Error();
+
+                if (!reCaptchaToken) {
+                    setError("There was a problem verifying reCAPTCHA. Please try again.");
+                    setSuccess(null);
+                    return;
+                }
 
                 await axiosInstance.post("auth/forgot-password", { email: values.email, reCaptchaToken });
                 setSuccess("If you have an account with us, you will receive an email with a link to reset your password shortly.");

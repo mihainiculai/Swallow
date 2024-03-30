@@ -1,5 +1,5 @@
 import React from "react";
-import { Logo } from "@/components/Logo";
+import { Logo } from "@/components/logo";
 import Link from 'next/link'
 import { Divider } from "@nextui-org/react";
 import { FooterConfig } from "@/config/landing/footer";

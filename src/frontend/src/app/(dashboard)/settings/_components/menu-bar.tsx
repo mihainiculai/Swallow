@@ -1,4 +1,4 @@
-import { TabMenubar } from "@/components/TabManuBar";
+import { TabMenubar } from "@/components/ui-elements/tab-manu-bar";
 import { MdAccountCircle, MdWallet, MdLock, MdSettings } from "react-icons/md";
 
 const items = [

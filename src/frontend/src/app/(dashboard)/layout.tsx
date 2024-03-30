@@ -1,7 +1,8 @@
+import React, { ReactNode } from "react";
 import { AuthGuard } from "@/guard/auth-guard"
-import { NavigationBar } from "./_components/Navbar/Navbar"
+import { NavigationBar } from "./_components/Navbar/navbar"
 
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+export default function DashboardLayout({ children }: { children: ReactNode }) {
     return (
         <AuthGuard>
             <NavigationBar />

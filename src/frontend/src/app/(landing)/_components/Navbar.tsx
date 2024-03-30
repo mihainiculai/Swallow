@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import Link from 'next/link'
 import { Navbar, NavbarBrand, NavbarContent, NavbarItem, NavbarMenu, NavbarMenuItem, NavbarMenuToggle, Button } from "@nextui-org/react";
-import { Logo } from "@/components/Logo";
+import { Logo } from "@/components/logo";
 import { NavbarConfig } from "@/config/landing/navbar";
 
 const MenuItem: React.FC<{ name: string; path: string }> = ({ name, path }) => {

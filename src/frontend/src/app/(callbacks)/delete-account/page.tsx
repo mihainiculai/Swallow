@@ -1,13 +1,16 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+
 import Link from "next/link";
 import { useSearchParams } from 'next/navigation'
+
 import { Button, Spinner } from "@nextui-org/react";
-import { axiosInstance } from "@/components/axiosInstance";
+
+import { axiosInstance } from "@/components/utilities/axiosInstance";
 import { mutate } from "swr";
 
-export default function deleteAccountPage() {
+export default function DeleteAccountPage() {
     const searchParams = useSearchParams()
     const email = searchParams.get("email")
     const token = searchParams.get("token")
@@ -48,7 +51,7 @@ export default function deleteAccountPage() {
             setError("There was a problem deleting your account.");
             setSuccess(null);
         } finally {
-            mutate("auth/me", null);
+            await mutate("auth/me", null);
         }
 
         setIsSubmitting(false);

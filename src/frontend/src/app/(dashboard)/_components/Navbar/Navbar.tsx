@@ -1,15 +1,18 @@
 "use client";
 
 import React, { useState } from "react";
+
 import Link from 'next/link'
 import { usePathname } from "next/navigation";
+
 import { Navbar, NavbarContent, Button, NavbarMenuToggle, NavbarMenu } from "@nextui-org/react";
-import { Logo } from "@/components/Logo";
+
+import { Logo } from "@/components/logo";
 import { CiSearch } from "react-icons/ci";
 import { RiSparklingLine } from "react-icons/ri";
 import { NavbarConfig, NavbarItemType } from "@/config/dashboard/navbar/navbar";
-import { MenuItem, BarItem } from "@/components/Navbar";
-import { DropdownAvatar } from "./DropdownAvatar";
+import { MenuItem, BarItem } from "@/components/ui-elements/navbar";
+import { DropdownAvatar } from "./dropdown-avatar";
 
 export const NavigationBar: React.FC = () => {
     const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);

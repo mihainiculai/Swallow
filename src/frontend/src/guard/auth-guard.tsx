@@ -1,20 +1,18 @@
 "use client";
 
-import { ReactNode, useEffect, useRef, useState, FC } from 'react';
+import React, { ReactNode, JSX, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 import { useAuthContext, AuthContextType } from '@/contexts/auth-context';
 
-interface AuthGuardProps {
+export interface AuthGuardProps {
     children: ReactNode;
 }
 
-export const AuthGuard: FC<AuthGuardProps> = (props) => {
-    const { children } = props;
+export function AuthGuard({ children }: AuthGuardProps): JSX.Element | null {
     const router = useRouter();
     const { isAuthenticated, isLoading } = useAuthContext() as AuthContextType;
-    const ignore = useRef(false);
-    const [checked, setChecked] = useState(false);
+    const [checked, setChecked] = useState<boolean>(false);
 
     useEffect(() => {
         if (isLoading) {
@@ -23,11 +21,11 @@ export const AuthGuard: FC<AuthGuardProps> = (props) => {
 
         if (!isAuthenticated) {
             setChecked(false);
-            console.log('Not authenticated, redirecting');
             router.push('/auth/login');
-        } else {
-            setChecked(true);
+            return;
         }
+
+        setChecked(true);
     }, [isAuthenticated, isLoading, router]);
 
     if (!checked) {
@@ -35,4 +33,4 @@ export const AuthGuard: FC<AuthGuardProps> = (props) => {
     }
 
     return <>{children}</>;
-};
+}

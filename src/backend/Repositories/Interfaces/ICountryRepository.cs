@@ -1,4 +1,5 @@
-﻿using Swallow.Models;
+﻿using Swallow.DTOs.Country;
+using Swallow.Models;
 
 namespace Swallow.Repositories.Interfaces
 {
@@ -6,5 +7,6 @@ namespace Swallow.Repositories.Interfaces
     {
         Task<IEnumerable<Country>> GetAllAsync();
         Task<Country> GetByIdAsync(short id);
+        Task UpdateAsync(CountryDetailsDto cityDto);
     }
 }

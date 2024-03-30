@@ -121,7 +121,7 @@ const PlaceListItem = React.forwardRef<HTMLDivElement, PlaceListItemProps>(
                                             <p key={index} className="text-small text-default-500">
                                                 {
                                                     schedule.weekdayName === "Monday" && schedule.openTime === "00:00:00" ? "Monday - Sunday: 00:00 - 24:00" :
-                                                        `${schedule.weekdayName}: ${schedule.openTime.substr(0, 5)} - ${schedule?.closeTime?.substr(0, 5)}`
+                                                        `${schedule.weekdayName}: ${schedule.openTime.substring(0, 5)} - ${schedule?.closeTime?.substring(0, 5)}`
                                                 }
                                             </p>
                                         ))}

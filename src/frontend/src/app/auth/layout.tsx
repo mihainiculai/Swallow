@@ -2,7 +2,7 @@ import React from "react"
 import Link from 'next/link'
 import Image from "next/image"
 import { LoginGuard } from "@/guard/login-guard"
-import { Logo } from "@/components/Logo"
+import { Logo } from "@/components/logo"
 import { Providers } from "./providers"
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {

@@ -1,24 +1,18 @@
-import { createContext, useContext, useEffect, useReducer, useRef } from 'react';
+"use client";
+
+import React, { ReactNode, createContext, useContext, useEffect, useReducer } from 'react';
+
+import type { User } from '@/types/user';
 import PropTypes from 'prop-types';
-import { axiosInstance } from '@/components/axiosInstance';
-import useSWR from 'swr'
-import { mutate } from 'swr';
-import { fetcher } from '@/components/fetcher';
+
+import { axiosInstance } from '@/components/utilities/axiosInstance';
+import useSWR, { mutate } from 'swr'
+import { fetcher } from '@/components/utilities/fetcher';
 
 const HANDLERS = {
     INITIALIZE: 'INITIALIZE',
     SIGN_IN: 'SIGN_IN',
     SIGN_OUT: 'SIGN_OUT'
-};
-
-export type User = {
-    email: string;
-    username: string;
-    firstName: string;
-    lastName: string;
-    fullName: string;
-    profilePictureUrl?: string;
-    public: boolean;
 };
 
 interface State {
@@ -28,7 +22,7 @@ interface State {
 }
 
 interface AuthProviderProps {
-    children: React.ReactNode;
+    children: ReactNode;
 }
 
 type Action = {
@@ -45,8 +39,9 @@ const initialState: State = {
 export interface AuthContextType {
     signIn: (email: string, password: string, reCaptchaToken: string) => Promise<void>;
     signInWithGoogle: (accessToken: string) => Promise<void>;
-    signUp: (email: string, passwird: string, firstName: string, lastNmae: string, reCaptchaToken: string) => Promise<void>;
+    signUp: (email: string, password: string, firstName: string, lastName: string, reCaptchaToken: string) => Promise<void>;
     signOut: () => Promise<void>;
+    refreshUser: () => void;
     isAuthenticated: boolean;
     isLoading: boolean;
     user: User | null;
@@ -62,7 +57,7 @@ function User() {
         user: data,
         isLoading: isValidating,
         isSignedIn: !error,
-        refreshUser: mutate
+        refresh: mutate
     }
 }
 
@@ -106,7 +101,7 @@ export const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
     const [state, dispatch] = useReducer(reducer, initialState);
-    const { user, isSignedIn, isLoading, refreshUser } = User();
+    const { user, isSignedIn, isLoading, refresh } = User();
 
     useEffect(() => {
         if (isLoading) {
@@ -152,16 +147,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         }
     };
 
+    const refreshUser = () => {
+        refresh();
+    }
+
     return (
-        <AuthContext.Provider
-            value={{
-                ...state,
-                signIn,
-                signInWithGoogle,
-                signUp,
-                signOut
-            }}
-        >
+        <AuthContext.Provider value={{ ...state, signIn, signInWithGoogle, signUp, signOut, refreshUser }} >
             {children}
         </AuthContext.Provider>
     );
@@ -172,5 +163,4 @@ AuthProvider.propTypes = {
 };
 
 export const AuthConsumer = AuthContext.Consumer;
-
 export const useAuthContext = () => useContext(AuthContext);

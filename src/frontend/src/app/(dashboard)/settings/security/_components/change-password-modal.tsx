@@ -8,9 +8,9 @@ import {
     ModalFooter,
     Input
 } from '@nextui-org/react';
-import { axiosInstance } from '@/components/axiosInstance';
+import { axiosInstance } from '@/components/utilities/axiosInstance';
 import useSWR, { mutate } from 'swr';
-import { fetcher } from '@/components/fetcher';
+import { fetcher } from '@/components/utilities/fetcher';
 import * as yup from "yup";
 import { useFormik } from "formik";
 

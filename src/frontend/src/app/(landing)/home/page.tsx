@@ -2,7 +2,7 @@ import React from 'react';
 import Image from 'next/image';
 import { Spacer } from "@nextui-org/react";
 import { Button } from '@nextui-org/button';
-import Typography from '@/components/Typography';
+import Typography from '@/components/ui-elements/typography';
 import Link from 'next/link';
 
 export default function Home() {

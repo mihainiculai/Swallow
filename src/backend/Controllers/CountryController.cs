@@ -23,7 +23,7 @@ namespace Swallow.Controllers
         public async Task<ActionResult<CountryDto>> GetCountryById(short id)
         {
             var country = await countryRepository.GetByIdAsync(id);
-            return Ok(mapper.Map<CountryDto>(country));
+            return Ok(mapper.Map<CountryDetailsDto>(country));
         }
 
         [HttpGet("{id}/generate-description")]
@@ -39,6 +39,13 @@ namespace Swallow.Controllers
         {
             var country = await countryRepository.GetByIdAsync(id);
             return Ok(mapper.Map<IEnumerable<CountryCityDto>>(country.Cities));
+        }
+
+        [HttpPut]
+        public async Task<ActionResult> UpdateCountry([FromBody] CountryDetailsDto countryDto)
+        {
+            await countryRepository.UpdateAsync(countryDto);
+            return Ok();
         }
     }
 }

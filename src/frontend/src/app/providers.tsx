@@ -1,11 +1,12 @@
 'use client'
 
+import React, { ReactNode } from "react";
 import { useRouter } from 'next/navigation'
 import { NextUIProvider } from '@nextui-org/react'
 import { ThemeProvider } from "next-themes";
 import { AuthProvider } from '@/contexts/auth-context';
 
-export function Providers({ children }: { children: React.ReactNode }) {
+export function Providers({ children }: { children: ReactNode }) {
     const router = useRouter();
 
     return (

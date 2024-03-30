@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 import Link from "next/link";
 import { Button, Input } from "@nextui-org/react";
 import { useGoogleLogin } from '@react-oauth/google';
-import DividerWithText from "@/components/DividerWithText";
+import DividerWithText from "@/components/ui-elements/divider-with-text";
 import { useFormik } from "formik";
 import { FaEye, FaEyeSlash } from "react-icons/fa6";
 import { FcGoogle } from "react-icons/fc";
@@ -38,7 +38,11 @@ export default function LoginPage() {
 
                 recaptchaRef.current?.reset()
                 const reCaptchaToken = await recaptchaRef.current?.executeAsync();
-                if (!reCaptchaToken) throw new Error()
+
+                if (!reCaptchaToken) {
+                    setError("There was a problem verifying reCAPTCHA. Please try again.");
+                    return;
+                }
 
                 await signIn(values.email, values.password, reCaptchaToken)
                 router.push("/dashboard")

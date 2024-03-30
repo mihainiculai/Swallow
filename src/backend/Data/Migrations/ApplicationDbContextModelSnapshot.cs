@@ -214,7 +214,7 @@ namespace Swallow.Data.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<string>("PhotoUrl")
+                    b.Property<string>("PictureUrl")
                         .HasMaxLength(300)
                         .HasColumnType("nvarchar(300)");
 
@@ -504,7 +504,7 @@ namespace Swallow.Data.Migrations
                         {
                             SettingsId = (byte)1,
                             MaintenanceMode = false,
-                            NextCurrencyUpdate = new DateTime(2024, 3, 17, 21, 2, 25, 683, DateTimeKind.Utc).AddTicks(1336)
+                            NextCurrencyUpdate = new DateTime(2024, 3, 28, 23, 44, 47, 470, DateTimeKind.Utc).AddTicks(977)
                         });
                 });
 

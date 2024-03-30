@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { FC, useState, useEffect } from "react";
 import { useTheme } from "next-themes";
 import Image from "next/image";
 
@@ -11,7 +11,7 @@ interface LogoProps {
     className?: string;
 }
 
-export const Logo: React.FC<LogoProps> = ({ width, height, theme, className }) => {
+export const Logo: FC<LogoProps> = ({ width, height, theme, className }) => {
     const { resolvedTheme } = useTheme();
     const [logoPath, setLogoPath] = useState<string | null>(null);
 

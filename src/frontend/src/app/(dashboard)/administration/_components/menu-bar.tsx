@@ -1,4 +1,4 @@
-import { TabMenubar } from "@/components/TabManuBar";
+import { TabMenubar } from "@/components/ui-elements/tab-manu-bar";
 import { MdDashboard } from "react-icons/md";
 import { IoIosStats } from "react-icons/io";
 import { FaCity } from "react-icons/fa";

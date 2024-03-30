@@ -14,7 +14,7 @@ namespace Swallow.Models
         [StringLength(3, MinimumLength = 3)]
         public required string Iso3 { get; set; }
         [MaxLength(300)]
-        public string? PhotoUrl { get; set; }
+        public string? PictureUrl { get; set; }
 
         public virtual ICollection<City> Cities { get; } = [];
         public virtual ICollection<Currency> Currencies { get; } = [];

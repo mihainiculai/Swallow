@@ -20,4 +20,4 @@ export function ThemeSwitcher() {
             <button onClick={() => setTheme('dark')}>Dark Mode</button>
         </div>
     )
-};
+}
