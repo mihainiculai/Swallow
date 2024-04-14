@@ -2,7 +2,8 @@
 
 import React, { FC, useState, useEffect } from "react";
 import { useTheme } from "next-themes";
-import Image from "next/image";
+import { Image } from "@nextui-org/react";
+import NextImage from "next/image";
 
 interface LogoProps {
     width: number;
@@ -24,9 +25,10 @@ export const Logo: FC<LogoProps> = ({ width, height, theme, className }) => {
 
     return (
         <Image
-            src={logoPath}
+            as={NextImage}
             width={width}
             height={height}
+            src={logoPath}
             className={className}
             alt="Swallow Logo"
         />

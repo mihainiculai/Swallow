@@ -1,5 +1,5 @@
 import React from "react";
-import Link from 'next/link'
+import { Link } from "@nextui-org/react";
 import { NavbarItem, NavbarMenuItem } from "@nextui-org/react";
 
 

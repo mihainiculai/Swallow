@@ -26,7 +26,7 @@ export default function Home() {
                         Swallow
                     </Typography>
                     <Spacer y={6} />
-                    <Typography variant='title' fullWidth={true}>
+                    <Typography variant='title' fullWidth={true} className='text-neutral-100'>
                         Where Your Next Adventure Takes Wing
                     </Typography>
                     <Spacer y={12} />

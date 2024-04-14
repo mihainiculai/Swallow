@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
-import Link from 'next/link'
+import { Link } from "@nextui-org/react";
 import { Navbar, NavbarBrand, NavbarContent, NavbarItem, NavbarMenu, NavbarMenuItem, NavbarMenuToggle, Button } from "@nextui-org/react";
 import { Logo } from "@/components/logo";
 import { NavbarConfig } from "@/config/landing/navbar";
@@ -17,15 +17,18 @@ const MenuItem: React.FC<{ name: string; path: string }> = ({ name, path }) => {
     )
 }
 
-const BarItem: React.FC<{ name: string; path: string; isActive: boolean; className?: string }> = ({ name, path, isActive, className }) => {
+const BarItem: React.FC<{ name: string; path: string; isActive: boolean; isHome: boolean, className?: string }> = ({ name, path, isActive, isHome, className }) => {
+    const linkClassName = isActive ? "text-primary" : isHome ? "text-white" : "text-inherit";
+
     return (
         <NavbarItem isActive={isActive} className={className}>
-            <Link href={path} className={`${isActive ? "text-primary" : "text-inherit"} hover:text-primary`}>
+            <Link href={path} className={`${linkClassName} hover:text-primary`}>
                 {name}
             </Link>
         </NavbarItem>
     );
 }
+
 
 export const NavigationBar: React.FC = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -72,7 +75,7 @@ export const NavigationBar: React.FC = () => {
 
             <NavbarContent className="sm:flex gap-6" justify="end">
                 {NavbarConfig.items.map((item, index) => (
-                    <BarItem key={index} className="hidden sm:block" name={item.name} path={item.path} isActive={isActive(item.path)} />
+                    <BarItem key={index} className="hidden sm:block" name={item.name} path={item.path} isActive={isActive(item.path)} isHome={isHome} />
                 ))}
 
                 <NavbarItem className="block sm:inline-block">

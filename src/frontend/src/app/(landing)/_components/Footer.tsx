@@ -1,6 +1,6 @@
 import React from "react";
 import { Logo } from "@/components/logo";
-import Link from 'next/link'
+import { Link } from "@nextui-org/react";
 import { Divider } from "@nextui-org/react";
 import { FooterConfig } from "@/config/landing/footer";
 
@@ -21,8 +21,8 @@ export const Footer = () => {
         <footer className='rounded-lg shadow'>
             <div className='w-full max-w-screen-xl mx-auto p-4 md:py-8'>
                 <div className='sm:flex sm:items-center sm:justify-between'>
-                    <Link href="/home" className="flex items-center mb-4 sm:mb-0">
-                        <Logo width={32} height={32} className="mr-3" />
+                    <Link href="/home" className="flex items-center mb-4 sm:mb-0 gap-2">
+                        <Logo width={32} height={32} />
                         <span className='self-center text-2xl font-semibold whitespace-nowrap dark:text-white'>
                             Swallow
                         </span>
@@ -36,7 +36,7 @@ export const Footer = () => {
                 <Divider className="my-8" />
                 <span className='block text-center text-sm text-gray-500 dark:text-gray-400 p-4'>
                     © {currentYear}{' '}
-                    <Link href='/home' className='hover:underline hover:text-primary'>
+                    <Link href='/home' underline="hover">
                         Swallow™
                     </Link>
                     . All Rights Reserved.
