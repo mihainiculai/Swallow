@@ -2,10 +2,9 @@
 
 import React, { useState } from "react";
 
-import Link from 'next/link'
 import { usePathname } from "next/navigation";
 
-import { Navbar, NavbarContent, Button, NavbarMenuToggle, NavbarMenu } from "@nextui-org/react";
+import { Navbar, NavbarContent, Button, NavbarMenuToggle, NavbarMenu, Link } from "@nextui-org/react";
 
 import { Logo } from "@/components/logo";
 import { CiSearch } from "react-icons/ci";
@@ -14,11 +13,15 @@ import { NavbarConfig, NavbarItemType } from "@/config/dashboard/navbar/navbar";
 import { MenuItem, BarItem } from "@/components/ui-elements/navbar";
 import { DropdownAvatar } from "./dropdown-avatar";
 
+import { useAuthContext, AuthContextType } from "@/contexts/auth-context";
+
 export const NavigationBar: React.FC = () => {
     const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
     const location = usePathname();
 
     const isActive = (item: string): boolean => location === item;
+
+    const { user } = useAuthContext() as AuthContextType
 
     return (
         <Navbar maxWidth="xl" onMenuOpenChange={setIsMenuOpen}>
@@ -41,9 +44,16 @@ export const NavigationBar: React.FC = () => {
             </NavbarContent>
 
             <NavbarContent as="div" className="items-center" justify="end">
-                <Button className="bg-gradient-to-tr from-[#F05121] to-[#FD8524] text-white" startContent={<RiSparklingLine size={18} />}>
-                    Go Premium
-                </Button>
+                {user?.planId === 1 && (
+                    <Button
+                        className="bg-gradient-to-tr from-[#F05121] to-[#FD8524] text-white"
+                        startContent={<RiSparklingLine size={18} />}
+                        as={Link}
+                        href="/settings/membership"
+                    >
+                        Go Premium
+                    </Button>
+                )}
                 <Button
                     variant="flat"
                     startContent={<CiSearch size={18} />}

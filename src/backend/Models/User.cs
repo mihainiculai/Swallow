@@ -24,6 +24,8 @@ namespace Swallow.Models
         public bool HasCustomProfilePicture { get; set; } = false;
         public Guid? ProfilePicturePath { get; set; }
 
+        public string? StripeCustomerId { get; set; }
+
         public virtual ICollection<Trip> Trips { get; } = [];
         public virtual ICollection<UserPlan> UserPlans { get; } = [];
 

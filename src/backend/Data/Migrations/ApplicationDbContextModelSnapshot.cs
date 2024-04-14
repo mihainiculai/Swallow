@@ -473,12 +473,56 @@ namespace Swallow.Data.Migrations
                     b.Property<bool>("PhoneAccess")
                         .HasColumnType("bit");
 
+                    b.Property<string>("PriceId")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<bool>("TripTips")
                         .HasColumnType("bit");
 
                     b.HasKey("PlanId");
 
-                    b.ToTable("Plan");
+                    b.ToTable("Plans");
+
+                    b.HasData(
+                        new
+                        {
+                            PlanId = 1,
+                            Ads = true,
+                            ChatbotAccess = false,
+                            MaxAttractions = 10,
+                            MaxTripDays = 3,
+                            MaxTrips = 3,
+                            Name = "Free",
+                            PersonalizeItinerary = false,
+                            PhoneAccess = false,
+                            TripTips = false
+                        },
+                        new
+                        {
+                            PlanId = 2,
+                            Ads = false,
+                            ChatbotAccess = true,
+                            MaxAttractions = 50,
+                            MaxTripDays = 10,
+                            MaxTrips = 10,
+                            Name = "Premium",
+                            PersonalizeItinerary = true,
+                            PhoneAccess = true,
+                            TripTips = true
+                        },
+                        new
+                        {
+                            PlanId = 3,
+                            Ads = false,
+                            ChatbotAccess = true,
+                            MaxAttractions = 50,
+                            MaxTripDays = 10,
+                            MaxTrips = 100,
+                            Name = "Business",
+                            PersonalizeItinerary = true,
+                            PhoneAccess = false,
+                            TripTips = false
+                        });
                 });
 
             modelBuilder.Entity("Swallow.Models.PlatformSettings", b =>
@@ -504,7 +548,7 @@ namespace Swallow.Data.Migrations
                         {
                             SettingsId = (byte)1,
                             MaintenanceMode = false,
-                            NextCurrencyUpdate = new DateTime(2024, 3, 28, 23, 44, 47, 470, DateTimeKind.Utc).AddTicks(977)
+                            NextCurrencyUpdate = new DateTime(2024, 4, 12, 9, 39, 38, 807, DateTimeKind.Utc).AddTicks(8624)
                         });
                 });
 
@@ -534,6 +578,20 @@ namespace Swallow.Data.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("Roles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("e90091a7-40ba-46c5-beb5-0a608c972756"),
+                            Name = "Admin",
+                            NormalizedName = "ADMIN"
+                        },
+                        new
+                        {
+                            Id = new Guid("eb634a23-4388-47d5-8b21-07a509e8a42d"),
+                            Name = "Premium",
+                            NormalizedName = "PREMIUM"
+                        });
                 });
 
             modelBuilder.Entity("Swallow.Models.RoleClaim", b =>
@@ -732,6 +790,9 @@ namespace Swallow.Data.Migrations
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("StripeCustomerId")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("bit");
 
@@ -813,17 +874,17 @@ namespace Swallow.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserPlanId"));
 
-                    b.Property<DateOnly?>("EndDate")
-                        .HasColumnType("date");
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("PlanId")
                         .HasColumnType("int");
 
-                    b.Property<DateOnly>("StartDate")
-                        .HasColumnType("date");
-
-                    b.Property<int>("TripCount")
+                    b.Property<int>("RemainingTrips")
                         .HasColumnType("int");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
@@ -834,7 +895,7 @@ namespace Swallow.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserPlan");
+                    b.ToTable("UserPlans");
                 });
 
             modelBuilder.Entity("Swallow.Models.UserRole", b =>

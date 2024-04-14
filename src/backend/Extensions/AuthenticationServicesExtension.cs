@@ -11,8 +11,11 @@ namespace Swallow.Extensions
         {
             services.AddAuthentication();
 
-            services.AddIdentityApiEndpoints<User>()
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+            services.AddAuthorization();
+
+            services.AddIdentity<User, Role>()
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddDefaultTokenProviders();
 
             services.ConfigureApplicationCookie(options =>
             {

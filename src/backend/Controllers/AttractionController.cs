@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swallow.DTOs.Attraction;
 using Swallow.Models;
@@ -7,6 +8,7 @@ using Swallow.Utils.AttractionDataProviders;
 
 namespace Swallow.Controllers
 {
+    [Authorize(Roles = "Admin")]
     [Route("api/attractions")]
     [ApiController]
     public class AttractionController(IAttractionRepository attractionRepository, IAttractionCategoryRepository attractionCategoryRepository, ICityRepository cityRepository, ITripAdvisorAttractionsCollector tripAdvisorAttractionsCollector, IGoogleMapsAttractionsDataFetcher googleMapsAttractionsDataFetcher, IMapper mapper) : ControllerBase

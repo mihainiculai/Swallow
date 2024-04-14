@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Swallow.Configs;
 using Swallow.DTOs.Authentication;
 using Swallow.Models;
+using Swallow.Repositories.Interfaces;
 using Swallow.Services.Email;
 using Swallow.Utils.Authentication;
 
@@ -12,7 +13,7 @@ namespace Swallow.Controllers
 {
     [Route("api/auth")]
     [ApiController]
-    public class AuthenticationController(UserManager<User> userManager, SignInManager<User> signInManager, IGoogleTokenVerifier googleTokenVerifier, AuthenticationPropertiesConfig authenticationPropertiesConfig, IEmailSender emailSender, IReCaptchaVerifier reCaptchaVerifier, IMapper mapper) : ControllerBase
+    public class AuthenticationController(UserManager<User> userManager, SignInManager<User> signInManager, IUserRepository userRepository, IGoogleTokenVerifier googleTokenVerifier, AuthenticationPropertiesConfig authenticationPropertiesConfig, ISubscriptionRepository subscriptionRepository, IEmailSender emailSender, IReCaptchaVerifier reCaptchaVerifier, IMapper mapper) : ControllerBase
     {
         [HttpPost("login")]
         public async Task<IActionResult> LogIn([FromBody] LoginDto loginDto)
@@ -47,6 +48,8 @@ namespace Swallow.Controllers
             {
                 return BadRequest("Invalid email or password.");
             }
+
+            await subscriptionRepository.CreateUserSubscription(user);
 
             await signInManager.SignInAsync(user, authenticationPropertiesConfig.Properties, "Register");
 
@@ -142,6 +145,8 @@ namespace Swallow.Controllers
                 {
                     return BadRequest("Failed to create user.");
                 }
+
+                await subscriptionRepository.CreateUserSubscription(user);
             }
             else
             {
@@ -171,7 +176,12 @@ namespace Swallow.Controllers
                 return BadRequest("Invalid user.");
             }
 
-            return Ok(mapper.Map<UserDto>(user));
+            var userPlan = await userRepository.GetCurrentSubscription(User);
+
+            var result = mapper.Map<UserDto>(user);
+            result.PlanId = userPlan.PlanId;
+
+            return Ok(result);
         }
     }
 }

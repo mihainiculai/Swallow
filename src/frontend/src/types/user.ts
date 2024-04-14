@@ -6,4 +6,5 @@ export interface User {
     fullName: string;
     profilePictureUrl?: string;
     public: boolean;
+    planId: number;
 }

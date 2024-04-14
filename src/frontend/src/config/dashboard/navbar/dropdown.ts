@@ -15,7 +15,7 @@ export const DropdownConfig: DropdownConfigType = {
         },
         {
             name: 'Memberships',
-            path: '/memberships',
+            path: '/settings/membership',
         },
         {
             name: 'Settings',

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Swallow.DTOs.Authentication;
+using Swallow.DTOs.User;
 using Swallow.Models;
 
 namespace Swallow.Mappings
@@ -32,6 +33,11 @@ namespace Swallow.Mappings
 
                     return null;
                 }));
+            CreateMap<UserPlan, UserPlanDto>()
+                .ForMember(dto => dto.PlanName, opt => opt.MapFrom(src => src.Plan.Name))
+                .ForMember(dto => dto.TotalTrips, opt => opt.MapFrom(src => src.Plan.MaxTrips))
+                .ForMember(dto => dto.RemainingTrips, opt => opt.MapFrom(src => src.RemainingTrips))
+                .ForMember(dto => dto.HasClientPortalAccess, opt => opt.MapFrom(src => src.User.StripeCustomerId != null));
         }
     }
 }

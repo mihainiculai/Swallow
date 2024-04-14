@@ -11,5 +11,6 @@ namespace Swallow.DTOs.Authentication
         public required string LastName { get; set; }
         public string? ProfilePictureUrl { get; set; }
         public bool? Public { get; set; }
+        public int PlanId { get; set; }
     }
 }

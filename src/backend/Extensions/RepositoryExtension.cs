@@ -13,6 +13,7 @@ namespace Swallow.Extensions
             services.AddScoped<IAttractionCategoryRepository, AttractionCategoryRepository>();
             services.AddScoped<IAttractionRepository, AttractionRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
         }
     }
 }

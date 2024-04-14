@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+﻿using Swallow.Models;
+using System.Security.Claims;
 
 namespace Swallow.Repositories.Interfaces
 {
@@ -6,6 +7,8 @@ namespace Swallow.Repositories.Interfaces
     {
         Task ChangePasswordAsync(ClaimsPrincipal claimsPrincipal, string newPassword, string? oldPassword);
         FileStream GetProfilePictureAsync(Guid photoId);
+        Task<UserPlan> GetCurrentSubscription(ClaimsPrincipal claimsPrincipal);
+        Task<string> GetStripeClientIdAsync(ClaimsPrincipal claimsPrincipal);
         Task UpdateProfilePictureAsync(ClaimsPrincipal claimsPrincipal, IFormFile file);
         Task DeleteProfilePictureAsync(ClaimsPrincipal claimsPrincipal);
         Task<bool> HasPasswordAsync(ClaimsPrincipal claimsPrincipal);

@@ -7,7 +7,7 @@ using Swallow.Utils.OpenAi;
 
 namespace Swallow.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     [Route("api/countries")]
     [ApiController]
     public class CountryController(ICountryRepository countryRepository, ILocationDescriptionGenerator locationDescriptionGenerator, IMapper mapper) : ControllerBase

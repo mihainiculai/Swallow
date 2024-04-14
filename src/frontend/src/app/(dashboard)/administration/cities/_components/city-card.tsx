@@ -70,7 +70,7 @@ export const CityCard = ({ selectedCity, selectedCountry }: { selectedCity: any,
 
     const handleGenerateDescription = () => {
         setIsGeneratingDescription(true);
-        axiosInstance.get(`cities/${selectedCity}/generate-description`, { timeout: 30000 })
+        axiosInstance.get(`cities/${selectedCity.id}/generate-description`, { timeout: 30000 })
             .then((response) => {
                 formik.setFieldValue("description", response.data);
             })

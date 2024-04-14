@@ -40,11 +40,13 @@ export const DropdownAvatar: React.FC = () => {
                     <p className="font-semibold">{user?.fullName}</p>
                 </DropdownItem>
 
-                <DropdownItem key="upgrade" className="bg-gradient-to-tr from-[#F05121] to-[#FD8524] text-white shadow-lg text-center">
-                    Upgrade your plan
-                </DropdownItem>
+                {user?.planId === 1 && (
+                    <DropdownItem key="upgrade" className="my-2 bg-gradient-to-tr from-[#F05121] to-[#FD8524] text-white shadow-lg text-center" as={Link} href="/settings/membership">
+                        Upgrade your plan
+                    </DropdownItem>
+                )}
 
-                <DropdownSection showDivider className="mt-2">
+                <DropdownSection showDivider>
                     {DropdownConfig.items.map((item: DropdownItemType) => (
                         <DropdownItem key={item.name} as={Link} href={item.path}>
                             {item.name}

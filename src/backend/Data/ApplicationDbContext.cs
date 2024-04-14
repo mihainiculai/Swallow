@@ -24,6 +24,8 @@ namespace Swallow.Data
         public DbSet<ExpenseCategory> ExpenseCategories { get; set; }
         public DbSet<Currency> Currencies { get; set; }
         public DbSet<CurrencyRate> CurrencyRates { get; set; }
+        public DbSet<Plan> Plans { get; set; }
+        public DbSet<UserPlan> UserPlans { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -46,6 +48,53 @@ namespace Swallow.Data
                 new Weekday { WeekdayId = 5, Name = "Friday" },
                 new Weekday { WeekdayId = 6, Name = "Saturday" },
                 new Weekday { WeekdayId = 7, Name = "Sunday" }
+            );
+
+            modelBuilder.Entity<Role>().HasData(
+                new Role { Id = Guid.NewGuid(), Name = "Admin", NormalizedName = "ADMIN" },
+                new Role { Id = Guid.NewGuid(), Name = "Premium", NormalizedName = "PREMIUM" }
+            );
+
+            modelBuilder.Entity<Plan>().HasData(
+                new Plan
+                {
+                    PlanId = 1,
+                    Name = "Free",
+                    MaxTrips = 3,
+                    MaxTripDays = 3,
+                    MaxAttractions = 10,
+                    ChatbotAccess = false,
+                    PersonalizeItinerary = false,
+                    PhoneAccess = false,
+                    TripTips = false,
+                    Ads = true
+                },
+                new Plan
+                {
+                    PlanId = 2,
+                    Name = "Premium",
+                    MaxTrips = 10,
+                    MaxTripDays = 10,
+                    MaxAttractions = 50,
+                    ChatbotAccess = true,
+                    PersonalizeItinerary = true,
+                    PhoneAccess = true,
+                    TripTips = true,
+                    Ads = false
+                },
+                new Plan
+                {
+                    PlanId = 3,
+                    Name = "Business",
+                    MaxTrips = 100,
+                    MaxTripDays = 10,
+                    MaxAttractions = 50,
+                    ChatbotAccess = true,
+                    PersonalizeItinerary = true,
+                    PhoneAccess = false,
+                    TripTips = false,
+                    Ads = false
+                }
             );
 
             modelBuilder.Entity<User>()

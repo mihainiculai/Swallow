@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swallow.DTOs.City;
 using Swallow.Repositories.Interfaces;
@@ -6,6 +7,7 @@ using Swallow.Utils.OpenAi;
 
 namespace Swallow.Controllers
 {
+    [Authorize(Roles = "Admin")]
     [Route("api/cities")]
     [ApiController]
     public class CityController(ICityRepository cityRepository, ILocationDescriptionGenerator locationDescriptionGenerator, IMapper mapper) : ControllerBase

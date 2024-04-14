@@ -16,6 +16,7 @@ namespace Swallow.Models
         public required bool PhoneAccess { get; set; }
         public required bool TripTips { get; set; }
         public required bool Ads { get; set; }
+        public string? PriceId { get; set; }
 
         public virtual ICollection<UserPlan> UserPlans { get; } = [];
     }

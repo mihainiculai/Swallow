@@ -1,14 +1,16 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.ActionConstraints;
 using Swallow.Exceptions.CustomExceptions;
 using Swallow.Models;
 using Swallow.Repositories.Interfaces;
 using Swallow.Services.Email;
 using Swallow.Utils.FileManagers;
+using Swallow.Utils.Stripe;
 using System.Security.Claims;
 
 namespace Swallow.Repositories.Implementations
 {
-    public class UserRepository(UserManager<User> userManager, IUserFileManager userFileManager, IEmailSender emailSender) : IUserRepository
+    public class UserRepository(UserManager<User> userManager, IStripeObjects stripeObjects, IUserFileManager userFileManager, IEmailSender emailSender) : IUserRepository
     {
         private async Task<User> GetUserAsync(ClaimsPrincipal claimsPrincipal)
         {
@@ -23,6 +25,26 @@ namespace Swallow.Repositories.Implementations
         private async Task<bool> HasPasswordAsync(User user)
         {
             return await userManager.HasPasswordAsync(user);
+        }
+        
+        public async Task<UserPlan> GetCurrentSubscription(ClaimsPrincipal claimsPrincipal)
+        {
+            var user = await GetUserAsync(claimsPrincipal);
+            var currentSubscription = user.UserPlans.Last();
+
+            return currentSubscription;
+        }
+        public async Task<string> GetStripeClientIdAsync(ClaimsPrincipal claimsPrincipal)
+        {
+            var user = await GetUserAsync(claimsPrincipal);
+
+            if (user.StripeCustomerId == null)
+            {
+                user.StripeCustomerId = await stripeObjects.CreateClientAsync(user);
+                await userManager.UpdateAsync(user);
+            }
+
+            return user.StripeCustomerId;
         }
 
         public async Task ChangePasswordAsync(ClaimsPrincipal claimsPrincipal, string newPassword, string? oldPassword)

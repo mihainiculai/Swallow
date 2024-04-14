@@ -3,6 +3,7 @@ using Swallow.Services.Currency;
 using Swallow.Services.Email;
 using Swallow.Utils.FileManagers;
 using Swallow.Utils.OpenAi;
+using Swallow.Utils.Stripe;
 
 namespace Swallow.Extensions
 {
@@ -18,6 +19,10 @@ namespace Swallow.Extensions
 
             services.AddScoped<ILocationDescriptionGenerator, LocationDescriptionGenerator>();
             services.AddScoped<IUserFileManager, UserFileManager>();
+
+            services.AddScoped<IStripeObjects, StripeObjects>();
+            services.AddScoped<IStripeCheckout, StripeCheckout>();
+            services.AddScoped<IStripeBillingPortal, StripeBillingPortal>();
 
             services.AddAutoMapper(typeof(Program).Assembly);
         }
