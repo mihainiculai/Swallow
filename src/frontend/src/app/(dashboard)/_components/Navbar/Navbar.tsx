@@ -4,7 +4,7 @@ import React, { useState } from "react";
 
 import { usePathname } from "next/navigation";
 
-import { Navbar, NavbarContent, Button, NavbarMenuToggle, NavbarMenu, Link } from "@nextui-org/react";
+import { Navbar, NavbarContent, Button, NavbarMenuToggle, NavbarMenu, Link, useDisclosure } from "@nextui-org/react";
 
 import { Logo } from "@/components/logo";
 import { CiSearch } from "react-icons/ci";
@@ -12,6 +12,7 @@ import { RiSparklingLine } from "react-icons/ri";
 import { NavbarConfig, NavbarItemType } from "@/config/dashboard/navbar/navbar";
 import { MenuItem, BarItem } from "@/components/ui-elements/navbar";
 import { DropdownAvatar } from "./dropdown-avatar";
+import { SearchModal } from "./search-modal";
 
 import { useAuthContext, AuthContextType } from "@/contexts/auth-context";
 
@@ -22,6 +23,8 @@ export const NavigationBar: React.FC = () => {
     const isActive = (item: string): boolean => location === item;
 
     const { user } = useAuthContext() as AuthContextType
+
+    const {isOpen: isModalOpen, onOpen: onOpenModal, onOpenChange: onOpenModalChange} = useDisclosure();
 
     return (
         <Navbar maxWidth="xl" onMenuOpenChange={setIsMenuOpen}>
@@ -58,10 +61,11 @@ export const NavigationBar: React.FC = () => {
                     variant="flat"
                     startContent={<CiSearch size={18} />}
                     className="text-default-500 w-40 lg:w-52 hidden md:inline-flex"
+                    onClick={onOpenModal}
                 >
                     Tap to search...
                 </Button>
-                <Button isIconOnly variant="flat" className="md:hidden">
+                <Button isIconOnly variant="flat" className="md:hidden" onClick={onOpenModal}>
                     <CiSearch size={18} />
                 </Button>
                 <DropdownAvatar />
@@ -72,6 +76,8 @@ export const NavigationBar: React.FC = () => {
                     <MenuItem key={item.name} name={item.name} path={item.path} />
                 ))}
             </NavbarMenu>
+
+            <SearchModal isOpen={isModalOpen} onOpen={onOpenModal} onOpenChange={onOpenModalChange} />
         </Navbar>
     )
 }

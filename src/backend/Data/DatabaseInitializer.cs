@@ -27,6 +27,11 @@ namespace Swallow.Data
             {
                 await LoadCurrencies();
             }
+            
+            if (!context.Roles.Any())
+            {
+                await LoadRoles();
+            }
         }
 
         private async Task LoadWorldCities()
@@ -119,6 +124,18 @@ namespace Swallow.Data
             await context.SaveChangesAsync();
 
             context.ChangeTracker.AutoDetectChangesEnabled = true;
+        }
+        
+        private async Task LoadRoles()
+        {
+            var roles = new List<Role>
+            {
+                new() { Id = Guid.NewGuid(), Name = "Admin", NormalizedName = "ADMIN" },
+                new() { Id = Guid.NewGuid(), Name = "Premium", NormalizedName = "PREMIUM" }
+            };
+
+            await context.Roles.AddRangeAsync(roles);
+            await context.SaveChangesAsync();
         }
 
         private class CityRecord

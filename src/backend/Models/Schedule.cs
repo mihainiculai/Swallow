@@ -2,9 +2,9 @@
 
 namespace Swallow.Models
 {
-    [PrimaryKey(nameof(AttractionId), nameof(WeekdayId))]
     public class Schedule
     {
+        public long ScheduleId { get; set; }
         public int AttractionId { get; set; }
         public virtual Attraction Attraction { get; set; } = null!;
         public byte WeekdayId { get; set; }

@@ -66,7 +66,7 @@ app.UseExceptionHandler(_ => { });
 app.UseHangfireDashboard();
 
 BackgroundJob.Enqueue<IDatabaseInitializer>(x => x.InitializeAsync());
-BackgroundJob.Enqueue<ICurrencyUpdater>(x => x.UpdateCurrenciesAsync());
+//BackgroundJob.Enqueue<ICurrencyUpdater>(x => x.UpdateCurrenciesAsync());
 
 if (app.Environment.IsDevelopment())
 {

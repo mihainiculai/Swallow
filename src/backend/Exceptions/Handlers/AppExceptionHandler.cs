@@ -7,7 +7,7 @@ namespace Swallow.Exceptions.Handlers
     {
         public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
         {
-            (int statusCode, string errorMessage) = exception switch
+            (int statusCode, string? errorMessage) = exception switch
             {
                 ForbidException => (StatusCodes.Status403Forbidden, "Forbidden"),
                 BadRequestException badRequestException => (StatusCodes.Status400BadRequest, badRequestException.Message),

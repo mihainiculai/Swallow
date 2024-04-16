@@ -13,6 +13,9 @@ namespace Swallow.Mappings
             CreateMap<City, CountryCityDto>().ReverseMap();
             CreateMap<City, CityDto>().ReverseMap();
             CreateMap<Country, CountryDetailsDto>().ReverseMap();
+            CreateMap<City, CitySearchDto>()
+                .ForMember(dest => dest.CountryName, opt => opt.MapFrom(src => src.Country.Name))
+                .ForMember(dest => dest.CountryCode, opt => opt.MapFrom(src => src.Country.Iso2));
         }
     }
 }

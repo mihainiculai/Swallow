@@ -50,11 +50,6 @@ namespace Swallow.Data
                 new Weekday { WeekdayId = 7, Name = "Sunday" }
             );
 
-            modelBuilder.Entity<Role>().HasData(
-                new Role { Id = Guid.NewGuid(), Name = "Admin", NormalizedName = "ADMIN" },
-                new Role { Id = Guid.NewGuid(), Name = "Premium", NormalizedName = "PREMIUM" }
-            );
-
             modelBuilder.Entity<Plan>().HasData(
                 new Plan
                 {

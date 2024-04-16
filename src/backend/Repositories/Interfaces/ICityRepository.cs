@@ -7,5 +7,8 @@ namespace Swallow.Repositories.Interfaces
     {
         Task<City> GetByIdAsync(int id);
         Task UpdateAsync(CityDto cityDto);
+        Task CalculateScoreAsync(City city);
+        Task<IEnumerable<City>> TopCitiesAsync(int? count);
+        IEnumerable<City> Search(string query);
     }
 }

@@ -44,6 +44,8 @@ namespace Swallow.Controllers
             var attractionsToSync = await attractionRepository.GetAllAsync(cityId);
             await googleMapsAttractionsDataFetcher.AddAttractionsDetails(attractionsToSync);
 
+            await cityRepository.CalculateScoreAsync(city);
+
             return Ok("City attractions synced successfully");
         }
 

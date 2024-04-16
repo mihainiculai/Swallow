@@ -11,9 +11,7 @@ namespace Swallow.Services.Currency
     {
         private const string REQUEST_URL = "https://open.er-api.com/v6/latest/USD";
         private const string DATETIME_FORMAT = "ddd, dd MMM yyyy HH:mm:ss '+0000'";
-
-
-        [AutomaticRetry(Attempts = 10, DelaysInSeconds = [60])]
+        
         public async Task UpdateCurrenciesAsync()
         {
             var platformSettings = await context.PlatformSettings.FirstOrDefaultAsync() ?? throw new Exception("Platform settings not found");

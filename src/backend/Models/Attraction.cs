@@ -8,7 +8,6 @@ namespace Swallow.Models
         public int AttractionId { get; set; }
         [MaxLength(100)]
         public required string Name { get; set; }
-        [MaxLength(2500)]
         public string? Description { get; set; }
         public virtual List<AttractionCategory> AttractionCategories { get; } = [];
         [Precision(10, 6)]

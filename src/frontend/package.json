@@ -31,7 +31,7 @@
     "@types/react-dom": "^18",
     "@types/react-google-recaptcha": "^2.1.7",
     "autoprefixer": "^10",
-    "eslint": "^8",
+    "eslint": "^8.57.0",
     "eslint-config-next": "^14.0.1",
     "postcss": "^8",
     "tailwindcss": "^3",

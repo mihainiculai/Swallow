@@ -14,20 +14,12 @@ export const NavbarConfig: NavbarConfigType = {
             path: '/home',
         },
         {
-            name: 'About',
-            path: '/about',
-        },
-        {
             name: 'Prices',
             path: '/prices',
         },
         {
             name: 'FAQ',
             path: '/faq',
-        },
-        {
-            name: 'Contact',
-            path: '/contact',
         },
     ]
 }
