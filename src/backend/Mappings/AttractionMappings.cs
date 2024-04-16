@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Swallow.DTOs.Attraction;
+using Swallow.DTOs.Destination;
 using Swallow.Models;
 
 namespace Swallow.Mappings
@@ -9,14 +10,16 @@ namespace Swallow.Mappings
         public AttractionMappings()
         {
             CreateMap<Attraction, GetAttractionsDto>()
-                .ForMember(dest => dest.Categories, opt => opt.MapFrom(src => src.AttractionCategories.Select(ac => ac.AttractionCategoryId)))
-                .ForMember(dest => dest.Schedules, opt => opt.MapFrom(src => src.Schedules.Select(s => new GetAttractionsDto.ScheduleDto
-                {
-                    WeekdayId = s.WeekdayId,
-                    WeekdayName = s.Weekday.Name,
-                    OpenTime = s.OpenTime,
-                    CloseTime = s.CloseTime
-                })));
+                .ForMember(dest => dest.Categories,
+                    opt => opt.MapFrom(src => src.AttractionCategories.Select(ac => ac.AttractionCategoryId)))
+                .ForMember(dest => dest.Schedules, opt => opt.MapFrom(src => src.Schedules.Select(s =>
+                    new GetAttractionsDto.ScheduleDto
+                    {
+                        WeekdayId = s.WeekdayId,
+                        WeekdayName = s.Weekday.Name,
+                        OpenTime = s.OpenTime,
+                        CloseTime = s.CloseTime
+                    })));
 
             CreateMap<AttractionCategory, GetAttractionCategoryDto>();
 
@@ -37,6 +40,10 @@ namespace Swallow.Mappings
                 .ForMember(dest => dest.PictureUrl, opt => opt.MapFrom(src => src.Details.ImageUrl))
                 .ForMember(dest => dest.VisitDuration, opt => opt.MapFrom(src => src.Details.VisitDuration))
                 .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.Details.Price));
+
+            CreateMap<Attraction, DestinationAttractionDto>()
+                .ForMember(dest => dest.Categories,
+                    opt => opt.MapFrom(src => src.AttractionCategories.Select(ac => ac.Name)));
         }
     }
 }

@@ -44,7 +44,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onOpen, onOpen
             hideCloseButton
             classNames={{
                 body: "py-6",
-                base: "border border-default-100 rounded-large bg-content bg-opacity-100n",
+                base: "border border-default-100 rounded-large bg-content bg-opacity-100n"
             }}
         >
             <ModalContent>
@@ -52,11 +52,12 @@ export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onOpen, onOpen
                     <>
                         <ModalBody className="flex flex-col gap-4">
                             {data?.map((item: any) => (
-
                                 <Button
                                     key={item.id}
+                                    fullWidth
                                     as={Link}
-                                    href={`/destination/${item.slug}`}
+                                    href={`/destination/${item.cityId}`}
+                                    onClick={onOpenChange}
                                     className="p-4 bg-content2 h-auto flex items-center justify-between"
                                 >
                                     <div className="flex gap-5">

@@ -1,9 +1,10 @@
 "use client";
 
 import React, { useState } from "react";
-import { Button, Image, Skeleton, Chip } from "@nextui-org/react";
+import { Button, Link, Image, Skeleton, Chip } from "@nextui-org/react";
 
-import { FaStar } from "react-icons/fa";
+import { FaStar, FaTripadvisor, FaPhoneAlt, FaLink } from "react-icons/fa";
+import { TbBrandGoogleMaps } from "react-icons/tb";
 
 export type PlaceListItemColor = {
     name: string;
@@ -22,6 +23,11 @@ export type PlaceItem = {
     pictureUrl?: string;
     categories?: string[];
     schedules?: any[];
+    descriptionLength?: number;
+    phone?: string;
+    website?: string;
+    tripAdvisorUrl?: string;
+    googleMapsUrl?: string;
 };
 
 export type PlaceListItemProps = Omit<React.HTMLAttributes<HTMLDivElement>, "id"> & {
@@ -32,12 +38,12 @@ export type PlaceListItemProps = Omit<React.HTMLAttributes<HTMLDivElement>, "id"
 
 const PlaceListItem = React.forwardRef<HTMLDivElement, PlaceListItemProps>(
     (
-        { name, priority, price, rating, isLoading, description, pictureUrl: imageSrc, categories, schedules, removeWrapper, className },
+        { name, priority, price, rating, isLoading, description, pictureUrl: imageSrc, categories, schedules, phone, website, tripAdvisorUrl, googleMapsUrl, removeWrapper, className, descriptionLength },
         ref,
 
     ) => {
         const [showFullDescription, setShowFullDescription] = useState(false);
-        const DESCRIPTION_MAX_LENGTH = 135;
+        const DESCRIPTION_MAX_LENGTH = descriptionLength ?? 135;
 
         const renderDescription = () => {
             if (description && description.length > DESCRIPTION_MAX_LENGTH && !showFullDescription) {
@@ -128,6 +134,59 @@ const PlaceListItem = React.forwardRef<HTMLDivElement, PlaceListItemProps>(
                                     </div>
                                 </div>
                             ) : null}
+                            <div className="flex justify-end gap-1">
+                                {phone && (
+                                    <Button
+                                        isIconOnly
+                                        size="sm"
+                                        as={Link}
+                                        variant="light"
+                                        href={`tel:${phone}`}
+                                        aria-label="Phone"
+                                    >
+                                        <FaPhoneAlt />
+                                    </Button>
+                                )}
+                                {website && (
+                                    <Button
+                                        isIconOnly
+                                        size="sm"
+                                        as={Link}
+                                        variant="light"
+                                        href={website}
+                                        aria-label="Website"
+                                        isExternal
+                                    >
+                                        <FaLink />
+                                    </Button>
+                                )}
+                                {tripAdvisorUrl && (
+                                    <Button
+                                        isIconOnly
+                                        size="sm"
+                                        as={Link}
+                                        variant="light"
+                                        href={tripAdvisorUrl}
+                                        aria-label="TripAdvisor"
+                                        isExternal
+                                    >
+                                        <FaTripadvisor />
+                                    </Button>
+                                )}
+                                {googleMapsUrl && (
+                                    <Button
+                                        isIconOnly
+                                        size="sm"
+                                        as={Link}
+                                        variant="light"
+                                        href={googleMapsUrl}
+                                        aria-label="Google Maps"
+                                        isExternal
+                                    >
+                                        <TbBrandGoogleMaps />
+                                    </Button>
+                                )}
+                            </div>
                         </>
                     )}
                 </div>

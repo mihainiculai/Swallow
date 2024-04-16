@@ -19,8 +19,13 @@ namespace Swallow.Repositories.Implementations
             return await context.Attractions.OrderBy(a => a.Popularity).ToListAsync();
         }
 
-        public async Task<IEnumerable<Attraction>> GetByCityIdAsync(int cityId)
+        public async Task<IEnumerable<Attraction>> GetByCityIdAsync(int cityId, int? limit = null)
         {
+            if (limit is not null)
+            {
+                return await context.Attractions.Where(a => a.CityId == cityId).OrderBy(a => a.Popularity).Take((int)limit).ToListAsync();
+            }
+            
             return await context.Attractions.Where(a => a.CityId == cityId).OrderBy(a => a.Popularity).ToListAsync();
         }
 
