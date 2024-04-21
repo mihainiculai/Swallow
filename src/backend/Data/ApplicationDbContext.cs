@@ -26,6 +26,8 @@ namespace Swallow.Data
         public DbSet<CurrencyRate> CurrencyRates { get; set; }
         public DbSet<Plan> Plans { get; set; }
         public DbSet<UserPlan> UserPlans { get; set; }
+        public DbSet<UserAction> UserActions { get; set; }
+        public DbSet<UserActionType> UserActionTypes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -90,6 +92,13 @@ namespace Swallow.Data
                     TripTips = false,
                     Ads = false
                 }
+            );
+            
+            modelBuilder.Entity<UserActionType>().HasData(
+                new UserActionType { UserActionTypeId = 1, Name = "Like", Points = 3 },
+                new UserActionType { UserActionTypeId = 2, Name = "Visit", Points = 2 },
+                new UserActionType { UserActionTypeId = 3, Name = "Hide", Points = -1 },
+                new UserActionType { UserActionTypeId = 4, Name = "Dislike", Points = -2 }
             );
 
             modelBuilder.Entity<User>()
@@ -235,6 +244,24 @@ namespace Swallow.Data
                 .WithOne(e => e.Country)
                 .HasForeignKey(e => e.CountryId)
                 .IsRequired(false);
+            
+            modelBuilder.Entity<User>()
+                .HasMany(e => e.UserActions)
+                .WithOne(e => e.User)
+                .HasForeignKey(e => e.UserId)
+                .IsRequired();
+            
+            modelBuilder.Entity<UserAction>()
+                .HasOne(e => e.Attraction)
+                .WithMany(e => e.UserActions)
+                .HasForeignKey(e => e.AttractionId)
+                .IsRequired();
+            
+            modelBuilder.Entity<UserAction>()
+                .HasOne(e => e.UserActionType)
+                .WithMany(e => e.UserActions)
+                .HasForeignKey(e => e.UserActionTypeId)
+                .IsRequired();
 
             modelBuilder.Entity<User>(b =>
             {
@@ -271,7 +298,7 @@ namespace Swallow.Data
                     .HasForeignKey(rc => rc.RoleId)
                     .IsRequired();
             });
-
+            
             modelBuilder.Entity<User>(b =>
             {
                 b.ToTable("Users");

@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc.ActionConstraints;
 using Swallow.Exceptions.CustomExceptions;
 using Swallow.Models;
 using Swallow.Repositories.Interfaces;
@@ -12,7 +11,7 @@ namespace Swallow.Repositories.Implementations
 {
     public class UserRepository(UserManager<User> userManager, IStripeObjects stripeObjects, IUserFileManager userFileManager, IEmailSender emailSender) : IUserRepository
     {
-        private async Task<User> GetUserAsync(ClaimsPrincipal claimsPrincipal)
+        public async Task<User> GetUserAsync(ClaimsPrincipal claimsPrincipal)
         {
             return await userManager.GetUserAsync(claimsPrincipal) ?? throw new BadRequestException("User not found.");
         }

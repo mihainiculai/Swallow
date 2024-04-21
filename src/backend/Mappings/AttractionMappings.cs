@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Swallow.DTOs.Attraction;
 using Swallow.DTOs.Destination;
+using Swallow.DTOs.Preference;
 using Swallow.Models;
 
 namespace Swallow.Mappings
@@ -44,6 +45,8 @@ namespace Swallow.Mappings
             CreateMap<Attraction, DestinationAttractionDto>()
                 .ForMember(dest => dest.Categories,
                     opt => opt.MapFrom(src => src.AttractionCategories.Select(ac => ac.Name)));
+
+            CreateMap<Attraction, AttractionRecomandation>();
         }
     }
 }

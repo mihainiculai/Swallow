@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 
 import Link from "next/link";
 import { useSearchParams } from 'next/navigation'
@@ -60,7 +60,7 @@ export default function DeleteAccountPage() {
     if (isLoading) return <Spinner />;
 
     return (
-        <>
+        <Suspense>
             <div>
                 <h1 className="text-2xl font-bold">Delete Account</h1>
                 {!tokenValid && <p className="mt-2">Your delete account link is invalid or has expired.</p>}
@@ -100,6 +100,6 @@ export default function DeleteAccountPage() {
                     )}
                 </>
             }
-        </>
+        </Suspense>
     );
 }

@@ -5,11 +5,11 @@ import {
     Card,
     CardHeader,
     CardFooter,
-    DateRangePicker,
     Image,
     Spacer,
     Button
 } from "@nextui-org/react";
+import { DateRangePicker } from "@nextui-org/date-picker";
 
 import useSWRImmutable from 'swr/immutable'
 import { fetcher } from "@/components/utilities/fetcher";

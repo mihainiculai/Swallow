@@ -9,6 +9,8 @@ namespace Swallow.Repositories.Implementations
 {
     public class AttractionRepository(ApplicationDbContext context, IAttractionCategoryRepository attractionCategoryRepository, ICurrencyRepository currencyRepository, IMapper mapper) : IAttractionRepository
     {
+        private readonly List<int> _dislikeActionTypes = [3, 4];
+        
         public async Task<IEnumerable<Attraction>> GetAllAsync(int? cityId = null)
         {
             if (cityId is not null)
@@ -27,6 +29,18 @@ namespace Swallow.Repositories.Implementations
             }
             
             return await context.Attractions.Where(a => a.CityId == cityId).OrderBy(a => a.Popularity).ToListAsync();
+        }
+        
+        public async Task<List<Attraction>> GetByCityIdAndNotDislikedAsync(int cityId, Guid userId)
+        {
+            var attractions = await context.Attractions
+                .Where(a => a.CityId == cityId && !context.UserActions
+                    .Where(ua => ua.UserId == userId && _dislikeActionTypes.Contains(ua.UserActionTypeId))
+                    .Select(ua => ua.AttractionId)
+                    .Contains(a.AttractionId))
+                .ToListAsync();
+            
+            return attractions;
         }
 
         public async Task<Attraction?> CreateOrUpdateAsync(TripAdvisorAttraction tripadvisorAttraction, City city, Currency? currency)
@@ -156,6 +170,27 @@ namespace Swallow.Repositories.Implementations
                 {
                     context.Attractions.Remove(attraction);
                 }
+            }
+
+            await context.SaveChangesAsync();
+        }
+
+        public async Task NormalieRatingAsync()
+        {
+            var attractions = await context.Attractions.ToListAsync();
+    
+            var averageRating = attractions.Average(a => a.Rating ?? 0M);
+            var averageReviewCount = attractions.Average(a => a.UserRatingsTotal ?? 0M);
+
+            foreach (var attraction in attractions)
+            {
+                var rating = attraction.Rating ?? 0M;
+                var reviews = attraction.UserRatingsTotal ?? 0M;
+    
+                var normalizedRating = (reviews / (reviews + averageReviewCount)) * rating + 
+                                       (averageReviewCount / (reviews + averageReviewCount)) * averageRating;
+    
+                attraction.NormalizedRating = normalizedRating;
             }
 
             await context.SaveChangesAsync();

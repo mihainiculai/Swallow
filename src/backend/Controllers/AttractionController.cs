@@ -45,8 +45,16 @@ namespace Swallow.Controllers
             await googleMapsAttractionsDataFetcher.AddAttractionsDetails(attractionsToSync);
 
             await cityRepository.CalculateScoreAsync(city);
+            await attractionRepository.NormalieRatingAsync();
 
             return Ok("City attractions synced successfully");
+        }
+        
+        [HttpPost("normalize-rating")]
+        public async Task<ActionResult> NormalizeRating()
+        {
+            await attractionRepository.NormalieRatingAsync();
+            return Ok("Attractions rating normalized successfully");
         }
 
         [HttpPost("clear-city/{cityId}")]

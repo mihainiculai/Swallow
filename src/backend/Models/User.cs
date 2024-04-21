@@ -33,5 +33,6 @@ namespace Swallow.Models
         public virtual ICollection<UserLogin> Logins { get; set; } = [];
         public virtual ICollection<UserToken> Tokens { get; set; } = [];
         public virtual ICollection<UserRole> UserRoles { get; set; } = [];
+        public virtual ICollection<UserAction> UserActions { get; } = [];
     }
 }

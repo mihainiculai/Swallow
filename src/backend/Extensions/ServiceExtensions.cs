@@ -1,6 +1,7 @@
 ﻿using Swallow.Data;
 using Swallow.Services.Currency;
 using Swallow.Services.Email;
+using Swallow.Services.Recommendation;
 using Swallow.Utils.FileManagers;
 using Swallow.Utils.OpenAi;
 using Swallow.Utils.Stripe;
@@ -23,6 +24,8 @@ namespace Swallow.Extensions
             services.AddScoped<IStripeObjects, StripeObjects>();
             services.AddScoped<IStripeCheckout, StripeCheckout>();
             services.AddScoped<IStripeBillingPortal, StripeBillingPortal>();
+            
+            services.AddScoped<IAttractionRecommender, AttractionRecommender>();
 
             services.AddAutoMapper(typeof(Program).Assembly);
         }

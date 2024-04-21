@@ -15,6 +15,7 @@ namespace Swallow.Controllers
     {
         private readonly string _stripeWebhookSecret = configuration["Stripe:WebhookSecret"]!;
 
+        [AllowAnonymous]
         [HttpGet("price")]
         public async Task<IActionResult> GetPremiumPrice()
         {
