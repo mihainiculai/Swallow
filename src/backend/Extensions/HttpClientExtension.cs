@@ -2,6 +2,7 @@
 using Swallow.Utils.AttractionDataProviders;
 using Swallow.Utils.Authentication;
 using System.Net;
+using Swallow.Utils.GoogleMaps;
 
 namespace Swallow.Extensions
 {
@@ -10,12 +11,9 @@ namespace Swallow.Extensions
         public static void AddHttpClients(this IServiceCollection services)
         {
             services.AddHttpClient<ITripAdvisorAttractionsCollector, TripAdvisorAttractionsCollector>()
-                .ConfigurePrimaryHttpMessageHandler(() =>
+                .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
                 {
-                    return new HttpClientHandler
-                    {
-                        AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate | DecompressionMethods.Brotli,
-                    };
+                    AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate | DecompressionMethods.Brotli,
                 })
                 .ConfigureHttpClient(httpClient =>
                 {
@@ -26,7 +24,10 @@ namespace Swallow.Extensions
                 });
             services.AddHttpClient<IReCaptchaVerifier, ReCaptchaVerifier >();
             services.AddHttpClient<IGoogleMapsAttractionsDataFetcher, GoogleMapsAttractionsDataFetcher>();
-            services.AddHttpClient<IGoogleTokenVerifier, GoogleTokenVerifier>();
+            services.AddHttpClient<IGoogleAuthTokenUtil, GoogleAuthTokenUtil>();
+            services.AddHttpClient<IGoogleMapsSearch, GoogleMapsSearch>();
+            services.AddHttpClient<IGoogleMapsPlaceDetails, GoogleMapsPlaceDetails>();
+            services.AddHttpClient<IGoogleMapsDistanceMatrix, GoogleMapsDistanceMatrix>();
         }
     }
 }

@@ -34,7 +34,7 @@ namespace Swallow.Repositories.Implementations
         {
             List<AttractionCategory> categories = [];
 
-            foreach (string name in names)
+            foreach (var name in names)
             {
                 categories.Add(await GetOrCreateAsync(name));
             }

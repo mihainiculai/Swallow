@@ -8,6 +8,7 @@ namespace Swallow.Repositories.Interfaces
         Task<User> GetUserAsync(ClaimsPrincipal claimsPrincipal);
         Task ChangePasswordAsync(ClaimsPrincipal claimsPrincipal, string newPassword, string? oldPassword);
         FileStream GetProfilePictureAsync(Guid photoId);
+        UserPlan GetCurrentSubscription(User user);
         Task<UserPlan> GetCurrentSubscription(ClaimsPrincipal claimsPrincipal);
         Task<string> GetStripeClientIdAsync(ClaimsPrincipal claimsPrincipal);
         Task UpdateProfilePictureAsync(ClaimsPrincipal claimsPrincipal, IFormFile file);

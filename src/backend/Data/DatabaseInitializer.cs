@@ -3,7 +3,6 @@ using CsvHelper;
 using Microsoft.EntityFrameworkCore;
 using Swallow.Models;
 using System.Globalization;
-using Microsoft.AspNetCore.Identity;
 
 namespace Swallow.Data
 {

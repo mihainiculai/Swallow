@@ -19,7 +19,7 @@ namespace Swallow.Data
         public DbSet<Schedule> Schedules { get; set; }
         public DbSet<Weekday> Weekdays { get; set; }
         public DbSet<TripTransport> TripTransports { get; set; }
-        public DbSet<TransportMode> TransportModes { get; set; }
+        public DbSet<TransportType> TransportTypes { get; set; }
         public DbSet<Expense> Expenses { get; set; }
         public DbSet<ExpenseCategory> ExpenseCategories { get; set; }
         public DbSet<Currency> Currencies { get; set; }
@@ -28,6 +28,9 @@ namespace Swallow.Data
         public DbSet<UserPlan> UserPlans { get; set; }
         public DbSet<UserAction> UserActions { get; set; }
         public DbSet<UserActionType> UserActionTypes { get; set; }
+        public DbSet<Place> Places { get; set; }
+        public DbSet<TripToHotel> TripsToHotels { get; set; }
+        public DbSet<TransportMode> TransportModes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -99,6 +102,18 @@ namespace Swallow.Data
                 new UserActionType { UserActionTypeId = 2, Name = "Visit", Points = 2 },
                 new UserActionType { UserActionTypeId = 3, Name = "Hide", Points = -1 },
                 new UserActionType { UserActionTypeId = 4, Name = "Dislike", Points = -2 }
+            );
+            
+            modelBuilder.Entity<TransportType>().HasData(
+                new TransportType { TransportTypeId = 1, Name = "Flights" },
+                new TransportType { TransportTypeId = 2, Name = "Train" },
+                new TransportType { TransportTypeId = 3, Name = "Coach" },
+                new TransportType { TransportTypeId = 4, Name = "Personal Vehicle" }
+            );
+            
+            modelBuilder.Entity<TransportMode>().HasData(
+                new TransportMode { TransportModeId = 1, Name = "Public transport + Walk short distance" },
+                new TransportMode { TransportModeId = 2, Name = "Drive + Walk short distance" }
             );
 
             modelBuilder.Entity<User>()
@@ -192,9 +207,9 @@ namespace Swallow.Data
                 .UsingEntity("AttractionsToCategories");
 
             modelBuilder.Entity<ItineraryAttraction>()
-                .HasOne(e => e.Currency)
+                .HasOne(e => e.Expense)
                 .WithMany(e => e.ItineraryAttractions)
-                .HasForeignKey(e => e.CurrencyId)
+                .HasForeignKey(e => e.ExpenseId)
                 .IsRequired(false);
 
             modelBuilder.Entity<Trip>()
@@ -222,15 +237,21 @@ namespace Swallow.Data
                 .IsRequired();
 
             modelBuilder.Entity<TripTransport>()
-                .HasOne(e => e.TransportMode)
+                .HasOne(e => e.TransportType)
                 .WithMany(e => e.TripTransports)
-                .HasForeignKey(e => e.TransportModeId)
+                .HasForeignKey(e => e.TransportTypeId)
                 .IsRequired();
 
             modelBuilder.Entity<TripTransport>()
-                .HasOne(e => e.Currency)
+                .HasOne(e => e.Expense)
                 .WithMany(e => e.TripTransports)
-                .HasForeignKey(e => e.CurrencyId)
+                .HasForeignKey(e => e.ExpenseId)
+                .IsRequired(false);
+            
+            modelBuilder.Entity<TripTransport>()
+                .HasOne(e => e.Place)
+                .WithMany(e => e.TripTransports)
+                .HasForeignKey(e => e.PlaceId)
                 .IsRequired(false);
 
             modelBuilder.Entity<Currency>()
@@ -262,6 +283,35 @@ namespace Swallow.Data
                 .WithMany(e => e.UserActions)
                 .HasForeignKey(e => e.UserActionTypeId)
                 .IsRequired();
+            
+            modelBuilder.Entity<TripToHotel>()
+                .HasOne(t => t.Trip)
+                .WithOne(t => t.TripToHotel)
+                .HasForeignKey<TripToHotel>(t => t.TripId)
+                .IsRequired(false);
+            
+            modelBuilder.Entity<TripToHotel>()
+                .HasOne(t => t.Place)
+                .WithMany(h => h.TripToHotels)
+                .HasForeignKey(t => t.PlaceId)
+                .IsRequired();
+            
+            modelBuilder.Entity<TripToHotel>()
+                .HasOne(t => t.Expense)
+                .WithMany(e => e.TripToHotels)
+                .HasForeignKey(t => t.ExpenseId)
+                .IsRequired(false);
+            
+            modelBuilder.Entity<Trip>()
+                .HasOne(t => t.TransportMode)
+                .WithMany(m => m.Trips)
+                .HasForeignKey(t => t.TransportModeId)
+                .IsRequired()
+                .OnDelete(DeleteBehavior.NoAction);
+            
+            modelBuilder.Entity<Place>()
+                .HasIndex(p => p.GooglePlaceId)
+                .IsUnique();
 
             modelBuilder.Entity<User>(b =>
             {

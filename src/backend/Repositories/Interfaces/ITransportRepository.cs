@@ -1,6 +1,6 @@
 using Swallow.Models;
 
-namespace Swallow.Repositories.Implementations;
+namespace Swallow.Repositories.Interfaces;
 
 public interface ITransportRepository
 {

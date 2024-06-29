@@ -1,12 +1,28 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Swallow.Repositories.Implementations;
+using Swallow.Repositories.Interfaces;
 
 namespace Swallow.Controllers;
 
-public class TripController : Controller
+[Authorize]
+[Route("api/trips")]
+[ApiController]
+public class TripController(ITransportRepository transportRepository) : ControllerBase
 {
-    // GET
-    public IActionResult Index()
+    [Route("transport-modes")]
+    [HttpGet]
+    public async Task<IActionResult> GetTransportModes()
     {
-        return View();
+        var transportModes = await transportRepository.GetAllTransportModesAsync();
+        return Ok(transportModes);
+    }
+    
+    [Route("transport-types")]
+    [HttpGet]
+    public async Task<IActionResult> GetTransportTypes()
+    {
+        var transportTypes = await transportRepository.GetAllTransportTypesAsync();
+        return Ok(transportTypes);
     }
 }

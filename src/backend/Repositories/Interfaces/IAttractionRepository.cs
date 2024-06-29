@@ -1,4 +1,5 @@
 ﻿using Swallow.DTOs.Attraction;
+using Swallow.DTOs.GoogleMaps;
 using Swallow.Models;
 
 namespace Swallow.Repositories.Interfaces
@@ -16,6 +17,6 @@ namespace Swallow.Repositories.Interfaces
         Task<Attraction> UpdateAsync(Attraction attraction, GoogleMapsDetailsResponseResult googleMapsDetailsResponseResult);
         Task<Attraction> UpdateAsync(Attraction attraction, TripAdvisorAttraction tripAdvisorAttraction, Currency currency, List<AttractionCategory> attractionCategories);
         Task UpdateSchedulesAsync(Attraction attraction, GoogleMapsDetailsResponseResultOpeningHours openingHours);
-        Task NormalieRatingAsync();
+        Task NormalizeRatingAsync();
     }
 }

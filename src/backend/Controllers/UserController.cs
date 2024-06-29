@@ -17,7 +17,7 @@ namespace Swallow.Controllers
     {
         #region ProfilePicture
         [HttpPost("profile-picture")]
-        public async Task<IActionResult> UploadProfilePicture([FromForm] IFormFile? file)
+        public async Task<IActionResult> UploadProfilePicture(IFormFile? file)
         {
             if (file == null || file.Length == 0)
             {

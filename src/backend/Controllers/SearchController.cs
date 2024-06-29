@@ -1,17 +1,17 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Swallow.DTOs.City;
+using Swallow.DTOs.Search;
 using Swallow.Models;
 using Swallow.Repositories.Interfaces;
+using Swallow.Utils.GoogleMaps;
 
 namespace Swallow.Controllers
 {
     [Route("api/search")]
     [ApiController]
-    public class SearchController(ICityRepository cityRepository, IMapper mapper) : ControllerBase
+    public class SearchController(IGoogleMapsSearch googleMapsSearch, ICityRepository cityRepository, IMapper mapper) : ControllerBase
     {
-        private const int threshold = 60;
-        
         [HttpGet]
         public async Task<IActionResult> Search(string? query)
         {
@@ -27,6 +27,23 @@ namespace Swallow.Controllers
             }
             
             return Ok(mapper.Map<IEnumerable<CitySearchDto>>(cities));
+        }
+        
+        [HttpGet("places")]
+        public async Task<IActionResult> SearchHotels([FromQuery] int cityId, [FromQuery] string query, [FromQuery] Guid? sessionToken)
+        {
+            var city = await cityRepository.GetByIdAsync(cityId);
+            sessionToken ??= Guid.NewGuid();
+
+            var predictions = await googleMapsSearch.AutocompleteSearchPlaceAsync(city, query, (Guid)sessionToken);
+            
+            PlaceSearchDto placeSearchDto = new()
+            {
+                Predictions = predictions,
+                SessionToken = (Guid)sessionToken
+            };
+
+            return Ok(placeSearchDto);
         }
     }
 }

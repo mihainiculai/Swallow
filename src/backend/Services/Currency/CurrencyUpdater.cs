@@ -4,96 +4,84 @@ using Newtonsoft.Json;
 using Swallow.Data;
 using Swallow.Models;
 using System.Globalization;
+using Swallow.DTOs.Currency;
 
-namespace Swallow.Services.Currency
+namespace Swallow.Services.Currency;
+
+public class CurrencyUpdater(ApplicationDbContext context, HttpClient httpClient) : ICurrencyUpdater
 {
-    public class CurrencyUpdater(ApplicationDbContext context, HttpClient httpClient) : ICurrencyUpdater
-    {
-        private const string REQUEST_URL = "https://open.er-api.com/v6/latest/USD";
-        private const string DATETIME_FORMAT = "ddd, dd MMM yyyy HH:mm:ss '+0000'";
+    private const string RequestUrl = "https://open.er-api.com/v6/latest/USD";
+    private const string DatetimeFormat = "ddd, dd MMM yyyy HH:mm:ss '+0000'";
         
-        public async Task UpdateCurrenciesAsync()
-        {
-            var platformSettings = await context.PlatformSettings.FirstOrDefaultAsync() ?? throw new Exception("Platform settings not found");
+    private static DateTime ParseDateTime(string dateTime)
+    {
+        return DateTime.ParseExact(dateTime, DatetimeFormat, CultureInfo.InvariantCulture);
+    }
+        
+    private static void UpdatePlatformSettings(ApplicationDbContext context, PlatformSettings platformSettings, DateTime lastUpdateUtc, DateTime nextUpdateUtc)
+    {
+        platformSettings.LastCurrencyUpdate = lastUpdateUtc;
+        platformSettings.NextCurrencyUpdate = nextUpdateUtc;
 
-            if (!ShouldUpdateCurrency(platformSettings))
+        context.PlatformSettings.Update(platformSettings);
+    }
+        
+    private static bool ShouldUpdateCurrency(PlatformSettings platformSettings)
+    {
+        var nextCurrencyUpdate = platformSettings.NextCurrencyUpdate;
+
+        return DateTime.UtcNow >= nextCurrencyUpdate;
+    }
+
+    private static async Task ProcessApiResponseAsync(ApplicationDbContext context, CurrencyApiResponse apiResponse, DateTime lastUpdateUtc)
+    {
+        foreach (var rate in apiResponse.Rates)
+        {
+            var currencyCode = rate.Key;
+            var rateToUsd = rate.Value;
+            var currency = await context.Currencies.FirstOrDefaultAsync(c => c.Code == currencyCode);
+
+            if (currency == null)
             {
-                return;
+                continue;
             }
 
-            var response = await httpClient.GetStringAsync(REQUEST_URL);
-            var apiResponse = JsonConvert.DeserializeObject<CurrencyApiResponse>(response) ?? throw new Exception("API response is null");
-
-            var lastUpdateUtc = ParseDateTime(apiResponse.TimeLastUpdateUtc);
-
-            if (lastUpdateUtc <= platformSettings.LastCurrencyUpdate)
+            CurrencyRate currencyRate = new()
             {
-                throw new Exception("Last update is not newer than the previous one");
-            }
+                RateToUSD = rateToUsd,
+                Date = lastUpdateUtc
+            };
 
-            await ProcessApiResponseAsync(context, apiResponse, lastUpdateUtc);
-
-            var nextUpdateUtc = ParseDateTime(apiResponse.TimeNextUpdateUtc);
-
-            UpdatePlatformSettings(context, platformSettings, lastUpdateUtc, nextUpdateUtc);
-
-            await context.SaveChangesAsync();
-
-            BackgroundJob.Schedule(() => UpdateCurrenciesAsync(), nextUpdateUtc.AddMinutes(1));
+            currency.CurrencyRates.Add(currencyRate);
         }
+    }
+        
+    public async Task UpdateCurrenciesAsync()
+    {
+        var platformSettings = await context.PlatformSettings.FirstOrDefaultAsync() ?? throw new Exception("Platform settings not found");
 
-        private static void UpdatePlatformSettings(ApplicationDbContext context, PlatformSettings platformSettings, DateTime lastUpdateUtc, DateTime nextUpdateUtc)
+        if (!ShouldUpdateCurrency(platformSettings))
         {
-            platformSettings.LastCurrencyUpdate = lastUpdateUtc;
-            platformSettings.NextCurrencyUpdate = nextUpdateUtc;
-
-            context.PlatformSettings.Update(platformSettings);
+            return;
         }
 
-        private static bool ShouldUpdateCurrency(PlatformSettings platformSettings)
+        var response = await httpClient.GetStringAsync(RequestUrl);
+        var apiResponse = JsonConvert.DeserializeObject<CurrencyApiResponse>(response) ?? throw new Exception("API response is null");
+        var lastUpdateUtc = ParseDateTime(apiResponse.TimeLastUpdateUtc);
+
+        if (lastUpdateUtc <= platformSettings.LastCurrencyUpdate)
         {
-            var nextCurrencyUpdate = platformSettings.NextCurrencyUpdate;
-
-            return DateTime.UtcNow >= nextCurrencyUpdate;
+            throw new Exception("Last update is not newer than the previous one");
         }
 
-        private static async Task ProcessApiResponseAsync(ApplicationDbContext context, CurrencyApiResponse apiResponse, DateTime lastUpdateUtc)
-        {
-            foreach (var rate in apiResponse.Rates)
-            {
-                string currencyCode = rate.Key;
-                decimal rateToUSD = rate.Value;
+        await ProcessApiResponseAsync(context, apiResponse, lastUpdateUtc);
 
-                var currency = await context.Currencies.FirstOrDefaultAsync(c => c.Code == currencyCode);
+        var nextUpdateUtc = ParseDateTime(apiResponse.TimeNextUpdateUtc);
 
-                if (currency == null)
-                {
-                    continue;
-                }
+        UpdatePlatformSettings(context, platformSettings, lastUpdateUtc, nextUpdateUtc);
 
-                CurrencyRate currencyRate = new()
-                {
-                    RateToUSD = rateToUSD,
-                    Date = lastUpdateUtc
-                };
+        await context.SaveChangesAsync();
 
-                currency.CurrencyRates.Add(currencyRate);
-            }
-        }
-
-        private static DateTime ParseDateTime(string dateTime)
-        {
-            return DateTime.ParseExact(dateTime, DATETIME_FORMAT, CultureInfo.InvariantCulture);
-        }
-
-        private class CurrencyApiResponse
-        {
-            [JsonProperty("time_last_update_utc")]
-            public required string TimeLastUpdateUtc { get; set; }
-            [JsonProperty("time_next_update_utc")]
-            public required string TimeNextUpdateUtc { get; set; }
-            [JsonProperty("rates")]
-            public required Dictionary<string, decimal> Rates { get; set; }
-        }
+        BackgroundJob.Schedule(() => UpdateCurrenciesAsync(), nextUpdateUtc.AddMinutes(1));
     }
 }

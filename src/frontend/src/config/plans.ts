@@ -50,7 +50,7 @@ export const tiers: Tier[] = [
         recommended: true,
         features: [
             { included: true, title: "10 trips per month" },
-            { included: true, title: "Up to 10 days trip duration" },
+            { included: true, title: "Up to 5 days trip duration" },
             { included: true, title: "Manual itinerary creation" },
             { included: true, title: "Automated itinerary creation" },
             { included: true, title: "Mobile app access" },
@@ -105,7 +105,7 @@ export const features: PricingFeatures = [
                 title: "Trip duration",
                 tiers: {
                     [TiersEnum.Free]: "Up to 3 days",
-                    [TiersEnum.Premium]: "Up to 10 days",
+                    [TiersEnum.Premium]: "Up to 5 days",
                     [TiersEnum.Business]: "Up to 10 days",
                 },
             },

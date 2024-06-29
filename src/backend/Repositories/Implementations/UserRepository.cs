@@ -26,13 +26,20 @@ namespace Swallow.Repositories.Implementations
             return await userManager.HasPasswordAsync(user);
         }
         
-        public async Task<UserPlan> GetCurrentSubscription(ClaimsPrincipal claimsPrincipal)
+        public UserPlan GetCurrentSubscription(User user)
         {
-            var user = await GetUserAsync(claimsPrincipal);
             var currentSubscription = user.UserPlans.Last();
 
             return currentSubscription;
         }
+        
+        public async Task<UserPlan> GetCurrentSubscription(ClaimsPrincipal claimsPrincipal)
+        {
+            var user = await GetUserAsync(claimsPrincipal);
+            
+            return GetCurrentSubscription(user);
+        }
+        
         public async Task<string> GetStripeClientIdAsync(ClaimsPrincipal claimsPrincipal)
         {
             var user = await GetUserAsync(claimsPrincipal);

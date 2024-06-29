@@ -4,16 +4,16 @@ using Swallow.Exceptions.CustomExceptions;
 
 namespace Swallow.Utils.Authentication;
 
-public interface IGoogleTokenVerifier
+public interface IGoogleAuthTokenUtil
 {
-    Task<GoogleUserInfo> GetUserInfo(string accessToken);
+    Task<GoogleUserInfo> GetUserInfoAsync(string accessToken);
 }
 
-public class GoogleTokenVerifier(HttpClient httpClient, IConfiguration configuration) : IGoogleTokenVerifier
+public class GoogleAuthTokenUtil(HttpClient httpClient, IConfiguration configuration) : IGoogleAuthTokenUtil
 {
     private readonly string _clientId = configuration["Google:ClientId"]!;
     
-    public async Task<GoogleUserInfo> GetUserInfo(string accessToken)
+    public async Task<GoogleUserInfo> GetUserInfoAsync(string accessToken)
     {
         var tokenInfoResponse = await httpClient.GetAsync($"https://www.googleapis.com/oauth2/v3/tokeninfo?access_token={accessToken}");
             

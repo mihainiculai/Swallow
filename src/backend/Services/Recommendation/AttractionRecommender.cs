@@ -6,10 +6,10 @@ namespace Swallow.Services.Recommendation;
 
 public interface IAttractionRecommender
 {
-    Task<IEnumerable<Attraction>> GetRecommendations(User user, int cityId, int limit = 5);
+    Task<IEnumerable<Attraction>> GetRecommendations(User user, int cityId, int limit = 5, Trip? trip = null);
 }
 
-public class AttractionRecommender(IAttractionRepository attractionRepository, IUserActionRepository userActionRepository) : IAttractionRecommender
+public class AttractionRecommender(IAttractionRepository attractionRepository,IUserActionRepository userActionRepository) : IAttractionRecommender
 {
     private static List<decimal> GetAttractionCategoryScores(IEnumerable<Attraction> attractions, IReadOnlyCollection<UserCategoryPreference> userCategoryPreferences)
     {
@@ -50,14 +50,28 @@ public class AttractionRecommender(IAttractionRepository attractionRepository, I
             _ => (0.5m, 0.5m)
         };
     }
+    
+    private static List<Attraction> GetAttractionsFromTrip(Trip trip)
+    {
+        return (from itineraryDay in trip.ItineraryDays from itineraryAttraction in itineraryDay.ItineraryAttractions select itineraryAttraction.Attraction).ToList();
+    }
 
-    public async Task<IEnumerable<Attraction>> GetRecommendations(User user, int cityId, int limit = 5)
+    public async Task<IEnumerable<Attraction>> GetRecommendations(User user, int cityId, int limit = 5, Trip? trip = null)
     {
         var attractions = await attractionRepository.GetByCityIdAndNotDislikedAsync(cityId, user.Id);
+    
+        if (trip != null)
+        {
+            var tripAttractions = GetAttractionsFromTrip(trip);
+            attractions = attractions.Where(a => !tripAttractions.Contains(a)).ToList();
+        }
+
         var userCategoryPreferences = await userActionRepository.GetNormalizedUserCategoryPreferencesAsync(user);
+    
         var categoryScores = GetAttractionCategoryScores(attractions, userCategoryPreferences);
+    
         var (ratingProportion, preferenceProportion) = DetermineProportions(await userActionRepository.GetUserPreferenceCountAsync(user));
-        
+    
         var combinedScores = attractions.Zip(categoryScores, (attraction, categoryScore) =>
             new
             {
@@ -68,8 +82,10 @@ public class AttractionRecommender(IAttractionRepository attractionRepository, I
         var sortedAttractions = combinedScores
             .OrderByDescending(x => x.CombinedScore)
             .Select(x => x.Attraction)
-            .Take(limit);
+            .Take(limit)
+            .ToList();  
 
         return sortedAttractions;
     }
+
 }

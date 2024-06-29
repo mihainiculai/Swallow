@@ -1,11 +1,12 @@
+using System.Globalization;
 using Microsoft.EntityFrameworkCore;
 using Swashbuckle.AspNetCore.Filters;
 using Microsoft.OpenApi.Models;
 using Swallow.Data;
 using Swallow.Extensions;
 using Hangfire;
+using Microsoft.AspNetCore.Localization;
 using Swallow.Exceptions.Handlers;
-using Swallow.Services.Currency;
 using Serilog;
 using Serilog.Sinks.MSSqlServer;
 
@@ -80,6 +81,16 @@ app.UseCors(builder => builder
     .AllowAnyHeader()
     .AllowCredentials()
 );
+
+
+var supportedCultures = new[] { "en-US" };
+var localizationOptions = new RequestLocalizationOptions
+{
+    DefaultRequestCulture = new RequestCulture("en-US"),
+    SupportedCultures = supportedCultures.Select(c => new CultureInfo(c)).ToList(),
+    SupportedUICultures = supportedCultures.Select(c => new CultureInfo(c)).ToList()
+};
+app.UseRequestLocalization(localizationOptions);
 
 app.UseHttpsRedirection();
 app.UseAuthorization();

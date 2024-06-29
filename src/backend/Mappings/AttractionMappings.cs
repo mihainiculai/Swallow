@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Swallow.DTOs.Attraction;
 using Swallow.DTOs.Destination;
+using Swallow.DTOs.GoogleMaps;
 using Swallow.DTOs.Preference;
 using Swallow.Models;
 
@@ -34,6 +35,16 @@ namespace Swallow.Mappings
                 .ForMember(dest => dest.UserRatingsTotal, opt => opt.MapFrom(src => src.UserRatingsTotal))
                 .ForMember(dest => dest.GoogleMapsUrl, opt => opt.MapFrom(src => src.Url))
                 .ForMember(dest => dest.Schedules, opt => opt.Ignore());
+
+            CreateMap<GoogleMapsDetailsResponseResult, Place>()
+                .ForMember(dest => dest.Latitude, opt => opt.MapFrom(src => src.Geometry.Location.Latitude))
+                .ForMember(dest => dest.Longitude, opt => opt.MapFrom(src => src.Geometry.Location.Longitude))
+                .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.FormattedAddress))
+                .ForMember(dest => dest.Phone, opt => opt.MapFrom(src => src.InternationalPhoneNumber))
+                .ForMember(dest => dest.Website, opt => opt.MapFrom(src => src.Website))
+                .ForMember(dest => dest.Rating, opt => opt.MapFrom(src => src.Rating))
+                .ForMember(dest => dest.UserRatingsTotal, opt => opt.MapFrom(src => src.UserRatingsTotal))
+                .ForMember(dest => dest.GoogleMapsUrl, opt => opt.MapFrom(src => src.Url));
 
             CreateMap<TripAdvisorAttraction, Attraction>()
                 .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Details.Description))
