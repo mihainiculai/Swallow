@@ -1,4 +1,6 @@
 import React, { useEffect } from 'react';
+import { useRouter } from 'next/navigation'
+
 import { Key } from '@react-types/shared';
 
 import {
@@ -70,6 +72,11 @@ const validationSchema = yup.object({
 });
 
 export const AutoItineraryCard: React.FC<AutoItineraryCardProps> = ({ cityId, startDate, endDate, itineraryType }) => {
+    const router = useRouter()
+
+    const [isCreating, setIsCreating] = React.useState(false)
+    const [error, setError] = React.useState<string | null>(null)
+
     const { data: transportModes } = useSWRImmutable("trips/transport-modes", fetcher);
     const { data: transportTypes } = useSWRImmutable("trips/transport-types", fetcher);
 
@@ -92,8 +99,18 @@ export const AutoItineraryCard: React.FC<AutoItineraryCardProps> = ({ cityId, st
             departingTime: new Time(12, 0),
         },
         validationSchema: validationSchema,
-        onSubmit: (values) => {
-            axiosInstance.post("/itineraries", values)
+        onSubmit: async (values) => {
+            try {
+                setIsCreating(true)
+                const response = await axiosInstance.post("/itineraries", values);
+                const guid = response.data;
+                router.push(`/itinerary/${guid}`);
+            } catch (error) {
+                setError("An error occurred while creating the itinerary. Please try again later.");
+                console.error("Error creating itinerary:", error);
+            } finally {
+                setIsCreating(false)
+            }
         }
     })
 
@@ -277,9 +294,10 @@ export const AutoItineraryCard: React.FC<AutoItineraryCardProps> = ({ cityId, st
                             />
                         </div>
                     </div>
+                    <p className="text-danger">{error}</p>
                 </CardBody>
                 <CardFooter className="flex justify-end pb-2">
-                    <Button color='primary' type='submit'>
+                    <Button color='primary' type='submit' isLoading={isCreating}>
                         Generate
                     </Button>
                 </CardFooter>

@@ -9,10 +9,9 @@ using Microsoft.AspNetCore.Localization;
 using Swallow.Exceptions.Handlers;
 using Serilog;
 using Serilog.Sinks.MSSqlServer;
+using Swallow.Services.Currency;
 
 var builder = WebApplication.CreateBuilder(args);
-
-// Add services to the container.
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -28,8 +27,6 @@ builder.Services.AddSwaggerGen(
 
         options.OperationFilter<SecurityRequirementsOperationFilter>();
     });
-
-// Database connection
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
@@ -67,7 +64,11 @@ app.UseExceptionHandler(_ => { });
 app.UseHangfireDashboard();
 
 BackgroundJob.Enqueue<IDatabaseInitializer>(x => x.InitializeAsync());
-//BackgroundJob.Enqueue<ICurrencyUpdater>(x => x.UpdateCurrenciesAsync());
+RecurringJob.AddOrUpdate<CurrencyUpdateJob>(
+    "CurrencyUpdater",
+    job => job.ExecuteAsync(),
+    Cron.Daily(12, 0)
+);
 
 if (app.Environment.IsDevelopment())
 {

@@ -13,6 +13,7 @@ namespace Swallow.Repositories.Interfaces
         Task<Attraction?> CreateOrUpdateAsync(TripAdvisorAttraction tripadvisorAttraction, City city, Currency? currency);
         Task<IEnumerable<Attraction>> GetAllAsync(int? cityId = null);
         Task<IEnumerable<Attraction>> GetByCityIdAsync(int cityId, int? limit = null);
+        Task<IEnumerable<Attraction>> GetByNameAsync(int cityId, string name, int limit = 5);
         Task<List<Attraction>> GetByCityIdAndNotDislikedAsync(int cityId, Guid userId);
         Task<Attraction> UpdateAsync(Attraction attraction, GoogleMapsDetailsResponseResult googleMapsDetailsResponseResult);
         Task<Attraction> UpdateAsync(Attraction attraction, TripAdvisorAttraction tripAdvisorAttraction, Currency currency, List<AttractionCategory> attractionCategories);

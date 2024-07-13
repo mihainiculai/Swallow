@@ -32,7 +32,7 @@ public partial class TripAdvisorAttractionsCollector(HttpClient httpClient) : IT
 
             if (document == null) break;
 
-            var sections = document.DocumentNode.SelectNodes("//section[@data-automation='WebPresentation_SingleFlexCardSection']");
+            var sections = document.DocumentNode.SelectNodes("//div[contains(@class, 'ALtqV')]");
 
             if (sections != null)
             {
@@ -102,7 +102,6 @@ public partial class TripAdvisorAttractionsCollector(HttpClient httpClient) : IT
 
         details.Categories = GetCategories(htmlDoc);
         details.VisitDuration = GetVisitDuration(htmlDoc);
-        details.OpeningHours = GetOpeningHours(htmlDoc);
         details.Price = GetPrice(htmlDoc);
         details.ImageUrl = GetImageUrl(htmlDoc);
         details.Description = GetDescription(htmlDoc);
@@ -146,22 +145,6 @@ public partial class TripAdvisorAttractionsCollector(HttpClient httpClient) : IT
         var durationText = durationElement.InnerText;
         var splitText = durationText.Split(':');
         return splitText.Length > 1 ? WebUtility.HtmlDecode(splitText[1].Trim()) : null;
-    }
-
-    private static Dictionary<string, string> GetOpeningHours(HtmlDocument htmlDoc)
-    {
-        var hours = new Dictionary<string, string>();
-        var hourElements = htmlDoc.DocumentNode.SelectNodes("//div[contains(@class, 'XZfLa')]");
-        if (hourElements == null) return hours;
-            
-        foreach (var element in hourElements)
-        {
-            var day = element.SelectSingleNode(".//span[contains(@class, 'pZUbB')]").InnerText.Trim();
-            var time = element.SelectSingleNode(".//div[contains(@class, 'pZUbB')]").InnerText.Trim();
-            hours[day] = time;
-        }
-            
-        return hours;
     }
 
     private static string? GetDescription(HtmlDocument htmlDoc)

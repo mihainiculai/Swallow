@@ -32,6 +32,11 @@ public class AttractionRepository(ApplicationDbContext context, IAttractionCateg
             
         return await context.Attractions.Where(a => a.CityId == cityId).OrderBy(a => a.Popularity).ToListAsync();
     }
+    
+    public async Task<IEnumerable<Attraction>> GetByNameAsync(int cityId, string name, int limit = 5)
+    {
+        return await context.Attractions.Where(a => a.CityId == cityId && a.Name.Contains(name)).OrderByDescending(a => a.NormalizedRating).Take(limit).ToListAsync();
+    }
         
     public async Task<List<Attraction>> GetByCityIdAndNotDislikedAsync(int cityId, Guid userId)
     {

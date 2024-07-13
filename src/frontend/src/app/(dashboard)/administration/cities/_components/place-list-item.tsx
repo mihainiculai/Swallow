@@ -83,7 +83,7 @@ const PlaceListItem = React.forwardRef<HTMLDivElement, PlaceListItemProps>(
                     alt={name}
                     className="aspect-square w-full hover:scale-110"
                     isLoading={isLoading}
-                    src={imageSrc || (isLoading ? "" : "/placeholder.svg")}
+                    src={imageSrc || (isLoading ? "" : "/placeholder.png")}
                 />
 
                 <div className="mt-1 flex flex-col gap-2 px-1">

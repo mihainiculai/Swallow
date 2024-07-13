@@ -1,14 +1,13 @@
-﻿namespace Swallow.Models
+﻿namespace Swallow.Models;
+
+public class ItineraryDay
 {
-    public class ItineraryDay
-    {
-        public int ItineraryDayId { get; set; }
+    public int ItineraryDayId { get; set; }
 
-        public Guid TripId { get; set; }
-        public virtual Trip Trip { get; set; } = null!;
+    public Guid TripId { get; set; }
+    public virtual Trip Trip { get; set; } = null!;
 
-        public DateOnly? Date { get; set; }
+    public DateOnly? Date { get; set; }
 
-        public virtual ICollection<ItineraryAttraction> ItineraryAttractions { get; } = [];
-    }
+    public virtual ICollection<ItineraryAttraction> ItineraryAttractions { get; } = [];
 }

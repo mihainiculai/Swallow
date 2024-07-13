@@ -124,7 +124,7 @@ export default function AccountSettingsPage() {
                         </Badge>
                         <div className="flex flex-col items-start justify-center">
                             <p className="font-medium">{user?.fullName}</p>
-                            <span className="text-small text-default-500">[PLAN NAME]</span>
+                            <span className="text-small text-default-500">{user?.planId === 1 ? "Free" : "Premium"}</span>
                         </div>
                     </div>
 

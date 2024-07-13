@@ -7,6 +7,7 @@ public class ItineraryDto
     public required DateOnly StartDate { get; set; }
     public required DateOnly EndDate { get; set; }
     
+    public required int CityId { get; set; }
     public required ItineraryCityDto City { get; set; }
     public ItineraryTripToHotelDto? TripToHotel { get; set; }
     public byte TransportModeId { get; set; }
@@ -70,6 +71,7 @@ public class ItineraryAttractionDto
     public int ItineraryAttractionId { get; set; }
     
     public required int Index { get; set; }
+    public int AttractionId { get; set; }
     public required ItineraryPlaceDto Attraction { get; set; }
     public string? TicketsUrl { get; set; }
     public ItineraryExpenseDto? Expense { get; set; }

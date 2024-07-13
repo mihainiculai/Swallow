@@ -116,6 +116,21 @@ namespace Swallow.Data
                 new TransportMode { TransportModeId = 2, Name = "Drive + Walk short distance" }
             );
 
+            modelBuilder.Entity<ExpenseCategory>().HasData(
+                new ExpenseCategory { ExpenseCategoryId = 1, Name = "Flights" },
+                new ExpenseCategory { ExpenseCategoryId = 2, Name = "Lodging" },
+                new ExpenseCategory { ExpenseCategoryId = 3, Name = "Car rental" },
+                new ExpenseCategory { ExpenseCategoryId = 4, Name = "Transit" },
+                new ExpenseCategory { ExpenseCategoryId = 5, Name = "Food" },
+                new ExpenseCategory { ExpenseCategoryId = 6, Name = "Drinks" },
+                new ExpenseCategory { ExpenseCategoryId = 7, Name = "Sightseeing" },
+                new ExpenseCategory { ExpenseCategoryId = 8, Name = "Activities" },
+                new ExpenseCategory { ExpenseCategoryId = 9, Name = "Shopping" },
+                new ExpenseCategory { ExpenseCategoryId = 10, Name = "Gas" },
+                new ExpenseCategory { ExpenseCategoryId = 11, Name = "Groceries" },
+                new ExpenseCategory { ExpenseCategoryId = 12, Name = "Other" }
+            );
+
             modelBuilder.Entity<User>()
                 .HasMany(e => e.Trips)
                 .WithOne(e => e.User)

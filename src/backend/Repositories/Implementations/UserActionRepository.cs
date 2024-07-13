@@ -17,13 +17,30 @@ public class UserActionRepository(ApplicationDbContext context) : IUserActionRep
             UserActionTypeId = actionType
         };
         
-        await context.UserActions.AddAsync(userAction);
+        var existingUserAction = await context.UserActions.FirstOrDefaultAsync(ua => ua.UserId == userId && ua.AttractionId == attractionId);
+        if (existingUserAction != null)
+        {
+            existingUserAction.UserActionTypeId = actionType;
+            context.UserActions.Update(existingUserAction);
+        }
+        else
+        {
+            await context.UserActions.AddAsync(userAction);
+        }
+        
         await context.SaveChangesAsync();
     }
     
     public async Task<int> GetUserPreferenceCountAsync(User user)
     {
         return await context.UserActions.CountAsync(ua => ua.UserId == user.Id);
+    }
+    
+    public async Task<int> GetUserPreference(User user, int attractionId)
+    {
+        return await context.UserActions.Where(ua => ua.UserId == user.Id && ua.AttractionId == attractionId)
+            .Select(ua => ua.UserActionTypeId)
+            .FirstOrDefaultAsync();
     }
     
     public async Task<List<UserCategoryPreference>> GetNormalizedUserCategoryPreferencesAsync(User user)

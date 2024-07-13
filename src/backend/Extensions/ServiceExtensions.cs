@@ -15,6 +15,7 @@ namespace Swallow.Extensions
         {
             services.AddScoped<IDatabaseInitializer, DatabaseInitializer>();
             services.AddScoped<ICurrencyUpdater, CurrencyUpdater>();
+            services.AddSingleton<CurrencyUpdateJob>();
 
             services.Configure<EmailSettings>(services.BuildServiceProvider().GetRequiredService<IConfiguration>().GetSection("EmailSettings"));
             services.AddScoped<IEmailSender, EmailSender>();

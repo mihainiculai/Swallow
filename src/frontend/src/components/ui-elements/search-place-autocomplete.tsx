@@ -28,10 +28,11 @@ interface SearchPlaceAutoCompleteProps {
     setSessionToken?: (token: string) => void;
     isInvalid?: boolean | undefined;
     errorMessage?: string | false | undefined;
+    defaultValue?: string;
 }
 
-export const SearchPlaceAutocomplete: React.FC<SearchPlaceAutoCompleteProps> = ({ cityId, value, setValue, setSessionToken, isInvalid = false, errorMessage = "" }) => {
-    const [searchQuery, setSearchQuery] = useState<string>("");
+export const SearchPlaceAutocomplete: React.FC<SearchPlaceAutoCompleteProps> = ({ cityId, value, setValue, setSessionToken, isInvalid = false, errorMessage = "", defaultValue }) => {
+    const [searchQuery, setSearchQuery] = useState<string>(defaultValue || "");
     const [predictions, setPredictions] = useState<Prediction[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [token, setToken] = useState<string>("");
