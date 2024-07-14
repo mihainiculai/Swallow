@@ -58,9 +58,10 @@ export default function AddExpenseModal({ isOpen, onOpen, onOpenChange, itinerar
                 ...values,
                 tripId: itineraryId,
             })
-
-            mutate(`/itineraries/${itineraryId}`);
-            onOpenChange();
+                .then(() => {
+                    mutate(`/itineraries/${itineraryId}`);
+                    onOpenChange();
+                })
         }
     });
 

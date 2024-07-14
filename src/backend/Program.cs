@@ -6,6 +6,9 @@ using Swallow.Data;
 using Swallow.Extensions;
 using Hangfire;
 using Microsoft.AspNetCore.Localization;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
+using Prometheus;
 using Swallow.Exceptions.Handlers;
 using Serilog;
 using Serilog.Sinks.MSSqlServer;
@@ -56,6 +59,19 @@ Log.Logger = new LoggerConfiguration()
     )
     .CreateLogger();
 
+// builder.Services.AddOpenTelemetry()
+//     .WithMetrics(metrics => metrics
+//         .AddAspNetCoreInstrumentation()
+//         .AddRuntimeInstrumentation()
+//         .AddHttpClientInstrumentation()
+//         .AddPrometheusExporter(options =>
+//         {
+//             options.ScrapeResponseCacheDurationMilliseconds = 10000;
+//         }));
+
+builder.Services.UseHttpClientMetrics(); 
+
+
 var app = builder.Build();
 
 app.UseSerilogRequestLogging();
@@ -83,6 +99,8 @@ app.UseCors(builder => builder
     .AllowCredentials()
 );
 
+app.UseMetricServer();
+app.UseHttpMetrics();
 
 var supportedCultures = new[] { "en-US" };
 var localizationOptions = new RequestLocalizationOptions
@@ -96,4 +114,5 @@ app.UseRequestLocalization(localizationOptions);
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
+
 app.Run();

@@ -36,9 +36,7 @@ export default function ItineraryEdit({ params }: { params: { guid: UUID } }) {
     const [totalCost, setTotalCost] = React.useState<number>(0);
 
     React.useEffect(() => {
-        if (itinerary) {
-            setItineraryData(itinerary);
-        }
+        if (itinerary) setItineraryData(itinerary);
     }, [itinerary]);
 
     const onDragEnd = async (result: any) => {
@@ -79,11 +77,11 @@ export default function ItineraryEdit({ params }: { params: { guid: UUID } }) {
 
     return (
         <div className="w-screen h-screen grid grid-cols-5 gap-6 p-6">
-            <div className="col-span-3 flex flex-col gap-6 overflow-x-hidden overflow-y-hidden">
+            <div className="col-span-5 md:col-span-3 flex flex-col gap-6 overflow-x-hidden overflow-y-hidden">
                 <Navbar />
                 <div className="overflow-x-hidden hide-scrollbar flex flex-col gap-8">
                     <HeadCard itinerary={itineraryData} />
-                        <ManageCard tripId={itineraryData?.tripId ?? ''} totalCost={totalCost} onViewMoreClick={scrollToExpenses} cityId={itineraryData?.cityId ?? 0} lodging={itineraryData?.tripToHotel?.place} />
+                    <ManageCard tripId={itineraryData?.tripId ?? ''} totalCost={totalCost} onViewMoreClick={scrollToExpenses} cityId={itineraryData?.cityId ?? 0} lodging={itineraryData?.tripToHotel?.place} />
                     <DragDropContext onDragEnd={onDragEnd}>
                         <div className="flex flex-col gap-8">
                             {itineraryData?.itineraryDays.map((day, dayIndex) => (
@@ -123,7 +121,7 @@ export default function ItineraryEdit({ params }: { params: { guid: UUID } }) {
                     />
                 </div>
             </div>
-            <div className="col-span-2 flex flex-col h-full">
+            <div className="hidden md:block col-span-2 flex flex-col h-full">
                 {itinerary?.city && <MapCard itinerary={itinerary} />}
             </div>
         </div>

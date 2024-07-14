@@ -9,10 +9,10 @@ type DropdownConfigType = {
 
 export const DropdownConfig: DropdownConfigType = {
     items: [
-        {
-            name: 'My Profile',
-            path: '/profile',
-        },
+        // {
+        //     name: 'My Profile',
+        //     path: '/profile',
+        // },
         {
             name: 'Memberships',
             path: '/settings/membership',
