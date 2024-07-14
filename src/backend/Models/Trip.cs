@@ -20,6 +20,7 @@ public class Trip
     
     public bool IsArchived { get; set; } = false;
     
+    public virtual ICollection<Attachment> Attachments { get; } = [];
     public virtual ICollection<ItineraryDay> ItineraryDays { get; } = [];
     public virtual ICollection<TripTransport> TripTransports { get; } = [];
     public virtual ICollection<Expense> Expenses { get; } = [];

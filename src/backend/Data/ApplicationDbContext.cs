@@ -31,6 +31,7 @@ namespace Swallow.Data
         public DbSet<Place> Places { get; set; }
         public DbSet<TripToHotel> TripsToHotels { get; set; }
         public DbSet<TransportMode> TransportModes { get; set; }
+        public DbSet<Attachment> Attachments { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -195,15 +196,16 @@ namespace Swallow.Data
                 .HasMany(e => e.ItineraryDays)
                 .WithOne(e => e.Trip)
                 .HasForeignKey(e => e.TripId)
+                .OnDelete(DeleteBehavior.Cascade)
                 .IsRequired();
 
             modelBuilder.Entity<ItineraryDay>()
                 .HasMany(e => e.ItineraryAttractions)
                 .WithOne(e => e.ItineraryDay)
                 .HasForeignKey(e => e.ItineraryDayId)
-                .IsRequired()
-                .OnDelete(DeleteBehavior.NoAction);
-
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .IsRequired();
+            
             modelBuilder.Entity<ItineraryAttraction>()
                 .HasOne(e => e.Attraction)
                 .WithMany(e => e.ItineraryAttractions)
@@ -327,6 +329,12 @@ namespace Swallow.Data
             modelBuilder.Entity<Place>()
                 .HasIndex(p => p.GooglePlaceId)
                 .IsUnique();
+            
+            modelBuilder.Entity<Trip>()
+                .HasMany(t => t.Attachments)
+                .WithOne(a => a.Trip)
+                .HasForeignKey(a => a.TripId)
+                .IsRequired();
 
             modelBuilder.Entity<User>(b =>
             {

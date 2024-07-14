@@ -19,6 +19,7 @@ namespace Swallow.Extensions
             services.AddScoped<ITransportRepository, TransportRepository>();
             services.AddScoped<IPlaceRepository, PlaceRepository>();
             services.AddScoped<IExpenseRepository, ExpenseRepository>();
+            services.AddScoped<IAttachmentRepository, AttachmentRepository>();
         }
     }
 }

@@ -8,6 +8,7 @@
     <ApplicationIcon>favicon.ico</ApplicationIcon>
     <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
     <AnalysisLevel>latest</AnalysisLevel>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

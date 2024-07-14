@@ -17,6 +17,17 @@ public class ItineraryRepository(
     IItineraryAutoCreator itineraryAutoCreator,
     IMapper mapper) : IItineraryRepository
 {
+    public async Task<IEnumerable<Trip>> GetUpcomingTripsAsync(User user)
+    {
+        var currentDate = DateOnly.FromDateTime(DateTime.Now);
+        var oneDayAgo = currentDate.AddDays(-1);
+
+        var result = await context.Trips
+            .Where(t => t.UserId == user.Id && t.EndDate >= oneDayAgo && !t.IsArchived)
+            .ToListAsync();
+
+        return result;
+    }
     private static void CheckValidDates(CreateItineraryDto dto)
     {
         if (dto.StartDate.AddDays(1) < DateTime.UtcNow)
@@ -235,7 +246,7 @@ public class ItineraryRepository(
         await context.SaveChangesAsync();
     }
     
-    public async Task DeleteAttractionAsync(Trip trip, DeleteAttractionDto dto)
+    public async Task<int> DeleteAttractionAsync(Trip trip, DeleteAttractionDto dto)
     {
         trip = await context.Trips
             .Include(t => t.ItineraryDays)
@@ -246,6 +257,8 @@ public class ItineraryRepository(
         var attraction = day.ItineraryAttractions.FirstOrDefault(a => a.Index == dto.Index) ??
                          throw new NotFoundException("Attraction not found");
         
+        var attractionId = attraction.AttractionId;
+        
         context.ItineraryAttractions.Remove(attraction);
         
         foreach (var a in day.ItineraryAttractions.Where(a => a.Index > dto.Index))
@@ -254,6 +267,8 @@ public class ItineraryRepository(
         }
         
         await context.SaveChangesAsync();
+        
+        return attractionId;
     }
     
     public async Task UpdateLodgingAsync(Trip trip, string placeId, string sessionToken)
@@ -264,5 +279,42 @@ public class ItineraryRepository(
             await context.SaveChangesAsync();
         }
         await AddLodgingAsync(trip, placeId, sessionToken);
+    }
+    
+    public async Task ArchiveTripAsync(Trip trip)
+    {
+        trip.IsArchived = true;
+        await context.SaveChangesAsync();
+    }
+    
+    public async Task UnarchiveTripAsync(Trip trip)
+    {
+        trip.IsArchived = false;
+        await context.SaveChangesAsync();
+    }
+    
+    public async Task DeleteTripAsync(Trip trip)
+    {
+        foreach (var day in trip.ItineraryDays)
+        {
+            foreach (var attraction in day.ItineraryAttractions)
+            {
+                context.ItineraryAttractions.Remove(attraction);
+            }
+            context.ItineraryDays.Remove(day);
+        }
+        
+        if (trip.TripToHotel != null)
+        {
+            context.TripsToHotels.Remove(trip.TripToHotel);
+        }
+        
+        foreach (var transport in trip.TripTransports)
+        {
+            context.TripTransports.Remove(transport);
+        }
+        
+        context.Trips.Remove(trip);
+        await context.SaveChangesAsync();
     }
 }

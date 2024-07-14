@@ -15,6 +15,7 @@ namespace Swallow.Utils.FileManagers
     {
         private const int MAX_PROFILE_PICTURE_SIZE = 5 * 1024 * 1024; // 5 MB
         private readonly string _profilePicturePath = configuration["DataDirectory"]! + "profile-pictures/";
+        private readonly string _attachmentPath = configuration["DataDirectory"]! + "attachments/";
         private readonly WebpEncoder _webpEncoder = new() { Quality = 75 };
 
         public FileStream GetProfilePicture(Guid photoId)

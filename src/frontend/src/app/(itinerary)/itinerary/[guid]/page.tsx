@@ -83,7 +83,7 @@ export default function ItineraryEdit({ params }: { params: { guid: UUID } }) {
                 <Navbar />
                 <div className="overflow-x-hidden hide-scrollbar flex flex-col gap-8">
                     <HeadCard itinerary={itineraryData} />
-                    <ManageCard tripId={itineraryData?.tripId ?? ''} totalCost={totalCost} onViewMoreClick={scrollToExpenses} cityId={itineraryData?.cityId ?? 0} lodging={itineraryData?.tripToHotel?.place} />
+                        <ManageCard tripId={itineraryData?.tripId ?? ''} totalCost={totalCost} onViewMoreClick={scrollToExpenses} cityId={itineraryData?.cityId ?? 0} lodging={itineraryData?.tripToHotel?.place} />
                     <DragDropContext onDragEnd={onDragEnd}>
                         <div className="flex flex-col gap-8">
                             {itineraryData?.itineraryDays.map((day, dayIndex) => (

@@ -25,7 +25,7 @@ export const RecommendationCard = ({ tripId, recommendation, addAttraction }: Re
                 className="w-12 h-12 object-cover"
                 src={recommendation.pictureUrl}
             />
-            <h4 className="font-bold grow">{recommendation.name.substring(0, 41)}</h4>
+            <h4 className="font-bold grow">{recommendation.name.substring(0, 32)}</h4>
             <Button
                 isIconOnly
                 variant='light'

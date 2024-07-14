@@ -84,29 +84,31 @@ export const ExpensesCard = forwardRef<HTMLDivElement, ExpensesCardProps>(
                     ))}
                 </div>
                 <CardFooter className='flex flex-col items-start'>
-                <Select
-                        label="Currency"
-                        size='sm'
-                        defaultSelectedKeys={['USD']}
-                        className="max-w-xs mb-4 min-w-[20rem]"
-                        onChange={(e) => setSelectedCurrency(e.target.value)}
-                    >
-                        {currencies?.map((currency: any) => (
-                            <SelectItem
-                                key={currency.code}
-                                value={currency.code}
-                                startContent={
-                                    <span className="text-default-500 w-8">
-                                        {currency.symbol}
-                                    </span>
-                                }
+                    <div className="flex flex-row justify-between w-full items-center">
+                        <div className="flex gap-4 items-center">
+                            <Select
+                                label="Currency"
+                                size='sm'
+                                defaultSelectedKeys={['USD']}
+                                className="w-[15rem]"
+                                onChange={(e) => setSelectedCurrency(e.target.value)}
                             >
-                                {currency.name}
-                            </SelectItem>
-                        ))}
-                    </Select>
-                    <div className="flex flex-row justify-between w-full">
-                        <p className="font-bold text-large">Total:</p>
+                                {currencies?.map((currency: any) => (
+                                    <SelectItem
+                                        key={currency.code}
+                                        value={currency.code}
+                                        startContent={
+                                            <span className="text-default-500 w-8">
+                                                {currency.symbol}
+                                            </span>
+                                        }
+                                    >
+                                        {currency.name}
+                                    </SelectItem>
+                                ))}
+                            </Select>
+                            <p className="font-bold text-large">Total:</p>
+                        </div>
                         <p>{displayTotal} {selectedCurrency}</p>
                     </div>
                 </CardFooter>

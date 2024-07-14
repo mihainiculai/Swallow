@@ -1,4 +1,5 @@
 using Swallow.Models;
+using System.Collections.Concurrent;
 
 namespace Swallow.Utils.Itinerary;
 
@@ -13,31 +14,53 @@ public class ItineraryGeneticAlgorithm(
 {
     private readonly Random _random = new();
     private List<List<int>> _population = [];
-    
+
     private const int MaxAttractionsPerDay = 4;
     private const int PopulationSize = 100;
     private const int TournamentSize = 5;
-    private const double MutationRate = 0.1;
+    private const double InitialMutationRate = 0.2;
+    private const double FinalMutationRate = 0.05;
     private const int MaxGenerations = 1000;
+    private const int EliteSize = 2;
 
     public List<int> GenerateItinerary()
     {
         InitializePopulation();
 
+        var bestFitness = double.MinValue;
+        var generationsWithoutImprovement = 0;
+
         for (var generation = 0; generation < MaxGenerations; generation++)
         {
-            var newPopulation = new List<List<int>>();
+            var elites = _population.OrderByDescending(CalculateFitness).Take(EliteSize).ToList();
+            var newPopulation = new ConcurrentBag<List<int>>(elites);
 
-            while (newPopulation.Count < PopulationSize)
+            Parallel.For(0, PopulationSize - EliteSize, _ =>
             {
                 var parent1 = SelectParent();
                 var parent2 = SelectParent();
                 var child = Crossover(parent1, parent2);
-                Mutate(child);
+                Mutate(child, CalculateMutationRate(generation));
                 newPopulation.Add(child);
+            });
+
+            _population = newPopulation.ToList();
+
+            var currentBestFitness = _population.Max(CalculateFitness);
+            if (currentBestFitness > bestFitness)
+            {
+                bestFitness = currentBestFitness;
+                generationsWithoutImprovement = 0;
+            }
+            else
+            {
+                generationsWithoutImprovement++;
             }
 
-            _population = newPopulation;
+            if (generationsWithoutImprovement >= 50)
+            {
+                break;
+            }
         }
 
         return GetBestItinerary();
@@ -45,16 +68,17 @@ public class ItineraryGeneticAlgorithm(
 
     private void InitializePopulation()
     {
-        for (var i = 0; i < PopulationSize; i++)
-        {
-            _population.Add(GenerateRandomItinerary());
-        }
+        _population = Enumerable.Range(0, PopulationSize)
+            .AsParallel()
+            .Select(_ => GenerateSmartRandomItinerary())
+            .ToList();
     }
 
-    private List<int> GenerateRandomItinerary()
+    private List<int> GenerateSmartRandomItinerary()
     {
         var itinerary = new List<int>();
         var availableAttractions = Enumerable.Range(1, attractions.Count).ToList();
+        var currentLocation = 0;
 
         for (var day = 0; day < days; day++)
         {
@@ -62,10 +86,14 @@ public class ItineraryGeneticAlgorithm(
             for (var i = 0; i < maxAttractions; i++)
             {
                 if (availableAttractions.Count == 0) break;
-                var index = _random.Next(availableAttractions.Count);
-                itinerary.Add(availableAttractions[index]);
-                availableAttractions.RemoveAt(index);
+                
+                var nextAttraction = availableAttractions.MinBy(a => distanceMatrix[currentLocation][a]);
+                
+                itinerary.Add(nextAttraction);
+                availableAttractions.Remove(nextAttraction);
+                currentLocation = nextAttraction;
             }
+            currentLocation = 0; // Return to starting point
         }
 
         return itinerary;
@@ -80,13 +108,10 @@ public class ItineraryGeneticAlgorithm(
 
     private List<int> SelectParent()
     {
-        var tournament = new List<List<int>>();
-        for (var i = 0; i < TournamentSize; i++)
-        {
-            tournament.Add(_population[_random.Next(PopulationSize)]);
-        }
-
-        return tournament.OrderByDescending(CalculateFitness).First();
+        return Enumerable.Range(0, TournamentSize)
+            .Select(_ => _population[_random.Next(PopulationSize)])
+            .OrderByDescending(CalculateFitness)
+            .First();
     }
 
     private List<int> Crossover(List<int> parent1, List<int> parent2)
@@ -102,14 +127,19 @@ public class ItineraryGeneticAlgorithm(
         return child;
     }
 
-    private void Mutate(List<int> itinerary)
+    private void Mutate(List<int> itinerary, double mutationRate)
     {
         for (var i = 0; i < itinerary.Count; i++)
         {
-            if (!(_random.NextDouble() < MutationRate)) continue;
+            if (!(_random.NextDouble() < mutationRate)) continue;
             var j = _random.Next(itinerary.Count);
             (itinerary[i], itinerary[j]) = (itinerary[j], itinerary[i]);
         }
+    }
+
+    private double CalculateMutationRate(int generation)
+    {
+        return InitialMutationRate - (InitialMutationRate - FinalMutationRate) * generation / MaxGenerations;
     }
 
     private double CalculateFitness(List<int> itinerary)

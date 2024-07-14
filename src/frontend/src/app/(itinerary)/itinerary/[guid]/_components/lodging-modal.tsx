@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { SearchPlaceAutocomplete } from "@/components/ui-elements/search-place-autocomplete";
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure } from "@nextui-org/react";
 import { useFormik } from "formik";

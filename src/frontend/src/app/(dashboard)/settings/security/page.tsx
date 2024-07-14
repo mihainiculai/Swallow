@@ -23,11 +23,11 @@ export default function AccountSettingsPage() {
                     <p className="text-small text-default-500">Manage your security preferences</p>
                 </CardHeader>
                 <CardBody className="flex flex-col gap-4">
-                    <SwitchCell
+                    {/* <SwitchCell
                         defaultSelected
                         description="Add an extra layer of security to your account."
                         label="Two-Factor Authentication"
-                    />
+                    /> */}
                     <CellWrapper>
                         <div>
                             <p>Password</p>

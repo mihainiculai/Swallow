@@ -10,14 +10,14 @@ namespace Swallow.Controllers;
 [Authorize]
 [Route("api/trips")]
 [ApiController]
-public class TripController(ITransportRepository transportRepository, IUserRepository userRepository, IMapper mapper) : ControllerBase
+public class TripController(IItineraryRepository itineraryRepository, ITransportRepository transportRepository, IUserRepository userRepository, IMapper mapper) : ControllerBase
 {
     [Route("upcoming")]
     [HttpGet]
     public async Task<IActionResult> GetUpcomingTrips()
     {
         var user = await userRepository.GetUserAsync(User);
-        var trips = await transportRepository.GetUpcomingTripsAsync(user);
+        var trips = await itineraryRepository.GetUpcomingTripsAsync(user);
         
         return Ok(mapper.Map<IEnumerable<TripDto>>(trips));
     }

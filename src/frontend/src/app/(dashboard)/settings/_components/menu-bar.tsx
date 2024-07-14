@@ -12,11 +12,11 @@ const items = [
         title: 'Security',
         icon: <MdLock />,
     },
-    {
-        key: 'preferences',
-        title: 'Preferences',
-        icon: <MdSettings />,
-    },
+    // {
+    //     key: 'preferences',
+    //     title: 'Preferences',
+    //     icon: <MdSettings />,
+    // },
     {
         key: 'membership',
         title: 'Membership',
